@@ -1,1078 +1,396 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="dots. makes thoughtful products for everyday life. Something thoughtful is taking shape at usedots.in." />
-    <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#520A1E" />
-    <link rel="canonical" href="https://usedots.in/" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="dots. — Thoughtful products for everyday life." />
-    <meta property="og:description" content="dots. makes thoughtful products for everyday life. Something thoughtful is taking shape at usedots.in." />
-    <meta property="og:url" content="https://usedots.in/" />
-    <meta property="og:image" content="https://usedots.in/public/brand/og/dots-og.svg" />
-    <meta property="og:site_name" content="dots." />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="dots. — Thoughtful products for everyday life." />
-    <meta name="twitter:description" content="dots. makes thoughtful products for everyday life. Something thoughtful is taking shape at usedots.in." />
-    <meta name="twitter:image" content="https://usedots.in/public/brand/og/dots-og.svg" />
-    <link rel="icon" type="image/svg+xml" href="/public/favicon.svg" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <title>dots. — Thoughtful products for everyday life.</title>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>dots. — IN DAILY LIFE</title>
+    
+    <meta name="description" content="dots. is rethinking everyday oral care through thoughtfully designed toothpaste tablets, with a focus on convenience, packaging, transport and measurable impact.">
+    <meta name="theme-color" content="#F9F9F8" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#520A1E" media="(prefers-color-scheme: dark)">
+    
+    <link rel="icon" type="image/svg+xml" href="./public/brand/favicon.svg">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="canonical" href="https://usedots.in/">
+
+    <!-- Typography: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS (Locked to Brand Palette) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
+                    colors: {
+                        saviere: {
+                            maroon: '#520A1E',
+                            gold: '#D4AF37',
+                            black: '#0A0A0A',
+                            white: '#FFFFFF',
+                            ivory: '#F9F9F8',
+                            grey: '#808080'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Core Animation & 3D Engines -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <style>
-      :root {
-        --maroon: #520A1E;
-        --maroon-deep: #2d040d;
-        --gold: #D4AF37;
-        --gold-soft: rgba(212, 175, 55, 0.18);
-        --black: #0A0A0A;
-        --white: #FFFFFF;
-        --bone: #f4f0eb;
-        --bone-strong: #e7e0d7;
-        --ink: #1b1b1b;
-        --muted: rgba(11, 11, 11, 0.7);
-        --line: rgba(11, 11, 11, 0.12);
-        --line-light: rgba(255, 255, 255, 0.14);
-        --shadow: 0 24px 60px rgba(18, 8, 13, 0.12);
-      }
-
-      * { box-sizing: border-box; }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      body {
-        margin: 0;
-        font-family: 'Poppins', sans-serif;
-        background: var(--bone);
-        color: var(--black);
-        line-height: 1.5;
-        -webkit-font-smoothing: antialiased;
-        text-rendering: optimizeLegibility;
-      }
-
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        background-image: radial-gradient(circle at 20% 10%, rgba(212, 175, 55, 0.09), transparent 18%), radial-gradient(circle at 80% 25%, rgba(82, 10, 30, 0.05), transparent 22%);
-        z-index: -1;
-      }
-
-      img {
-        max-width: 100%;
-        display: block;
-      }
-
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-
-      p {
-        margin: 0;
-      }
-
-      .container {
-        width: min(1200px, calc(100% - 2rem));
-        margin: 0 auto;
-      }
-
-      .eyebrow,
-      .kicker,
-      .label {
-        display: inline-block;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        font-size: 0.71rem;
-        font-weight: 500;
-      }
-
-      .eyebrow {
-        color: var(--maroon);
-      }
-
-      .kicker {
-        color: var(--gold);
-      }
-
-      .label {
-        color: rgba(255,255,255,0.7);
-      }
-
-      .site-header {
-        position: sticky;
-        top: 0;
-        z-index: 30;
-        background: rgba(244, 240, 235, 0.82);
-        backdrop-filter: blur(18px);
-        border-bottom: 1px solid rgba(11,11,11,0.05);
-      }
-
-      .topbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        min-height: 74px;
-      }
-
-      .brand-lockup {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.7rem;
-        flex-shrink: 0;
-      }
-
-      .logo-wrap {
-        width: clamp(120px, 18vw, 260px);
-        line-height: 0;
-      }
-
-      .brand-wrap img {
-        width: 100%;
-        height: auto;
-      }
-
-      .logo {
-        display: block;
-        width: 100%;
-        height: auto;
-      }
-
-      .logo-dark {
-        filter: brightness(0) saturate(0);
-      }
-
-      .logo-light {
-        filter: brightness(0) invert(1);
-      }
-
-      .hero-logo {
-        width: min(100%, 780px);
-        display: block;
-        height: auto;
-        margin-bottom: 1rem;
-      }
-
-      .site-nav {
-        display: flex;
-        align-items: center;
-        gap: clamp(1rem, 2vw, 2rem);
-        font-size: 0.8rem;
-        letter-spacing: 0.04em;
-        color: rgba(10,10,10,0.7);
-      }
-
-      .site-nav a {
-        position: relative;
-      }
-
-      .site-nav a::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        bottom: -0.35rem;
-        width: 100%;
-        height: 1px;
-        background: var(--black);
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 0.3s ease;
-      }
-
-      .site-nav a:hover::after,
-      .site-nav a:focus-visible::after {
-        transform: scaleX(1);
-      }
-
-      .nav-cta {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 44px;
-        padding: 0.7rem 1.2rem;
-        color: var(--white);
-        background: var(--maroon);
-        border-radius: 999px;
-        font-size: 0.8rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        transition: transform 0.25s ease, background 0.25s ease;
-      }
-
-      .nav-cta:hover,
-      .nav-cta:focus-visible,
-      .primary-btn:hover,
-      .primary-btn:focus-visible,
-      .secondary-btn:hover,
-      .secondary-btn:focus-visible,
-      .inline-link:hover,
-      .inline-link:focus-visible {
-        transform: translateY(-1px);
-      }
-
-      .hero {
-        padding: clamp(4rem, 9vw, 8rem) 0 5rem;
-      }
-
-      .hero-grid {
-        display: grid;
-        grid-template-columns: 1.12fr 0.88fr;
-        align-items: center;
-        gap: clamp(2rem, 6vw, 4rem);
-      }
-
-      .hero-badge {
-        margin-bottom: 1rem;
-      }
-
-      h1 {
-        margin: 0;
-        font-size: clamp(3.25rem, 8vw, 8.6rem);
-        line-height: 0.88;
-        letter-spacing: -0.065em;
-        font-weight: 600;
-      }
-
-      .hero-brand {
-        display: block;
-        width: min(100%, 780px);
-        margin-bottom: 1rem;
-      }
-
-      .hero-title {
-        display: block;
-        font-weight: 300;
-      }
-
-      .hero-sub {
-        margin-top: 1.4rem;
-        max-width: 34rem;
-        font-size: clamp(1.08rem, 1.6vw, 1.55rem);
-        line-height: 1.45;
-        color: var(--muted);
-      }
-
-      .hero-actions {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-        margin-top: 2rem;
-      }
-
-      .primary-btn,
-      .secondary-btn {
-        display: inline-flex;
-        height: 52px;
-        align-items: center;
-        justify-content: center;
-        border-radius: 999px;
-        padding: 0 1.4rem;
-        font-size: 0.8rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        transition: transform 0.25s ease, background 0.25s ease;
-      }
-
-      .primary-btn {
-        background: var(--maroon);
-        color: var(--white);
-      }
-
-      .secondary-btn {
-        border: 1px solid var(--line);
-        color: var(--black);
-        background: rgba(255,255,255,0.25);
-      }
-
-      .hero-visual {
-        position: relative;
-        min-height: clamp(24rem, 40vw, 38rem);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .orbital-stage {
-        position: relative;
-        width: min(100%, 540px);
-        height: min(72vw, 540px);
-      }
-
-      .gold-orbit {
-        position: absolute;
-        inset: 10% 12% 9% 12%;
-        border-radius: 50%;
-        border: 1px solid rgba(82,10,30,0.2);
-        box-shadow: inset 0 0 0 1px rgba(212,175,55,0.06);
-      }
-
-      .gold-orbit::before,
-      .gold-orbit::after {
-        content: "";
-        position: absolute;
-        border-radius: 50%;
-        border: 1px solid rgba(212,175,55,0.25);
-      }
-
-      .gold-orbit::before {
-        inset: 8%;
-      }
-
-      .gold-orbit::after {
-        inset: 24%;
-      }
-
-      .dot-field {
-        position: absolute;
-        inset: 0;
-        filter: drop-shadow(0 25px 38px rgba(82,10,30,0.08));
-      }
-
-      .floating-dot {
-        position: absolute;
-        width: 0.8rem;
-        height: 0.8rem;
-        border-radius: 50%;
-        background: rgba(82,10,30,0.2);
-        transform: translate3d(var(--tx, 0), var(--ty, 0), 0);
-        transition: transform 0.18s ease-out, opacity 0.18s ease-out;
-      }
-
-      .floating-dot.active {
-        background: var(--gold);
-        box-shadow: 0 0 0 8px rgba(212,175,55,0.14);
-      }
-
-      .core-dot {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        width: clamp(5.5rem, 9vw, 7.2rem);
-        height: clamp(5.5rem, 9vw, 7.2rem);
-        border-radius: 50%;
-        background: var(--gold);
-        transform: translate(-50%, -50%);
-        box-shadow: 0 0 0 18px rgba(212,175,55,0.08), 0 24px 44px rgba(212,175,55,0.16);
-        animation: pulseDot 7s ease-in-out infinite;
-      }
-
-      .core-dot::before {
-        content: "";
-        position: absolute;
-        inset: 18%;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.18);
-      }
-
-      @keyframes pulseDot {
-        0%, 100% { transform: translate(-50%, -50%) scale(1); }
-        50% { transform: translate(-50%, -48%) scale(1.05); }
-      }
-
-      .floating-badge {
-        position: absolute;
-        right: 0;
-        bottom: 1.2rem;
-        width: clamp(11rem, 16vw, 16rem);
-        background: rgba(255,255,255,0.72);
-        border: 1px solid rgba(11,11,11,0.08);
-        border-radius: 1.2rem;
-        box-shadow: var(--shadow);
-        padding: 1rem 1.05rem;
-        transform: translateY(0);
-      }
-
-      .floating-badge strong {
-        display: block;
-        font-size: 0.74rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--maroon);
-        margin-bottom: 0.3rem;
-      }
-
-      .floating-badge span {
-        font-size: 0.95rem;
-        color: var(--muted);
-      }
-
-      .feature-band {
-        padding-top: 0;
-      }
-
-      .feature-rail {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        flex-wrap: wrap;
-        padding-top: 1.4rem;
-        border-top: 1px solid rgba(11,11,11,0.08);
-        color: rgba(10, 10, 10, 0.52);
-        text-transform: uppercase;
-        letter-spacing: 0.18em;
-        font-size: 0.68rem;
-      }
-
-      .section {
-        padding: clamp(4.5rem, 7vw, 7.5rem) 0;
-      }
-
-      .section-head {
-        display: grid;
-        gap: 1rem;
-        margin-bottom: clamp(2rem, 4vw, 3rem);
-      }
-
-      h2 {
-        margin: 0;
-        font-size: clamp(2.2rem, 4.5vw, 5rem);
-        line-height: 0.97;
-        letter-spacing: -0.06em;
-        font-weight: 500;
-      }
-
-      .lede-copy {
-        max-width: 42rem;
-        color: var(--muted);
-        font-size: clamp(1rem, 1.4vw, 1.15rem);
-      }
-
-      .idea-grid {
-        display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
-        gap: clamp(2rem, 4vw, 3rem);
-        align-items: end;
-      }
-
-      .idea-copy {
-        font-size: clamp(1.15rem, 2vw, 1.8rem);
-        line-height: 1.38;
-        letter-spacing: -0.04em;
-      }
-
-      .idea-aside {
-        background: rgba(255,255,255,0.28);
-        border: 1px solid rgba(11,11,11,0.08);
-        border-radius: 1.6rem;
-        padding: 1.5rem 1.3rem;
-      }
-
-      .idea-aside p { color: var(--muted); }
-
-      .daily-grid {
-        display: grid;
-        grid-template-columns: 1fr 1.1fr;
-        gap: clamp(1.5rem, 3vw, 3rem);
-        align-items: stretch;
-      }
-
-      .daily-panel {
-        background: rgba(255,255,255,0.18);
-        border: 1px solid rgba(11,11,11,0.08);
-        border-radius: 2rem;
-        padding: clamp(1.4rem, 2vw, 2rem);
-      }
-
-      .object-scene {
-        position: relative;
-        min-height: 32rem;
-        overflow: hidden;
-        background: linear-gradient(180deg, rgba(82,10,30,0.04), rgba(212,175,55,0.04));
-        border-radius: 2rem;
-      }
-
-      .shape {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.9);
-        border: 1px solid rgba(11,11,11,0.08);
-      }
-
-      .shape.a { width: 10rem; height: 10rem; left: 14%; top: 18%; background: #faf7f0; }
-      .shape.b { width: 14rem; height: 14rem; right: 18%; top: 14%; background: rgba(212,175,55,0.12); }
-      .shape.c { width: 18rem; height: 18rem; bottom: -2rem; left: 18%; background: rgba(82,10,30,0.06); }
-      .shape.d { width: 8rem; height: 8rem; right: 12%; bottom: 14%; background: rgba(255,255,255,0.86); }
-
-      .shape::before {
-        content: "";
-        position: absolute;
-        inset: 18%;
-        border-radius: 50%;
-        background: rgba(82,10,30,0.08);
-      }
-
-      .principles-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 1rem;
-      }
-
-      .principle {
-        position: relative;
-        padding: 1.5rem 1rem 1.2rem;
-        border-radius: 1.4rem;
-        background: rgba(255,255,255,0.28);
-        border: 1px solid rgba(11,11,11,0.08);
-        min-height: 220px;
-        overflow: hidden;
-        transition: transform 0.25s ease, border-color 0.25s ease;
-      }
-
-      .principle:hover,
-      .principle:focus-within {
-        transform: translateY(-2px);
-        border-color: rgba(82,10,30,0.18);
-      }
-
-      .principle .principle-index {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.2rem;
-        height: 2.2rem;
-        border-radius: 0.8rem;
-        background: var(--gold-soft);
-        color: var(--maroon);
-        font-size: 0.78rem;
-        font-weight: 600;
-        letter-spacing: 0.09em;
-      }
-
-      .principle h3 {
-        margin: 1.2rem 0 0.5rem;
-        font-size: clamp(1.2rem, 2vw, 1.7rem);
-        letter-spacing: -0.05em;
-        font-weight: 500;
-      }
-
-      .principle p {
-        color: var(--muted);
-      }
-
-      .immersive-wrap {
-        position: relative;
-        background: var(--maroon);
-        color: var(--white);
-        border-radius: 2rem;
-        padding: clamp(2rem, 5vw, 4rem);
-        overflow: hidden;
-      }
-
-      .immersive-wrap::before {
-        content: "";
-        position: absolute;
-        inset: 8% -10% 40% auto;
-        width: 22rem;
-        height: 22rem;
-        border-radius: 50%;
-        background: rgba(212,175,55,0.12);
-      }
-
-      .immersive-inner {
-        position: relative;
-        z-index: 1;
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 2rem;
-        align-items: end;
-      }
-
-      .immersive-copy {
-        max-width: 42rem;
-      }
-
-      .immersive-copy h2 {
-        font-size: clamp(2.3rem, 5vw, 5rem);
-      }
-
-      .immersive-dots {
-        position: relative;
-        width: min(18rem, 40vw);
-        aspect-ratio: 1;
-      }
-
-      .immersive-dots .dot {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.78);
-      }
-
-      .immersive-dots .dot:nth-child(1) { width: 1.3rem; height: 1.3rem; left: 10%; top: 18%; }
-      .immersive-dots .dot:nth-child(2) { width: 0.9rem; height: 0.9rem; left: 26%; top: 50%; background: var(--gold); }
-      .immersive-dots .dot:nth-child(3) { width: 1.8rem; height: 1.8rem; right: 18%; top: 24%; }
-      .immersive-dots .dot:nth-child(4) { width: 1.3rem; height: 1.3rem; left: 42%; bottom: 18%; }
-      .immersive-dots .dot:nth-child(5) { width: 2.5rem; height: 2.5rem; right: 36%; bottom: 20%; background: rgba(212,175,55,0.9); }
-      .immersive-dots .dot:nth-child(6) { width: 1rem; height: 1rem; right: 12%; bottom: 8%; }
-      .immersive-dots .dot:nth-child(7) { width: 0.9rem; height: 0.9rem; left: 52%; top: 14%; }
-      .immersive-dots .dot:nth-child(8) { width: 1.7rem; height: 1.7rem; left: 15%; bottom: 12%; }
-
-      .soon-wrap {
-        background: #f2ece8;
-      }
-
-      .soon-box {
-        position: relative;
-        padding: clamp(2rem, 4vw, 4rem);
-        border-radius: 2rem;
-        border: 1px solid rgba(11,11,11,0.08);
-        background: rgba(255,255,255,0.3);
-        overflow: hidden;
-      }
-
-      .soon-box::after {
-        content: "";
-        position: absolute;
-        right: -4rem;
-        top: -2rem;
-        width: 16rem;
-        height: 16rem;
-        border-radius: 50%;
-        background: rgba(212,175,55,0.1);
-      }
-
-      .soon-inner {
-        position: relative;
-        z-index: 1;
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 2rem;
-        align-items: end;
-      }
-
-      .soon-box h2 {
-        font-size: clamp(2.4rem, 6vw, 5.2rem);
-      }
-
-      .soon-box p {
-        color: var(--muted);
-      }
-
-      .mini-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1.1rem;
-        border-radius: 999px;
-        background: var(--white);
-        border: 1px solid rgba(11,11,11,0.08);
-        color: var(--black);
-        font-size: 0.74rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-      }
-
-      .about-grid {
-        display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        gap: clamp(1.5rem, 3vw, 3rem);
-        align-items: end;
-      }
-
-      .about-copy {
-        font-size: clamp(1.15rem, 2vw, 1.8rem);
-        line-height: 1.4;
-        letter-spacing: -0.04em;
-      }
-
-      .about-meta {
-        display: grid;
-        gap: 1rem;
-        background: rgba(255,255,255,0.22);
-        border: 1px solid rgba(11,11,11,0.08);
-        border-radius: 1.5rem;
-        padding: 1.4rem 1.2rem;
-      }
-
-      .inline-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        color: var(--maroon);
-        font-weight: 500;
-      }
-
-      .inline-link::after {
-        content: "→";
-      }
-
-      footer {
-        padding: 1.6rem 0 3rem;
-        color: rgba(10,10,10,0.7);
-      }
-
-      .footer-shell {
-        display: grid;
-        gap: 1.2rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid rgba(11,11,11,0.08);
-      }
-
-      .footer-top {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-
-      .footer-brand {
-        font-size: clamp(1.5rem, 3vw, 2.4rem);
-        line-height: 0.9;
-        letter-spacing: -0.08em;
-      }
-
-      .footer-links {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-        font-size: 0.8rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0,0,0,0);
-        white-space: nowrap;
-        border: 0;
-      }
-
-      @media (max-width: 980px) {
-        .hero-grid,
-        .idea-grid,
-        .daily-grid,
-        .about-grid,
-        .soon-inner,
-        .immersive-inner {
-          grid-template-columns: 1fr;
-        }
-
-        .site-nav {
-          display: none;
-        }
-
-        .principles-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-      }
-
-      @media (max-width: 640px) {
-        .topbar {
-          min-height: 68px;
-        }
-
-        .nav-cta {
-          display: none;
-        }
-
-        .hero {
-          padding-top: 3rem;
-        }
-
-        .hero-actions {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .primary-btn,
-        .secondary-btn,
-        .mini-link {
-          width: 100%;
-        }
-
-        .principles-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .object-scene {
-          min-height: 25rem;
-        }
-
-        .footer-top {
-          align-items: flex-start;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-
-        *, *::before, *::after {
-          animation: none !important;
-          transition: none !important;
-        }
-      }
+        body { background-color: #F9F9F8; color: #0A0A0A; overflow-x: hidden; cursor: crosshair; }
+        .text-balance { text-wrap: balance; }
+        
+        /* WebGL Canvas strictly behind content */
+        #dot-field-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
+        .content-layer { position: relative; z-index: 10; }
+        
+        /* Navigation / Utilities */
+        .glass-nav { background: rgba(249, 249, 248, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(10, 10, 10, 0.05); transition: transform 0.4s ease, background 0.4s ease; }
+        .nav-maroon { background: rgba(82, 10, 30, 0.9); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        
+        /* Typographic Restraint */
+        .editorial-label { font-size: 0.65rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.3em; }
+        
+        /* Calculator UI */
+        .range-slider { -webkit-appearance: none; width: 100%; height: 2px; background: #E5E5E5; outline: none; }
+        .range-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #D4AF37; cursor: pointer; }
     </style>
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="container topbar">
-        <a href="#top" class="brand-lockup" aria-label="dots. home">
-          <span class="logo-wrap" aria-hidden="true">
-            <img class="logo logo-dark" src="/public/brand/logos/DotsTBWTWS.png" alt="dots." />
-          </span>
-        </a>
+</head>
+<body class="antialiased selection:bg-saviere-gold selection:text-white">
 
-        <nav class="site-nav" aria-label="Main navigation">
-          <a href="#idea">The idea</a>
-          <a href="#daily-life">Daily life</a>
-          <a href="#philosophy">Philosophy</a>
-          <a href="#about">About</a>
-        </nav>
+    <!-- The Singular WebGL Context -->
+    <canvas id="dot-field-canvas"></canvas>
 
-        <a class="nav-cta" href="#coming-soon">Explore</a>
-      </div>
+    <!-- Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-nav" id="main-nav">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="/" class="relative z-50">
+                <img src="./public/brand/logos/DotsTBBTWoS.png" alt="dots." class="h-6 w-auto object-contain transition-opacity duration-300" id="nav-logo-light">
+                <img src="./public/brand/logos/DotsTBWTWoS.png" alt="dots." class="h-6 w-auto object-contain absolute top-0 left-0 opacity-0 transition-opacity duration-300" id="nav-logo-dark">
+            </a>
+            <nav class="hidden md:flex gap-8 editorial-label text-saviere-black" id="nav-links">
+                <a href="#problem" class="hover:text-saviere-gold transition-colors">The Problem</a>
+                <a href="#impact" class="hover:text-saviere-gold transition-colors">Impact Model</a>
+                <a href="#ritual" class="hover:text-saviere-gold transition-colors">The Ritual</a>
+            </nav>
+        </div>
     </header>
 
-    <main id="top">
-      <section class="hero">
-        <div class="container hero-grid">
-          <div>
-            <div class="eyebrow hero-badge">IN DAILY LIFE</div>
-            <img class="hero-brand logo logo-dark" src="/public/brand/logos/DotsTBWTWS.png" alt="dots." />
-            <h1>
-              Thoughtful products for everyday life.
-            </h1>
-            <p class="hero-sub">We notice the little things. Then we make them better.</p>
-
-            <div class="hero-actions">
-              <a class="primary-btn" href="#coming-soon">Explore</a>
-              <a class="secondary-btn" href="#idea">Scroll</a>
+    <main class="content-layer">
+        
+        <!-- SCENE 1-3: The Hero & Discovery -->
+        <section class="h-screen flex flex-col items-center justify-center relative">
+            <div class="text-center pointer-events-none mt-20">
+                <img src="./public/brand/logos/DotsTBBTWoS.png" alt="dots." class="h-16 md:h-20 w-auto mx-auto opacity-0 translate-y-8" id="hero-logo">
+                <p class="editorial-label text-saviere-black mt-6 opacity-0" id="hero-tagline">In Daily Life</p>
+                <p class="mt-12 text-lg md:text-xl font-light text-saviere-grey tracking-wide opacity-0 translate-y-4" id="hero-copy">
+                    Thoughtful products for everyday life.
+                </p>
             </div>
-          </div>
-
-          <div class="hero-visual" aria-label="Interactive brand dot field">
-            <div class="orbital-stage">
-              <div class="gold-orbit" aria-hidden="true"></div>
-              <div class="dot-field" aria-hidden="true" id="dotField"></div>
-              <div class="core-dot" aria-hidden="true"></div>
-              <div class="floating-badge" aria-label="Brand note">
-                <strong>Thoughtful</strong>
-                <span>Products for everyday rituals.</span>
-              </div>
+            <div class="absolute bottom-12 flex flex-col items-center opacity-40">
+                <p class="editorial-label text-saviere-grey mb-3">Look closer</p>
+                <div class="w-px h-12 bg-saviere-grey/30"></div>
             </div>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <div class="feature-band">
-        <div class="container feature-rail">
-          <span>Made with care</span>
-          <span>Quietly useful</span>
-          <span>Everyday value</span>
-          <span>Built by Savière Group</span>
-        </div>
-      </div>
-
-      <section class="section" id="idea">
-        <div class="container">
-          <div class="section-head">
-            <div class="kicker">The idea</div>
-            <h2>We notice the little things.</h2>
-          </div>
-
-          <div class="idea-grid">
-            <div class="idea-copy">
-              The things you use every day. The things that almost work. The things that could be simpler. The things that deserve a little more thought.
+        <!-- SCENE 4: The Everyday Problem -->
+        <section id="problem" class="py-32 px-6 max-w-7xl mx-auto min-h-screen flex flex-col justify-center">
+            <h2 class="text-5xl md:text-7xl font-light tracking-tight text-saviere-black mb-16 max-w-3xl leading-tight">
+                You use it<br>every day.
+            </h2>
+            
+            <div class="grid md:grid-cols-3 gap-12 border-t border-saviere-black/10 pt-16">
+                <div class="counter-block opacity-0 translate-y-8">
+                    <span class="text-6xl md:text-8xl font-light text-saviere-black block mb-4" id="count-days">0</span>
+                    <span class="editorial-label text-saviere-grey">Days a year</span>
+                </div>
+                <div class="counter-block opacity-0 translate-y-8">
+                    <span class="text-6xl md:text-8xl font-light text-saviere-black block mb-4" id="count-times">0</span>
+                    <span class="editorial-label text-saviere-grey">Times a day</span>
+                </div>
+                <div class="counter-block opacity-0 translate-y-8">
+                    <span class="text-6xl md:text-8xl font-light text-saviere-gold block mb-4" id="count-total">0</span>
+                    <span class="editorial-label text-saviere-grey">Brushing moments</span>
+                </div>
             </div>
+            
+            <p class="text-2xl md:text-4xl font-light text-saviere-black mt-32 max-w-4xl leading-snug">
+                What if the product you use twice a day was designed differently?
+            </p>
+        </section>
 
-            <div class="idea-aside">
-              <p>So we’re making them.</p>
+        <!-- SCENE 5-8: The Tube & Calculator -->
+        <section id="impact" class="py-32 px-6 bg-white border-y border-saviere-black/5">
+            <div class="max-w-7xl mx-auto">
+                <div class="mb-20">
+                    <p class="editorial-label text-saviere-gold mb-6">Interactive Data Model</p>
+                    <h2 class="text-4xl md:text-6xl font-light tracking-tight text-saviere-black max-w-3xl">
+                        The format changes the equation.
+                    </h2>
+                    <p class="mt-6 text-saviere-grey font-light max-w-2xl text-balance">
+                        The environmental outcome depends on formulation, packaging, and logistics. This illustrative model estimates the systemic impact based on current assumptions.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-12 gap-12">
+                    <!-- Inputs -->
+                    <div class="md:col-span-5 bg-saviere-ivory p-8 rounded-2xl border border-saviere-black/5">
+                        <h3 class="font-medium text-lg mb-8">Household Usage</h3>
+                        <div class="space-y-8">
+                            <div>
+                                <label class="flex justify-between editorial-label text-saviere-grey mb-4">
+                                    <span>People in household</span>
+                                    <span id="val-people" class="text-saviere-black font-medium">1</span>
+                                </label>
+                                <input type="range" id="input-people" min="1" max="10" value="1" class="range-slider">
+                            </div>
+                            <div>
+                                <label class="flex justify-between editorial-label text-saviere-grey mb-4">
+                                    <span>Timeframe (Years)</span>
+                                    <span id="val-years" class="text-saviere-black font-medium">1</span>
+                                </label>
+                                <input type="range" id="input-years" min="1" max="10" value="1" class="range-slider">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Outputs -->
+                    <div class="md:col-span-7 flex flex-col justify-center">
+                        <div class="space-y-12">
+                            <div>
+                                <p class="editorial-label text-saviere-grey mb-3">Estimated Plastic Packaging Avoided</p>
+                                <div class="flex items-end gap-4">
+                                    <span class="text-5xl md:text-7xl font-light text-saviere-black" id="out-plastic">0</span>
+                                    <span class="text-xl text-saviere-grey mb-2">grams</span>
+                                </div>
+                                <!-- Visual Bar -->
+                                <div class="w-full h-1 bg-saviere-ivory mt-6 relative overflow-hidden">
+                                    <div class="absolute top-0 left-0 h-full bg-saviere-gold transition-all duration-500 w-0" id="bar-plastic"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <p class="editorial-label text-saviere-grey mb-3">Estimated Shipment Mass Reduction</p>
+                                <div class="flex items-end gap-4">
+                                    <span class="text-5xl md:text-7xl font-light text-saviere-black" id="out-mass">0</span>
+                                    <span class="text-xl text-saviere-grey mb-2">kg</span>
+                                </div>
+                                <div class="w-full h-1 bg-saviere-ivory mt-6 relative overflow-hidden">
+                                    <div class="absolute top-0 left-0 h-full bg-saviere-black transition-all duration-500 w-0" id="bar-mass"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="section" id="daily-life">
-        <div class="container">
-          <div class="section-head">
-            <div class="kicker">DOTS IN DAILY LIFE</div>
-            <h2>Thoughtful objects for the rhythm of ordinary days.</h2>
-          </div>
-
-          <div class="daily-grid">
-            <div class="daily-panel">
-              <p class="lede-copy">We design with attention to the rituals people repeat without noticing. The routines. The surfaces. The moments in between. A better angle. A calmer interface. A product that simply fits.</p>
+        <!-- SCENE 10-14: The Ritual & Philosophy -->
+        <section id="ritual" class="py-32 px-6 max-w-7xl mx-auto text-center">
+            <h2 class="text-4xl md:text-6xl font-light tracking-tight text-saviere-black mb-12">Not just less.</h2>
+            <div class="grid md:grid-cols-2 gap-8 text-left max-w-4xl mx-auto">
+                <div class="p-8 border border-saviere-black/10 rounded-2xl">
+                    <ul class="space-y-4 text-saviere-grey font-light text-lg">
+                        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-saviere-grey"></span> Less bulk.</li>
+                        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-saviere-grey"></span> Less packaging.</li>
+                        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-saviere-grey"></span> Less space.</li>
+                        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-saviere-grey"></span> No liquid toothpaste in your bag.</li>
+                    </ul>
+                </div>
+                <div class="p-8 border border-saviere-gold/30 bg-saviere-gold/5 rounded-2xl">
+                    <ul class="space-y-4 text-saviere-black font-medium text-lg">
+                        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-saviere-gold"></span> More control.</li>
+                        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-saviere-gold"></span> More convenience.</li>
+                        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-saviere-gold"></span> More intention.</li>
+                        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-saviere-gold"></span> More dots.</li>
+                    </ul>
+                </div>
             </div>
+        </section>
 
-            <div class="object-scene" aria-hidden="true">
-              <div class="shape a"></div>
-              <div class="shape b"></div>
-              <div class="shape c"></div>
-              <div class="shape d"></div>
-            </div>
-          </div>
-        </div>
-      </section>
+        <!-- SCENE 15: Maroon Immersion -->
+        <section id="maroon-zone" class="min-h-screen bg-saviere-maroon text-saviere-white flex flex-col items-center justify-center px-6 relative transition-colors duration-700">
+            <!-- RULE 02: Approved lockup for dark background -->
+            <img src="./public/brand/logos/DotsScBWTWS.png" alt="dots." class="w-48 md:w-64 mb-16 opacity-0 translate-y-8 maroon-reveal rounded-2xl shadow-2xl">
+            <h2 class="text-4xl md:text-7xl font-light tracking-tight max-w-4xl text-center text-balance opacity-0 translate-y-8 maroon-reveal">
+                There is another way.
+            </h2>
+        </section>
 
-      <section class="section" id="philosophy">
-        <div class="container">
-          <div class="section-head">
-            <div class="kicker">The philosophy</div>
-            <h2>Useful. Thoughtful. Honest. Everyday.</h2>
-          </div>
-
-          <div class="principles-grid">
-            <article class="principle">
-              <div class="principle-index">01</div>
-              <h3>Useful.</h3>
-              <p>Does it solve something real?</p>
-            </article>
-
-            <article class="principle">
-              <div class="principle-index">02</div>
-              <h3>Thoughtful.</h3>
-              <p>Every detail has a reason.</p>
-            </article>
-
-            <article class="principle">
-              <div class="principle-index">03</div>
-              <h3>Honest.</h3>
-              <p>No unnecessary promises.</p>
-            </article>
-
-            <article class="principle">
-              <div class="principle-index">04</div>
-              <h3>Everyday.</h3>
-              <p>Made to be used.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container">
-          <div class="immersive-wrap">
-            <div class="immersive-inner">
-              <div class="immersive-copy">
-                <div class="label">Something is taking shape</div>
-                <img class="hero-brand logo logo-light" src="/public/brand/logos/DotsTBWTWS.png" alt="dots." style="max-width: 640px; margin: 0 0 1rem;" />
-                <h2>Something thoughtful is taking shape.</h2>
-              </div>
-
-              <div class="immersive-dots" aria-hidden="true">
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section soon-wrap" id="coming-soon">
-        <div class="container">
-          <div class="soon-box">
-            <div class="soon-inner">
-              <div>
-                <div class="kicker">Coming soon</div>
-                <h2>WE’RE MAKING SOMETHING.</h2>
-                <p>More soon.</p>
-              </div>
-
-              <a class="mini-link" href="mailto:hello@usedots.in">hello@usedots.in</a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" id="about">
-        <div class="container about-grid">
-          <div class="about-copy">
-            <div class="kicker">About dots.</div>
-            <p>DOTS is a consumer business being built by Savière Group.</p>
-          </div>
-
-          <div class="about-meta">
-            <div>
-              <div class="label">Parent company</div>
-              <a class="inline-link" href="https://savieregroup.com" target="_blank" rel="noreferrer">savieregroup.com</a>
-            </div>
-            <div>
-              <div class="label">Domain</div>
-              <a class="inline-link" href="https://usedots.in" target="_blank" rel="noreferrer">usedots.in</a>
-            </div>
-          </div>
-        </div>
-      </section>
     </main>
 
-    <footer>
-      <div class="container footer-shell">
-        <div class="footer-top">
-          <div class="footer-brand">dots.</div>
-          <div class="footer-links">
-            <a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a>
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a>
-            <a href="https://x.com" target="_blank" rel="noreferrer">X</a>
-            <a href="https://threads.net" target="_blank" rel="noreferrer">Threads</a>
-          </div>
+    <footer class="bg-saviere-black text-saviere-white pt-24 pb-12 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-12 border-b border-saviere-white/10 pb-12">
+            <img src="./public/brand/logos/DotsTBWTWoS.png" alt="dots." class="h-8 w-auto">
+            <div class="editorial-label text-saviere-grey flex flex-col md:flex-row gap-8">
+                <button id="btn-sources" class="hover:text-saviere-gold text-left">Sources & Assumptions</button>
+                <span>Built by <a href="https://savieregroup.com" class="text-saviere-white hover:text-saviere-gold" target="_blank">Savière Group.</a></span>
+            </div>
         </div>
-
-        <div class="footer-top" style="align-items:flex-start;">
-          <div>IN DAILY LIFE</div>
-          <div>Built by Savière Group Private Limited.</div>
+        <div class="max-w-7xl mx-auto pt-8 editorial-label text-saviere-grey">
+            © 2026 Savière Group Private Limited.
         </div>
-      </div>
     </footer>
 
-    <script>
-      const dotField = document.getElementById('dotField');
-      if (dotField) {
-        const total = 18;
-        for (let i = 0; i < total; i += 1) {
-          const dot = document.createElement('span');
-          dot.className = 'floating-dot';
-          if (i === 0) dot.classList.add('active');
-          const angle = (Math.PI * 2 * i) / total;
-          const radius = 28 + ((i % 5) * 10);
-          const x = Math.cos(angle) * radius;
-          const y = Math.sin(angle) * radius;
-          dot.style.left = `50%`;
-          dot.style.top = `50%`;
-          dot.style.setProperty('--tx', `${x}px`);
-          dot.style.setProperty('--ty', `${y}px`);
-          dotField.appendChild(dot);
-        }
+    <!-- Sources Panel (Hidden by default) -->
+    <div id="sources-panel" class="fixed inset-0 bg-saviere-black/95 z-[100] flex justify-end transform translate-x-full transition-transform duration-500">
+        <div class="w-full max-w-md bg-saviere-ivory h-full p-8 overflow-y-auto">
+            <div class="flex justify-between items-center mb-12">
+                <h3 class="font-medium text-xl">Methodology & Sources</h3>
+                <button id="close-sources" class="text-3xl">&times;</button>
+            </div>
+            <div id="sources-content" class="space-y-8 text-sm font-light text-saviere-black">
+                <!-- Injected via impact.js -->
+            </div>
+        </div>
+    </div>
 
-        const stage = dotField.parentElement;
-        const moveDots = (event) => {
-          const rect = stage.getBoundingClientRect();
-          const x = event.clientX - rect.left - rect.width / 2;
-          const y = event.clientY - rect.top - rect.height / 2;
-          const dots = dotField.querySelectorAll('.floating-dot');
-          dots.forEach((dot, index) => {
-            const offsetX = (x / rect.width) * 20 * (index % 2 === 0 ? 1 : -1);
-            const offsetY = (y / rect.height) * 18 * (index % 3 === 0 ? 1 : -1);
-            dot.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-          });
+    <!-- Data Module & Animations -->
+    <script type="module" src="./data/impact.js"></script>
+    <script>
+        // 1. Smooth Scroll Setup
+        const lenis = new Lenis({ duration: 1.2, smooth: true });
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        // 2. WebGL Dot Field (Phase 1 Physics Engine)
+        const initDotField = () => {
+            const canvas = document.getElementById('dot-field-canvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            camera.position.z = 10;
+
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            
+            // Materials
+            const neutralMat = new THREE.MeshBasicMaterial({ color: 0xC0C0C0, transparent: true, opacity: 0.3 });
+            const goldMat = new THREE.MeshBasicMaterial({ color: 0xD4AF37 });
+            const geo = new THREE.CircleGeometry(0.04, 16);
+
+            // Neutral Dots (Instanced for performance)
+            const dotCount = 200;
+            const instancedMesh = new THREE.InstancedMesh(geo, neutralMat, dotCount);
+            const dummy = new THREE.Object3D();
+            const positions = [];
+
+            for(let i = 0; i < dotCount; i++) {
+                const x = (Math.random() - 0.5) * 25;
+                const y = (Math.random() - 0.5) * 25;
+                const z = (Math.random() - 0.5) * 5;
+                positions.push({ base: new THREE.Vector3(x, y, z), current: new THREE.Vector3(x, y, z), speed: Math.random() });
+                dummy.position.set(x, y, z);
+                dummy.updateMatrix();
+                instancedMesh.setMatrixAt(i, dummy.matrix);
+            }
+            scene.add(instancedMesh);
+
+            // The Singular Gold Dot
+            const goldDot = new THREE.Mesh(new THREE.CircleGeometry(0.08, 32), goldMat);
+            scene.add(goldDot);
+
+            let mouse = new THREE.Vector2();
+            let target = new THREE.Vector3();
+            
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+            });
+
+            const clock = new THREE.Clock();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                const time = clock.getElapsedTime();
+
+                if (!reducedMotion) {
+                    // Update Gold Dot (trails cursor smoothly)
+                    target.set(mouse.x * (window.innerWidth/100), mouse.y * (window.innerHeight/100), 1);
+                    goldDot.position.lerp(target, 0.02);
+                    
+                    // Gentle breathing scale
+                    const scale = 1 + Math.sin(time * 2) * 0.1;
+                    goldDot.scale.set(scale, scale, scale);
+
+                    // Update Neutral Dots (subtle drift)
+                    positions.forEach((p, i) => {
+                        p.current.x = p.base.x + Math.sin(time * p.speed) * 0.2;
+                        p.current.y = p.base.y + Math.cos(time * p.speed) * 0.2;
+                        dummy.position.copy(p.current);
+                        dummy.updateMatrix();
+                        instancedMesh.setMatrixAt(i, dummy.matrix);
+                    });
+                    instancedMesh.instanceMatrix.needsUpdate = true;
+                }
+
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
         };
 
-        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          stage.addEventListener('pointermove', moveDots);
-        }
-      }
+        // 3. GSAP Choreography
+        document.addEventListener("DOMContentLoaded", () => {
+            gsap.registerPlugin(ScrollTrigger);
+            initDotField();
+
+            // Hero Sequence
+            const heroTl = gsap.timeline({ delay: 1.0 }); // Wait for gold dot to establish
+            heroTl.to("#hero-logo", { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" })
+                  .to("#hero-tagline", { opacity: 1, duration: 1 }, "-=0.5")
+                  .to("#hero-copy", { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, "-=0.5");
+
+            // Stat Counters
+            ScrollTrigger.create({
+                trigger: "#problem",
+                start: "top 60%",
+                onEnter: () => {
+                    gsap.to(".counter-block", { y: 0, opacity: 1, duration: 0.8, stagger: 0.2 });
+                    gsap.to("#count-days", { innerHTML: 365, duration: 2, snap: { innerHTML: 1 }, ease: "power2.out" });
+                    gsap.to("#count-times", { innerHTML: 2, duration: 2, snap: { innerHTML: 1 }, ease: "power2.out" });
+                    gsap.to("#count-total", { innerHTML: 730, duration: 2, snap: { innerHTML: 1 }, ease: "power2.out", delay: 0.4 });
+                },
+                once: true
+            });
+
+            // Maroon Transition Logic & Nav Color Swapping
+            ScrollTrigger.create({
+                trigger: "#maroon-zone",
+                start: "top 10%",
+                onEnter: () => {
+                    document.getElementById("main-nav").classList.add("nav-maroon");
+                    document.getElementById("nav-links").classList.replace("text-saviere-black", "text-saviere-white");
+                    gsap.to("#nav-logo-light", { opacity: 0, duration: 0.3 });
+                    gsap.to("#nav-logo-dark", { opacity: 1, duration: 0.3 });
+                    gsap.to(".maroon-reveal", { y: 0, opacity: 1, duration: 1, stagger: 0.2 });
+                },
+                onLeaveBack: () => {
+                    document.getElementById("main-nav").classList.remove("nav-maroon");
+                    document.getElementById("nav-links").classList.replace("text-saviere-white", "text-saviere-black");
+                    gsap.to("#nav-logo-light", { opacity: 1, duration: 0.3 });
+                    gsap.to("#nav-logo-dark", { opacity: 0, duration: 0.3 });
+                }
+            });
+        });
     </script>
-  </body>
+</body>
 </html>
