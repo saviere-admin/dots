@@ -8,12 +8,12 @@
     "theme_color": "#520A1E",
     "icons": [
         {
-            "src": "/public/brand/logos/dh/DotsScBWTWS.png",
+            "src": "/public/brand/logos/dh/DotsTBWTWS.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/public/brand/logos/dh/DotsScBWTWS.png",
+            "src": "/public/brand/logos/dh/DotsTBWTWS.png",
             "sizes": "512x512",
             "type": "image/png"
         }

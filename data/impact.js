@@ -1,11 +1,11 @@
 // impact.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Scientific Assumptions based on Savière Group guidelines
+    // Scientific Assumptions
     const ASSUMPTIONS = { 
-        tubePlasticGrams: 15, // standard multi-laminate empty tube weight
-        pasteWaterKg: 0.05,   // water weight per standard 100g tube
-        tubesPerYear: 6       // approx tubes per individual per year
+        tubePlasticGrams: 15, // Standard plastic tube weight
+        pasteWaterKg: 0.05,   // Water mass eliminated
+        tubesPerYear: 6       // Average tubes per person per year
     };
     
     const updateCalculator = () => {
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Calculate maximums for visual bars
+        // Calculate maximums for visual bars (based on 10 people over 10 years max slider values)
         const maxPlastic = 10 * 10 * ASSUMPTIONS.tubesPerYear * ASSUMPTIONS.tubePlasticGrams;
         const maxMass = 10 * 10 * ASSUMPTIONS.tubesPerYear * ASSUMPTIONS.pasteWaterKg;
         
