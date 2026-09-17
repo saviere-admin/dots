@@ -1,0 +1,7 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="dots. icon">
+  <rect width="256" height="256" fill="transparent"/>
+  <circle cx="128" cy="128" r="32" fill="#D4AF37"/>
+  <circle cx="76" cy="98" r="16" fill="#520A1E" opacity="0.9"/>
+  <circle cx="128" cy="72" r="16" fill="#520A1E" opacity="0.9"/>
+  <circle cx="180" cy="98" r="16" fill="#520A1E" opacity="0.9"/>
+</svg>

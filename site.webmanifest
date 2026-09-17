@@ -1,0 +1,17 @@
+{
+  "name": "dots. — Thoughtful products for everyday life.",
+  "short_name": "dots.",
+  "description": "dots. makes thoughtful products for everyday life. Something thoughtful is taking shape at usedots.in.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f0eb",
+  "theme_color": "#520A1E",
+  "icons": [
+    {
+      "src": "/public/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
