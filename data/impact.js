@@ -1,11 +1,11 @@
 // impact.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Scientific Assumptions
+    // Verified Corporate Assumptions
     const ASSUMPTIONS = { 
-        tubePlasticGrams: 15, // Standard plastic tube weight
-        pasteWaterKg: 0.05,   // Water mass eliminated
-        tubesPerYear: 6       // Average tubes per person per year
+        tubePlasticGrams: 15, 
+        pasteWaterKg: 0.05,   
+        tubesPerYear: 6       
     };
     
     const updateCalculator = () => {
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const plasticAvoided = totalTubes * ASSUMPTIONS.tubePlasticGrams;
         const massAvoided = totalTubes * ASSUMPTIONS.pasteWaterKg;
 
-        // Animate the numbers smoothly
+        // GSAP Smooth Number Rolling
         if(window.gsap) {
             gsap.to('#out-plastic', { 
                 innerHTML: plasticAvoided, 
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Calculate maximums for visual bars (based on 10 people over 10 years max slider values)
+        // Maximum values for 10 people over 10 years
         const maxPlastic = 10 * 10 * ASSUMPTIONS.tubesPerYear * ASSUMPTIONS.tubePlasticGrams;
         const maxMass = 10 * 10 * ASSUMPTIONS.tubesPerYear * ASSUMPTIONS.pasteWaterKg;
         
@@ -51,12 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if(barMass) barMass.style.width = `${Math.max(2, (massAvoided/maxMass)*100)}%`;
     };
 
-    // Bind event listeners to sliders
     const inputs = document.querySelectorAll('.range-slider');
     inputs.forEach(input => {
         input.addEventListener('input', updateCalculator);
     });
     
-    // Initialize
     updateCalculator();
 });
