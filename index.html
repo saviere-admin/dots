@@ -3,14 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>dots. — IN DAILY LIFE</title>
+    <title>dots. — IN DAILY LIFE | Thoughtful Oral Care</title>
     
-    <meta name="description" content="dots. is rethinking everyday oral care through thoughtfully designed toothpaste tablets, with a focus on convenience, packaging, transport and measurable impact.">
-    <meta name="theme-color" content="#F9F9F8" media="(prefers-color-scheme: light)">
+    <!-- Comprehensive SEO & Social Media Engine -->
+    <meta name="description" content="dots. is rethinking everyday oral care through precise, solid-state toothpaste tablets. Zero plastic tubes. Zero water weight. Clinical-grade biomimetics.">
+    <meta name="theme-color" content="#FDF8F9" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#520A1E" media="(prefers-color-scheme: dark)">
     
-    <link rel="icon" type="image/png" href="./public/brand/logos/dh/DotsTBBTWoS.png">
-    <link rel="manifest" href="site.webmanifest">
+    <!-- Open Graph / LinkedIn / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://usedots.in/">
+    <meta property="og:title" content="dots. — IN DAILY LIFE">
+    <meta property="og:description" content="Rethinking everyday oral care through precise, solid-state formulations. Designed to minimize environmental debt without compromising the ritual.">
+    <meta property="og:image" content="https://usedots.in/public/brand/og/dots-og.svg">
+    
+    <!-- Twitter / X -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://usedots.in/">
+    <meta property="twitter:title" content="dots. — IN DAILY LIFE">
+    <meta property="twitter:description" content="Zero plastic tubes. Zero water weight. Clinical-grade biomimetics.">
+    <meta property="twitter:image" content="https://usedots.in/public/brand/og/dots-og.svg">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": "dots. Toothpaste Tablets",
+      "brand": {
+        "@type": "Brand",
+        "name": "dots."
+      },
+      "manufacturer": {
+        "@type": "Organization",
+        "name": "Savière Group Private Limited",
+        "url": "https://savieregroup.com"
+      },
+      "description": "Solid-state, waterless toothpaste tablets engineered for biological purity, convenience, and zero plastic tube waste.",
+      "category": "Health & Beauty > Personal Care > Oral Care"
+    }
+    </script>
+
+    <link rel="icon" type="image/svg+xml" href="./public/brand/favicon.svg">
     <link rel="canonical" href="https://usedots.in/">
 
     <!-- Typography: Poppins -->
@@ -18,7 +52,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS (Strict Brand Palette) -->
+    <!-- Tailwind CSS (Locked to Strict Savière Palette) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -31,7 +65,8 @@
                             gold: '#D4AF37',
                             black: '#0A0A0A',
                             white: '#FFFFFF',
-                            ivory: '#F9F9F8',
+                            alabaster: '#FDF8F9',
+                            silver: '#C0C0C0',
                             grey: '#808080'
                         }
                     }
@@ -47,27 +82,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
-        body { background-color: #F9F9F8; color: #0A0A0A; overflow-x: hidden; }
+        body { background-color: #FDF8F9; color: #0A0A0A; overflow-x: hidden; }
         .text-balance { text-wrap: balance; }
         
         /* The Apple-Tier WebGL Canvas */
-        #webgl-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; opacity: 0.8; }
+        #webgl-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; opacity: 0.85; }
         .content-layer { position: relative; z-index: 10; }
         
-        /* Frosted Glass Navigation */
-        .glass-nav { background: rgba(249, 249, 248, 0.8); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(10, 10, 10, 0.05); transition: all 0.4s ease; }
-        .nav-maroon { background: rgba(82, 10, 30, 0.9); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        /* Premium Frosted Glass Navigation */
+        .glass-nav { background: rgba(253, 248, 249, 0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(10, 10, 10, 0.05); transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .nav-maroon { background: rgba(82, 10, 30, 0.85); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
         
-        /* Typographic Restraint */
-        .editorial-label { font-size: 0.65rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.3em; }
+        /* Typographic Restraint & Masking */
+        .editorial-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3em; }
+        .mask-container { overflow: hidden; display: inline-block; vertical-align: top; }
+        .mask-text { display: inline-block; transform: translateY(110%); opacity: 0; }
         
         /* Calculator UI */
         .range-slider { -webkit-appearance: none; width: 100%; height: 2px; background: #E5E5E5; outline: none; transition: background 0.3s; }
-        .range-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #D4AF37; cursor: pointer; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3); transition: transform 0.2s; }
-        .range-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        .range-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #D4AF37; cursor: pointer; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .range-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
         
-        /* Reveal Logic */
-        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        /* Magnetic Reveal Logic */
+        .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
         .reveal.visible { opacity: 1; transform: translateY(0); }
     </style>
 </head>
@@ -79,38 +116,42 @@
     <!-- Navigation -->
     <header class="fixed top-0 left-0 right-0 z-50 glass-nav" id="main-nav">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <a href="/" class="relative z-50 group">
-                <img src="./public/brand/logos/dh/DotsTBBTWoS.png" alt="dots." class="h-6 w-auto object-contain transition-opacity duration-300 group-hover:opacity-70" id="nav-logo-light">
-                <img src="./public/brand/logos/dh/DotsTBWTWS.png" alt="dots." class="h-6 w-auto object-contain absolute top-0 left-0 opacity-0 transition-opacity duration-300 rounded-sm" id="nav-logo-dark">
+            <a href="/" class="relative z-50 group hover:opacity-80 transition-opacity">
+                <!-- Primary Logo -->
+                <img src="./public/brand/logos/dh/DotsTBBTWoS_2.png" alt="dots." class="h-6 w-auto object-contain transition-all duration-500" id="nav-logo-light">
+                <!-- Reversed Logo for Maroon State -->
+                <img src="./public/brand/logos/dh/DotsTBWTWoS.png" alt="dots." class="h-6 w-auto object-contain absolute top-0 left-0 opacity-0 transition-all duration-500" id="nav-logo-dark">
             </a>
-            <nav class="hidden md:flex gap-10 editorial-label text-saviere-black" id="nav-links">
+            <nav class="hidden md:flex gap-12 editorial-label text-saviere-black" id="nav-links">
                 <a href="#problem" class="hover:text-saviere-gold transition-colors">The Problem</a>
+                <a href="#science" class="hover:text-saviere-gold transition-colors">The Science</a>
                 <a href="#impact" class="hover:text-saviere-gold transition-colors">Impact Model</a>
-                <a href="#ritual" class="hover:text-saviere-gold transition-colors">The Ritual</a>
             </nav>
         </div>
     </header>
 
     <main class="content-layer">
         
-        <!-- SCENE 1-3: The Hero -->
+        <!-- SCENE 1: The Hero -->
         <section class="h-screen flex flex-col items-center justify-center relative">
             <div class="text-center pointer-events-none mt-20">
-                <img src="./public/brand/logos/dh/DotsTBBTWS.png" alt="dots." class="h-16 md:h-20 w-auto mx-auto opacity-0 translate-y-8" id="hero-logo">
+                <img src="./public/brand/logos/dh/DotsTBBTWoS_2.png" alt="dots." class="h-16 md:h-20 w-auto mx-auto opacity-0 translate-y-8" id="hero-logo">
                 <p class="editorial-label text-saviere-black mt-8 opacity-0" id="hero-tagline">In Daily Life</p>
-                <p class="mt-12 text-lg md:text-xl font-light text-saviere-grey tracking-wide opacity-0 translate-y-4" id="hero-copy">
-                    Thoughtful products for everyday life.
-                </p>
+                <div class="mt-12 mask-container">
+                    <p class="text-lg md:text-xl font-light text-saviere-grey tracking-wide mask-text" id="hero-copy">
+                        Thoughtful products for everyday life.
+                    </p>
+                </div>
             </div>
             <div class="absolute bottom-12 flex flex-col items-center opacity-40">
-                <p class="editorial-label text-saviere-grey mb-3">Look closer</p>
-                <div class="w-px h-16 bg-gradient-to-b from-saviere-grey/50 to-transparent"></div>
+                <p class="editorial-label text-saviere-grey mb-4">Look closer</p>
+                <div class="w-px h-16 bg-gradient-to-b from-saviere-grey/60 to-transparent animate-pulse"></div>
             </div>
         </section>
 
-        <!-- SCENE 4: The Everyday Problem -->
+        <!-- SCENE 2: The Everyday Problem -->
         <section id="problem" class="py-32 px-6 max-w-7xl mx-auto min-h-screen flex flex-col justify-center reveal">
-            <h2 class="text-5xl md:text-7xl font-light tracking-tight text-saviere-black mb-16 max-w-3xl leading-tight">
+            <h2 class="text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-saviere-black mb-16 max-w-4xl leading-[1.1]">
                 You use it<br>every day.
             </h2>
             
@@ -130,27 +171,55 @@
             </div>
             
             <p class="text-2xl md:text-4xl font-light text-saviere-black mt-32 max-w-4xl leading-snug text-balance">
-                What if the product you use twice a day was fundamentally engineered differently?
+                What if the product you rely on twice a day was fundamentally engineered differently?
             </p>
         </section>
 
-        <!-- SCENE 5-8: Interactive Data Model -->
-        <section id="impact" class="py-32 px-6 bg-white border-y border-saviere-black/5 reveal">
+        <!-- SCENE 3: Scientific Authority (Informative Addition) -->
+        <section id="science" class="py-32 px-6 bg-white border-y border-saviere-black/5 reveal">
+            <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+                <div>
+                    <p class="editorial-label text-saviere-gold mb-6">Clinical Biomimetics</p>
+                    <h2 class="text-4xl md:text-6xl font-light tracking-tight text-saviere-black mb-8 leading-tight">
+                        Biological purity.<br>Zero water weight.
+                    </h2>
+                    <p class="text-lg text-saviere-grey font-light leading-relaxed mb-8 text-balance">
+                        Standard toothpaste formulations carry up to 50% dead-weight water and are packaged in multi-laminate plastics. 
+                        <strong>dots.</strong> strips away the unnecessary logistics, delivering clinical-grade Nano-Hydroxyapatite (Nano-HAp) in a precise, solid-state format.
+                    </p>
+                    <div class="flex flex-wrap gap-4 mt-8">
+                        <span class="px-4 py-2 border border-saviere-black/10 rounded-full text-xs font-medium uppercase tracking-widest text-saviere-black">Cruelty-Free</span>
+                        <span class="px-4 py-2 border border-saviere-black/10 rounded-full text-xs font-medium uppercase tracking-widest text-saviere-black">Vegan Formulation</span>
+                        <span class="px-4 py-2 border border-saviere-black/10 rounded-full text-xs font-medium uppercase tracking-widest text-saviere-black">Travel Ready</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="aspect-square bg-saviere-alabaster rounded-2xl flex items-center justify-center border border-saviere-black/5 p-8 text-center">
+                        <p class="text-saviere-black font-light">Eliminates single-use plastic tubes entirely.</p>
+                    </div>
+                    <div class="aspect-square bg-saviere-gold/10 rounded-2xl flex items-center justify-center border border-saviere-gold/30 p-8 text-center">
+                        <p class="text-saviere-black font-medium">Restores enamel with advanced biomimetics.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCENE 4: Interactive Data Model -->
+        <section id="impact" class="py-32 px-6 bg-saviere-alabaster border-b border-saviere-black/5 reveal">
             <div class="max-w-7xl mx-auto">
-                <div class="mb-20">
+                <div class="mb-24">
                     <p class="editorial-label text-saviere-gold mb-6">Live Architecture</p>
                     <h2 class="text-4xl md:text-6xl font-light tracking-tight text-saviere-black max-w-3xl text-balance">
                         The format changes the equation.
                     </h2>
                     <p class="mt-6 text-saviere-grey font-light max-w-2xl text-balance">
-                        The environmental outcome relies heavily on formulation, packaging materials, and logistics. This illustrative model visualizes the systemic efficiency of removing water mass and plastic tubes.
+                        This illustrative model visualizes the systemic efficiency of removing water mass and plastic tubes from your daily routine based on current LCA assumptions.
                     </p>
                 </div>
 
                 <div class="grid md:grid-cols-12 gap-16">
-                    <!-- Inputs -->
-                    <div class="md:col-span-5 bg-saviere-ivory p-10 rounded-3xl border border-saviere-black/5 shadow-sm">
-                        <h3 class="font-medium text-xl mb-10">Household Usage</h3>
+                    <div class="md:col-span-5 bg-white p-10 rounded-3xl border border-saviere-black/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                        <h3 class="font-medium text-xl mb-12">Household Variables</h3>
                         <div class="space-y-12">
                             <div>
                                 <label class="flex justify-between editorial-label text-saviere-grey mb-6">
@@ -169,16 +238,15 @@
                         </div>
                     </div>
                     
-                    <!-- Outputs -->
                     <div class="md:col-span-7 flex flex-col justify-center">
-                        <div class="space-y-16">
+                        <div class="space-y-20">
                             <div>
                                 <p class="editorial-label text-saviere-grey mb-4">Estimated Plastic Packaging Avoided</p>
                                 <div class="flex items-end gap-4">
-                                    <span class="text-6xl md:text-7xl font-light text-saviere-black tabular-nums" id="out-plastic">0</span>
-                                    <span class="text-xl text-saviere-grey mb-2">grams</span>
+                                    <span class="text-6xl md:text-8xl font-light text-saviere-black tabular-nums tracking-tighter" id="out-plastic">0</span>
+                                    <span class="text-xl text-saviere-grey mb-3">grams</span>
                                 </div>
-                                <div class="w-full h-1 bg-saviere-ivory mt-6 relative overflow-hidden rounded-full">
+                                <div class="w-full h-1.5 bg-saviere-black/5 mt-8 relative overflow-hidden rounded-full">
                                     <div class="absolute top-0 left-0 h-full bg-saviere-gold transition-all duration-700 ease-out w-0 rounded-full" id="bar-plastic"></div>
                                 </div>
                             </div>
@@ -186,10 +254,10 @@
                             <div>
                                 <p class="editorial-label text-saviere-grey mb-4">Estimated Freight Mass Reduction</p>
                                 <div class="flex items-end gap-4">
-                                    <span class="text-6xl md:text-7xl font-light text-saviere-black tabular-nums" id="out-mass">0</span>
-                                    <span class="text-xl text-saviere-grey mb-2">kg</span>
+                                    <span class="text-6xl md:text-8xl font-light text-saviere-black tabular-nums tracking-tighter" id="out-mass">0</span>
+                                    <span class="text-xl text-saviere-grey mb-3">kg</span>
                                 </div>
-                                <div class="w-full h-1 bg-saviere-ivory mt-6 relative overflow-hidden rounded-full">
+                                <div class="w-full h-1.5 bg-saviere-black/5 mt-8 relative overflow-hidden rounded-full">
                                     <div class="absolute top-0 left-0 h-full bg-saviere-black transition-all duration-700 ease-out w-0 rounded-full" id="bar-mass"></div>
                                 </div>
                             </div>
@@ -199,21 +267,21 @@
             </div>
         </section>
 
-        <!-- SCENE 10-14: The Ritual -->
+        <!-- SCENE 5: The Ritual -->
         <section id="ritual" class="py-32 px-6 max-w-7xl mx-auto text-center reveal">
             <h2 class="text-4xl md:text-6xl font-light tracking-tight text-saviere-black mb-16">Not just less.</h2>
             <div class="grid md:grid-cols-2 gap-8 text-left max-w-5xl mx-auto">
-                <div class="p-12 border border-saviere-black/10 rounded-3xl bg-white hover:shadow-xl transition-shadow duration-500">
+                <div class="p-12 border border-saviere-black/10 rounded-3xl bg-white shadow-sm hover:shadow-lg transition-all duration-500">
                     <ul class="space-y-6 text-saviere-grey font-light text-xl">
-                        <li class="flex items-center gap-4"><span class="w-2 h-2 rounded-full bg-saviere-grey"></span> Less bulk.</li>
-                        <li class="flex items-center gap-4"><span class="w-2 h-2 rounded-full bg-saviere-grey"></span> Less packaging.</li>
-                        <li class="flex items-center gap-4"><span class="w-2 h-2 rounded-full bg-saviere-grey"></span> Less space.</li>
-                        <li class="flex items-center gap-4"><span class="w-2 h-2 rounded-full bg-saviere-grey"></span> No liquid toothpaste in your bag.</li>
+                        <li class="flex items-center gap-4"><span class="w-2 h-2 rounded-full bg-saviere-silver"></span> Less bulk.</li>
+                        <li class="flex items-center gap-4"><span class="w-2 h-2 rounded-full bg-saviere-silver"></span> Less packaging.</li>
+                        <li class="flex items-center gap-4"><span class="w-2 h-2 rounded-full bg-saviere-silver"></span> Less space.</li>
+                        <li class="flex items-center gap-4"><span class="w-2 h-2 rounded-full bg-saviere-silver"></span> No liquid toothpaste in your bag.</li>
                     </ul>
                 </div>
-                <div class="p-12 border border-saviere-gold/30 bg-saviere-gold/5 rounded-3xl hover:shadow-xl transition-shadow duration-500">
+                <div class="p-12 border border-saviere-gold/40 bg-saviere-gold/5 rounded-3xl shadow-sm hover:shadow-xl hover:shadow-saviere-gold/10 transition-all duration-500">
                     <ul class="space-y-6 text-saviere-black font-medium text-xl">
-                        <li class="flex items-center gap-4"><span class="w-2 h-2 rounded-full bg-saviere-gold shadow-[0_0_8px_rgba(212,175,55,0.8)]"></span> More control.</li>
+                        <li class="flex items-center gap-4"><span class="w-2 h-2 rounded-full bg-saviere-gold shadow-[0_0_12px_rgba(212,175,55,0.8)]"></span> More control.</li>
                         <li class="flex items-center gap-4"><span class="w-2 h-2 rounded-full bg-saviere-gold"></span> More convenience.</li>
                         <li class="flex items-center gap-4"><span class="w-2 h-2 rounded-full bg-saviere-gold"></span> More intention.</li>
                         <li class="flex items-center gap-4"><span class="w-2 h-2 rounded-full bg-saviere-gold"></span> More dots.</li>
@@ -222,62 +290,64 @@
             </div>
         </section>
 
-        <!-- SCENE 15: Maroon Immersion -->
-        <section id="maroon-zone" class="min-h-screen bg-saviere-maroon text-saviere-white flex flex-col items-center justify-center px-6 relative transition-colors duration-700">
-            <img src="./public/brand/logos/dh/DotsTBWTWS.png" alt="dots." class="w-48 md:w-72 mb-16 opacity-0 translate-y-8 maroon-reveal rounded-xl shadow-2xl">
-            <h2 class="text-4xl md:text-7xl font-light tracking-tight max-w-4xl text-center text-balance opacity-0 translate-y-8 maroon-reveal">
-                There is another way.
-            </h2>
+        <!-- SCENE 6: Maroon Immersion (Updated Logo Asset) -->
+        <section id="maroon-zone" class="min-h-screen bg-saviere-maroon text-white flex flex-col items-center justify-center px-6 relative transition-colors duration-700 overflow-hidden">
+            <!-- Subtle Radial Glow -->
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_60%)] pointer-events-none"></div>
+            
+            <div class="relative z-10 flex flex-col items-center text-center">
+                <!-- Using the requested transparent PNG with Tagline -->
+                <img src="./public/brand/logos/dh/DotsTBWTWS.png" alt="dots. IN DAILY LIFE" class="w-56 md:w-80 mb-16 opacity-0 translate-y-12 maroon-reveal">
+                
+                <div class="mask-container mt-8">
+                    <h2 class="text-4xl md:text-7xl lg:text-8xl font-light tracking-tight text-white mask-text maroon-reveal-text">
+                        There is another way.
+                    </h2>
+                </div>
+            </div>
         </section>
 
     </main>
 
-    <!-- LUXURIOUS INSTITUTIONAL FOOTER -->
-    <footer class="bg-saviere-maroon text-white pt-24 pb-12 px-6 relative z-20 overflow-hidden border-t-4 border-saviere-gold">
-        <!-- Subtle Ambient Glow -->
-        <div class="absolute -right-32 -bottom-32 w-96 h-96 bg-saviere-gold/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -left-32 top-0 w-64 h-64 bg-black/20 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div class="max-w-[80rem] mx-auto relative z-10">
-            <!-- Top Section -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/10 pb-12 mb-12 gap-8">
-                <div class="max-w-md">
-                    <img src="./public/brand/logos/dh/DotsTBWTWS.png" alt="dots." class="h-10 md:h-12 w-auto object-contain rounded mb-6">
-                    <p class="text-white/70 text-sm font-light leading-relaxed font-sans">
+    <!-- Savière Group Institutional Footer -->
+    <footer class="bg-saviere-black text-white pt-24 pb-12 px-6 relative z-20">
+        <div class="max-w-[80rem] mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/10 pb-16 mb-12 gap-12">
+                <div class="max-w-md space-y-6">
+                    <img src="./public/brand/logos/dh/DotsTBWTWoS.png" alt="dots." class="h-10 md:h-12 w-auto object-contain">
+                    <p class="text-white/60 text-sm font-light leading-relaxed font-sans">
                         Rethinking everyday oral care through precise, solid-state formulations. Designed to minimize environmental debt without compromising the ritual.
                     </p>
                 </div>
                 <div class="text-left md:text-right">
-                    <p class="editorial-label text-saviere-gold mb-4">A Subsidiary Brand Of</p>
-                    <!-- Savière Group Corporate Logo (Inverted for Maroon Background) -->
-                    <a href="https://savieregroup.com" target="_blank" rel="noopener noreferrer">
-                        <img src="https://savieregroup.com/assets/TransBGRHorizontal.png" alt="Savière Group" class="h-8 md:h-10 w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity">
+                    <p class="editorial-label text-saviere-gold mb-5">A Subsidiary Brand Of</p>
+                    <a href="https://savieregroup.com" target="_blank" rel="noopener noreferrer" class="inline-block hover:opacity-80 transition-opacity">
+                        <img src="https://savieregroup.com/assets/TransBGRHorizontal.png" alt="Savière Group" class="h-8 md:h-10 w-auto object-contain brightness-0 invert">
                     </a>
                 </div>
             </div>
 
-            <!-- Bottom Legal & Badges -->
             <div class="pt-4 flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
-                <p class="text-white/50 text-[10px] md:text-xs font-medium tracking-[0.1em] uppercase font-sans">
+                <p class="text-white/40 text-[10px] md:text-xs font-medium tracking-[0.15em] uppercase">
                     dots. © 2026 All rights reserved. A brand of Savière Group Private Limited.
                 </p>
-                <div class="flex flex-wrap justify-center gap-3 text-saviere-gold text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] font-sans">
-                    <span class="border border-saviere-gold/30 px-3 py-1.5 rounded-sm bg-saviere-gold/5">Cruelty-Free</span>
-                    <span class="border border-saviere-gold/30 px-3 py-1.5 rounded-sm bg-saviere-gold/5">Waterless</span>
-                    <span class="border border-saviere-gold/30 px-3 py-1.5 rounded-sm bg-saviere-gold/5">Recyclable</span>
+                <div class="flex flex-wrap justify-center gap-4 text-saviere-gold text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em]">
+                    <span class="border border-saviere-gold/20 px-4 py-2 rounded-full bg-saviere-gold/5">Cruelty-Free</span>
+                    <span class="border border-saviere-gold/20 px-4 py-2 rounded-full bg-saviere-gold/5">Waterless</span>
+                    <span class="border border-saviere-gold/20 px-4 py-2 rounded-full bg-saviere-gold/5">Zero Plastic</span>
                 </div>
             </div>
         </div>
     </footer>
 
     <script>
-        // 1. Lenis Smooth Scroll Setup (Apple-tier fluid scroll)
+        // 1. Lenis Smooth Scroll Setup (Apple-tier)
         const lenis = new Lenis({ duration: 1.5, smooth: true, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
         lenis.on('scroll', ScrollTrigger.update);
         gsap.ticker.add((time) => lenis.raf(time * 1000));
         gsap.ticker.lagSmoothing(0);
 
-        // 2. Three.js Particle Morph Engine (Fluid -> Structured Dots)
+        // 2. Three.js Engine: Paste Chaos -> Geometric Crystalline Tablet
         const initWebGL = () => {
             const canvas = document.getElementById('webgl-canvas');
             const scene = new THREE.Scene();
@@ -287,32 +357,31 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             camera.position.z = 25;
 
-            // Geometry & Materials
-            const particleCount = 2000;
+            const particleCount = 2500;
             const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(particleCount * 3);
-            const targetPositions = new Float32Array(particleCount * 3); // For morphing to structured shape
+            const targetPositions = new Float32Array(particleCount * 3); 
             const colors = new Float32Array(particleCount * 3);
             
             const colorNeutral = new THREE.Color('#D3D3D3');
             const colorGold = new THREE.Color('#D4AF37');
 
             for (let i = 0; i < particleCount; i++) {
-                // Initial Fluid State (Wide dispersed wave)
-                positions[i * 3] = (Math.random() - 0.5) * 60;
-                positions[i * 3 + 1] = (Math.random() - 0.5) * 60;
-                positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+                // Initial State: Disorganized Fluid (Paste)
+                positions[i * 3] = (Math.random() - 0.5) * 70;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 70;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 30;
 
-                // Target Structured State (A dense, precise sphere representing the tablet)
-                const phi = Math.acos(-1 + (2 * i) / particleCount);
-                const theta = Math.sqrt(particleCount * Math.PI) * phi;
-                const radius = 6;
-                targetPositions[i * 3] = radius * Math.cos(theta) * Math.sin(phi);
-                targetPositions[i * 3 + 1] = radius * Math.sin(theta) * Math.sin(phi);
-                targetPositions[i * 3 + 2] = radius * Math.cos(phi);
+                // Target State: Perfect Cylindrical Disc (Tablet)
+                const radius = Math.random() * 8;
+                const theta = Math.random() * Math.PI * 2;
+                const height = (Math.random() - 0.5) * 3; // Thickness of tablet
+                
+                targetPositions[i * 3] = radius * Math.cos(theta);
+                targetPositions[i * 3 + 1] = radius * Math.sin(theta);
+                targetPositions[i * 3 + 2] = height;
 
-                // 5% of dots are Savière Gold
-                const isGold = Math.random() > 0.95;
+                const isGold = Math.random() > 0.96;
                 colors[i * 3] = isGold ? colorGold.r : colorNeutral.r;
                 colors[i * 3 + 1] = isGold ? colorGold.g : colorNeutral.g;
                 colors[i * 3 + 2] = isGold ? colorGold.b : colorNeutral.b;
@@ -321,13 +390,12 @@
             geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
             geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-            // Custom Circular Particle Shader for premium look
             const material = new THREE.PointsMaterial({
-                size: 0.25,
+                size: 0.22,
                 vertexColors: true,
                 transparent: true,
-                opacity: 0.6,
-                map: createCircleTexture() // Rounded dots instead of square pixels
+                opacity: 0.7,
+                map: createCircleTexture() 
             });
 
             const particles = new THREE.Points(geometry, material);
@@ -336,28 +404,26 @@
             function createCircleTexture() {
                 const canvas = document.createElement('canvas');
                 canvas.width = 32; canvas.height = 32;
-                const context = canvas.getContext('2d');
-                context.beginPath();
-                context.arc(16, 16, 14, 0, Math.PI * 2);
-                context.fillStyle = '#FFFFFF';
-                context.fill();
+                const ctx = canvas.getContext('2d');
+                ctx.beginPath();
+                ctx.arc(16, 16, 14, 0, Math.PI * 2);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fill();
                 return new THREE.CanvasTexture(canvas);
             }
 
-            // Morph Logic connected to Scroll Position
             let scrollProgress = 0;
             window.addEventListener('scroll', () => {
-                // Morph completely by the time user reaches 3000px down
-                scrollProgress = Math.min(window.scrollY / 3000, 1.0);
+                scrollProgress = Math.min(window.scrollY / 2500, 1.0);
             });
 
-            const clock = new THREE.Clock();
             let mouseX = 0, mouseY = 0;
-
             window.addEventListener('mousemove', (e) => {
                 mouseX = (e.clientX / window.innerWidth) * 2 - 1;
                 mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
             });
+
+            const clock = new THREE.Clock();
 
             function animate() {
                 requestAnimationFrame(animate);
@@ -366,12 +432,12 @@
 
                 for (let i = 0; i < particleCount; i++) {
                     const idx = i * 3;
-                    // Base fluid movement
-                    const waveX = Math.sin(time * 0.5 + positions[idx + 1] * 0.1) * 2;
-                    const waveY = Math.cos(time * 0.3 + positions[idx] * 0.1) * 2;
+                    // Chaos wave
+                    const waveX = Math.sin(time * 0.4 + positions[idx + 1] * 0.1) * 2.5;
+                    const waveY = Math.cos(time * 0.3 + positions[idx] * 0.1) * 2.5;
                     
-                    // Interpolate between Chaos (Paste) and Order (Tablet) based on scroll
-                    const easeProgress = 1 - Math.pow(1 - scrollProgress, 3); // Cubic ease out
+                    // Ease morphing
+                    const easeProgress = 1 - Math.pow(1 - scrollProgress, 4); 
                     
                     const currentX = THREE.MathUtils.lerp(positions[idx] + waveX, targetPositions[idx], easeProgress);
                     const currentY = THREE.MathUtils.lerp(positions[idx + 1] + waveY, targetPositions[idx + 1], easeProgress);
@@ -383,10 +449,10 @@
                 }
                 posAttribute.needsUpdate = true;
 
-                // Rotate the entire cluster slightly based on mouse
-                particles.rotation.y += 0.001;
-                particles.rotation.x = THREE.MathUtils.lerp(particles.rotation.x, mouseY * 0.5, 0.05);
-                particles.rotation.y = THREE.MathUtils.lerp(particles.rotation.y, mouseX * 0.5, 0.05);
+                // Rotate the structure globally
+                particles.rotation.y += 0.002;
+                particles.rotation.x = THREE.MathUtils.lerp(particles.rotation.x, mouseY * 0.4 + (scrollProgress * 1.5), 0.05);
+                particles.rotation.z = THREE.MathUtils.lerp(particles.rotation.z, mouseX * 0.4, 0.05);
 
                 renderer.render(scene, camera);
             }
@@ -410,20 +476,20 @@
             }, { threshold: 0.15 });
             document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-            // Hero Typography Sequence
-            const heroTl = gsap.timeline({ delay: 0.8 });
+            // Hero Typography Sequence (Masked Reveal)
+            const heroTl = gsap.timeline({ delay: 0.5 });
             heroTl.to("#hero-logo", { y: 0, opacity: 1, duration: 1.5, ease: "power3.out" })
-                  .to("#hero-tagline", { opacity: 1, duration: 1 }, "-=0.8")
-                  .to("#hero-copy", { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, "-=0.5");
+                  .to("#hero-tagline", { opacity: 1, duration: 1 }, "-=1.0")
+                  .to(".mask-text", { y: "0%", opacity: 1, duration: 1.2, ease: "power4.out" }, "-=0.8");
 
-            // Playful Statistics Counters
+            // Stat Counters
             ScrollTrigger.create({
                 trigger: "#problem",
                 start: "top 60%",
                 onEnter: () => {
                     gsap.to("#count-days", { innerHTML: 365, duration: 2, snap: { innerHTML: 1 }, ease: "power3.out" });
                     gsap.to("#count-times", { innerHTML: 2, duration: 2, snap: { innerHTML: 1 }, ease: "power3.out" });
-                    gsap.to("#count-total", { innerHTML: 730, duration: 2.5, snap: { innerHTML: 1 }, ease: "power3.out", delay: 0.3 });
+                    gsap.to("#count-total", { innerHTML: 730, duration: 2.5, snap: { innerHTML: 1 }, ease: "power3.out", delay: 0.2 });
                 },
                 once: true
             });
@@ -431,17 +497,18 @@
             // Maroon Transition Logic
             ScrollTrigger.create({
                 trigger: "#maroon-zone",
-                start: "top 15%",
+                start: "top 25%",
                 onEnter: () => {
                     document.getElementById("main-nav").classList.add("nav-maroon");
-                    document.getElementById("nav-links").classList.replace("text-saviere-black", "text-saviere-white");
+                    document.getElementById("nav-links").classList.replace("text-saviere-black", "text-white");
                     gsap.to("#nav-logo-light", { opacity: 0, duration: 0.3 });
                     gsap.to("#nav-logo-dark", { opacity: 1, duration: 0.3 });
-                    gsap.to(".maroon-reveal", { y: 0, opacity: 1, duration: 1.2, stagger: 0.2, ease: "power3.out" });
+                    gsap.to(".maroon-reveal", { y: 0, opacity: 1, duration: 1.5, ease: "power3.out" });
+                    gsap.to(".maroon-reveal-text", { y: "0%", opacity: 1, duration: 1.5, ease: "power4.out", delay: 0.2 });
                 },
                 onLeaveBack: () => {
                     document.getElementById("main-nav").classList.remove("nav-maroon");
-                    document.getElementById("nav-links").classList.replace("text-saviere-white", "text-saviere-black");
+                    document.getElementById("nav-links").classList.replace("text-white", "text-saviere-black");
                     gsap.to("#nav-logo-light", { opacity: 1, duration: 0.3 });
                     gsap.to("#nav-logo-dark", { opacity: 0, duration: 0.3 });
                 }
@@ -460,14 +527,14 @@
                 const plastic = totalTubes * ASSUMPTIONS.tubePlasticGrams;
                 const mass = totalTubes * ASSUMPTIONS.pasteWaterKg;
 
-                gsap.to('#out-plastic', { innerHTML: plastic, duration: 0.5, snap: { innerHTML: 1 } });
-                gsap.to('#out-mass', { innerHTML: mass, duration: 0.5, snap: { innerHTML: 0.1 } });
+                gsap.to('#out-plastic', { innerHTML: plastic, duration: 0.6, snap: { innerHTML: 1 }, ease: "power2.out" });
+                gsap.to('#out-mass', { innerHTML: mass, duration: 0.6, snap: { innerHTML: 0.1 }, ease: "power2.out" });
 
                 const maxP = 10 * 10 * ASSUMPTIONS.tubesPerYear * ASSUMPTIONS.tubePlasticGrams;
                 const maxM = 10 * 10 * ASSUMPTIONS.tubesPerYear * ASSUMPTIONS.pasteWaterKg;
                 
-                document.getElementById('bar-plastic').style.width = `${Math.max(5, (plastic/maxP)*100)}%`;
-                document.getElementById('bar-mass').style.width = `${Math.max(5, (mass/maxM)*100)}%`;
+                document.getElementById('bar-plastic').style.width = `${Math.max(3, (plastic/maxP)*100)}%`;
+                document.getElementById('bar-mass').style.width = `${Math.max(3, (mass/maxM)*100)}%`;
             };
 
             ['input-people', 'input-years'].forEach(id => document.getElementById(id).addEventListener('input', updateCalc));
