@@ -17,7 +17,7 @@ export async function onRequestGet({ request, env }) {
     try {
       return json({ ok: true, waitlist: await readWaitlist(env) });
     } catch (error) {
-      console.error('Cloudflare waitlist read failed:', error.message);
+      console.error('Cloudflare D1 waitlist read failed:', error.message);
       return json({ ok: false, message: error.message }, 503);
     }
   });
@@ -26,5 +26,3 @@ export async function onRequestGet({ request, env }) {
 export async function onRequestOptions() {
   return new Response(null, { status: 204 });
 }
-
-export { readWaitlist };
