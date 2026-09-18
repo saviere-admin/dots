@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const isLocalStaticPreview = window.location.protocol === 'file:'
+    || (window.location.hostname === 'localhost' && window.location.port === '8000');
+  const apiOrigin = isLocalStaticPreview ? 'http://localhost:3000' : window.location.origin;
+
   const menuToggle = document.querySelector('.menu-toggle');
   const mainNav = document.querySelector('.main-nav');
 
@@ -86,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setStatus(form, 'Submitting your interest…');
 
       try {
-        const response = await fetch('/api/waitlist', {
+        const response = await fetch(`${apiOrigin}/api/waitlist`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -116,14 +120,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setStatus(form, 'You’re on the early access list.', false);
       } catch (error) {
-        setStatus(form, error.message || 'Something went wrong. Please try again.', true);
+        const message = error instanceof TypeError
+          ? 'The waitlist service is unavailable. Please try again in a moment.'
+          : error.message || 'Something went wrong. Please try again.';
+        setStatus(form, message, true);
       }
     });
   });
 
   const countNode = document.querySelector('[data-waitlist-count]');
   if (countNode) {
-    fetch('/api/health')
+    fetch(`${apiOrigin}/api/health`)
       .then((res) => res.json())
       .then(() => {
         countNode.textContent = 'Early access now open';
