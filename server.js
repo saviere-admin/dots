@@ -4,7 +4,6 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
-const Airtable = require('airtable');
 const { Resend } = require('resend');
 
 const app = express();
@@ -15,7 +14,7 @@ const notificationFile = path.join(dataDirectory, 'notifications.json');
 const adminAccessToken = process.env.ADMIN_ACCESS_TOKEN || '';
 const githubAdminUsername = (process.env.GITHUB_ADMIN_USERNAME || '').trim().toLowerCase();
 
-const airtableEnabled = Boolean(process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID);
+const baserowEnabled = Boolean(process.env.BASEROW_TOKEN && process.env.BASEROW_TABLE_ID);
 const resendEnabled = Boolean(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL);
 
 function readJson(file, fallback) {
@@ -81,15 +80,18 @@ function normalizePayload(body = {}) {
   };
 }
 
-async function saveToAirtable(entry) {
-  if (!airtableEnabled) return null;
+async function saveToBaserow(entry) {
+  if (!baserowEnabled) return null;
 
   try {
-    const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
-    const table = base(process.env.AIRTABLE_TABLE_NAME || 'Waitlist');
-
-    const record = await table.create({
-      fields: {
+    const apiUrl = (process.env.BASEROW_API_URL || 'https://api.baserow.io').replace(/\/$/, '');
+    const response = await fetch(`${apiUrl}/api/database/rows/table/${encodeURIComponent(process.env.BASEROW_TABLE_ID)}/?user_field_names=true`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Token ${process.env.BASEROW_TOKEN}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
         Name: entry.fullName,
         Email: entry.email,
         Phone: entry.phone || '',
@@ -97,12 +99,12 @@ async function saveToAirtable(entry) {
         Interest: entry.interest || '',
         Notes: entry.notes || '',
         'Created At': entry.createdAt,
-      },
+      }),
     });
-
-    return record;
+    if (!response.ok) throw new Error(`Baserow returned ${response.status}.`);
+    return await response.json();
   } catch (error) {
-    console.error('Airtable save failed:', error.message);
+    console.error('Baserow save failed:', error.message);
     return null;
   }
 }
@@ -215,7 +217,7 @@ app.get('/api/health', (req, res) => {
     ok: true,
     message: 'dots. API healthy',
     services: {
-      airtable: airtableEnabled,
+      baserow: baserowEnabled,
       resend: resendEnabled,
       waitlistCount: waitlistStore.length,
     },
@@ -229,7 +231,7 @@ app.post('/api/waitlist', async (req, res) => {
 
     waitlistStore.push(saved);
     writeJson(waitlistFile, waitlistStore);
-    const airtableRecord = await saveToAirtable(saved);
+    const baserowRecord = await saveToBaserow(saved);
     const emailRecord = await sendLeadEmail(saved);
     const welcomeEmailRecord = await sendWelcomeEmail(saved);
 
@@ -238,7 +240,7 @@ app.post('/api/waitlist', async (req, res) => {
       message: 'Added to the dots. waitlist.',
       entry: saved,
       integrations: {
-        airtable: airtableRecord ? 'saved' : airtableEnabled ? 'failed' : 'not-configured',
+        baserow: baserowRecord ? 'saved' : baserowEnabled ? 'failed' : 'not-configured',
         resend: emailRecord ? 'sent' : resendEnabled ? 'failed' : 'not-configured',
         welcomeEmail: welcomeEmailRecord ? 'sent' : resendEnabled ? 'failed' : 'not-configured',
       },

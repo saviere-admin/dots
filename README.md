@@ -19,16 +19,16 @@ Start the server with `npm start`, then open `/admin.html`. Enter a GitHub fine-
 
 Create the PAT with the minimum GitHub account access needed to identify the user, keep it out of source control, and only use the console over HTTPS. The PAT is sent to the backend for GitHub identity validation and is kept only in the browser session storage.
 
-When Resend is configured, a new signup receives a welcome email and the dots. team receives the signup notification. Without Resend credentials, signups still persist locally and the admin console records broadcasts as not configured.
+When Resend is configured, a new signup receives a welcome email and the dots. team receives the signup notification. Without Resend credentials, signups still reach Baserow and the admin console records broadcasts as not configured.
 
 ## Cloudflare Pages deployment
 
 Cloudflare Pages serves the site and runs the API from `functions/api/`. In the Pages project settings, add these production environment variables:
 
 ```env
-AIRTABLE_API_KEY=your-airtable-token
-AIRTABLE_BASE_ID=your-airtable-base-id
-AIRTABLE_TABLE_NAME=Waitlist
+BASEROW_API_URL=https://api.baserow.io
+BASEROW_TOKEN=your-baserow-database-token
+BASEROW_TABLE_ID=your-baserow-table-id
 RESEND_API_KEY=your-resend-key
 RESEND_FROM_EMAIL=verified-sender@your-domain.com
 EMAIL_TO=doyou@usedots.in
@@ -42,14 +42,14 @@ Create a Cloudflare KV namespace named `PUSH_SUBSCRIPTIONS` and bind it to the P
 
 For the public admin console, also create and bind a KV namespace named `NOTIFICATION_HISTORY`. The admin routes are available under `/api/admin/*` on Cloudflare Pages and validate `x-admin-token` against GitHub using `GITHUB_ADMIN_USERNAME`.
 
-### Easiest Airtable setup
+### Easiest Baserow setup
 
-1. Create an Airtable base named `dots. Waitlist`.
-2. Create a table named exactly `Waitlist`.
+1. Create a free Baserow cloud workspace at `baserow.io`.
+2. Create a database named `dots. Waitlist` and a table named `Waitlist`.
 3. Add these fields with these exact names: `Name`, `Email`, `Phone`, `Category`, `Interest`, `Notes`, and `Created At`.
-4. Create an Airtable Personal Access Token with `data.records:read` and `data.records:write`, limited to that base.
-5. Copy the base ID beginning with `app...` from the Airtable URL.
-6. Put the PAT, base ID, and `Waitlist` table name into Cloudflare Pages **Production** variables.
+4. Create a Baserow database token with read/write access to this database.
+5. Copy the numeric table ID from the Baserow table URL or API documentation.
+6. Put `BASEROW_TOKEN`, `BASEROW_TABLE_ID`, and `BASEROW_API_URL` into Cloudflare Pages **Production** variables.
 7. Save, then create a new deployment.
 
-Local success does not automatically transfer to Cloudflare: local `.env` values and local `data/*.json` files stay on the development machine. Cloudflare needs the same values in its dashboard and uses Airtable as the shared production database.
+Your Baserow workspace becomes the dashboard: use its grid, filters, views, and built-in CSV export to manage the waitlist. The admin console continues to show and export the same audience.

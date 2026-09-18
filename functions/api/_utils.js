@@ -34,35 +34,33 @@ export function normalizePayload(body = {}) {
   return { entry };
 }
 
-export async function saveToAirtable(entry, env) {
-  if (!env.AIRTABLE_API_KEY || !env.AIRTABLE_BASE_ID) return 'not-configured';
+export async function saveToBaserow(entry, env) {
+  if (!env.BASEROW_TOKEN || !env.BASEROW_TABLE_ID) return 'not-configured';
 
-  const table = encodeURIComponent(env.AIRTABLE_TABLE_NAME || 'Waitlist');
-  const response = await fetch(`https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${table}`, {
+  const apiUrl = (env.BASEROW_API_URL || 'https://api.baserow.io').replace(/\/$/, '');
+  const response = await fetch(`${apiUrl}/api/database/rows/table/${encodeURIComponent(env.BASEROW_TABLE_ID)}/?user_field_names=true`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${env.AIRTABLE_API_KEY}`,
+      Authorization: `Token ${env.BASEROW_TOKEN}`,
       'content-type': 'application/json',
     },
     body: JSON.stringify({
-      fields: {
-        Name: entry.fullName,
-        Email: entry.email,
-        Phone: entry.phone,
-        Category: entry.category,
-        Interest: entry.interest,
-        Notes: entry.notes,
-        'Created At': entry.createdAt,
-      },
+      Name: entry.fullName,
+      Email: entry.email,
+      Phone: entry.phone,
+      Category: entry.category,
+      Interest: entry.interest,
+      Notes: entry.notes,
+      'Created At': entry.createdAt,
     }),
   });
 
   if (!response.ok) {
     const details = await response.text();
     const error = new Error(response.status === 404
-      ? 'Airtable could not find the configured base or table. Check AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, and PAT base access.'
-      : `Airtable returned ${response.status}.`);
-    console.error('Airtable response:', details);
+      ? 'Baserow could not find the configured table. Check BASEROW_TABLE_ID and workspace access.'
+      : `Baserow returned ${response.status}.`);
+    console.error('Baserow response:', details);
     throw error;
   }
   return 'saved';

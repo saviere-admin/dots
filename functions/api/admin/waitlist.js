@@ -2,31 +2,31 @@ import { json } from '../_utils.js';
 import { withAdmin } from './_auth.js';
 
 async function readWaitlist(env) {
-  if (!env.AIRTABLE_API_KEY || !env.AIRTABLE_BASE_ID) {
-    throw new Error('Airtable is not configured in Cloudflare Pages.');
+  if (!env.BASEROW_TOKEN || !env.BASEROW_TABLE_ID) {
+    throw new Error('Baserow is not configured in Cloudflare Pages.');
   }
 
-  const table = encodeURIComponent(env.AIRTABLE_TABLE_NAME || 'Waitlist');
-  const response = await fetch(`https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${table}?pageSize=100`, {
-    headers: { Authorization: `Bearer ${env.AIRTABLE_API_KEY}` },
+  const apiUrl = (env.BASEROW_API_URL || 'https://api.baserow.io').replace(/\/$/, '');
+  const response = await fetch(`${apiUrl}/api/database/rows/table/${encodeURIComponent(env.BASEROW_TABLE_ID)}/?user_field_names=true&size=200`, {
+    headers: { Authorization: `Token ${env.BASEROW_TOKEN}` },
   });
   if (!response.ok) {
     const details = await response.text();
-    console.error('Airtable response:', details);
+    console.error('Baserow response:', details);
     throw new Error(response.status === 404
-      ? 'Airtable could not find the configured base or table. Check AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, and PAT base access.'
-      : `Airtable returned ${response.status}.`);
+      ? 'Baserow could not find the configured table. Check BASEROW_TABLE_ID and workspace access.'
+      : `Baserow returned ${response.status}.`);
   }
   const result = await response.json();
 
-  return (result.records || []).map(({ fields = {} }) => ({
+  return (result.results || []).map((fields) => ({
     fullName: fields.Name || '',
     email: fields.Email || '',
     phone: fields.Phone || '',
     category: fields.Category || '',
     interest: fields.Interest || '',
     notes: fields.Notes || '',
-    createdAt: fields['Created At'] || '',
+    createdAt: fields['Created At'] || fields.created_on || '',
   }));
 }
 
