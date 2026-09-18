@@ -4,6 +4,7 @@ export function onRequestGet({ env }) {
   return json({
     ok: true,
     message: 'dots. Cloudflare Pages API healthy',
+    version: 'd1-2026-09-18',
     services: {
       database: Boolean(env.DB),
       resend: Boolean(env.RESEND_API_KEY && env.RESEND_FROM_EMAIL),
