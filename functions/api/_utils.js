@@ -52,22 +52,35 @@ export async function saveToD1(entry, env) {
 }
 
 export async function sendEmail({ to, subject, html }, env) {
-  if (!env.RESEND_API_KEY || !env.RESEND_FROM_EMAIL) return 'not-configured';
+  if (!env.RESEND_API_KEY || !env.RESEND_FROM_EMAIL) {
+    console.warn('Resend email sending skipped: RESEND_API_KEY or RESEND_FROM_EMAIL not configured.');
+    return 'not-configured';
+  }
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: env.RESEND_FROM_EMAIL,
-      to: Array.isArray(to) ? to : [to],
-      subject,
-      html,
-    }),
-  });
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${env.RESEND_API_KEY.trim()}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: env.RESEND_FROM_EMAIL.trim(),
+        to: Array.isArray(to) ? to : [to],
+        subject,
+        html,
+      }),
+    });
 
-  if (!response.ok) throw new Error(`Resend returned ${response.status}.`);
-  return 'sent';
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Resend API returned ${response.status}:`, errorText);
+      return 'failed';
+    }
+
+    return 'sent';
+  } catch (err) {
+    console.error('Network failure calling Resend:', err.message);
+    return 'failed';
+  }
 }

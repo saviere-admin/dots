@@ -4,3 +4,5 @@ node_modules/
 npm-debug.log*
 data/waitlist.json
 data/notifications.json
+.dev.vars
+.wrangler/
