@@ -1,0 +1,8 @@
+name = "dots"
+compatibility_date = "2026-09-18"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "dots-waitlist"
+database_id = "aed66b86-948b-4b7e-a6c0-f664aec2f212"

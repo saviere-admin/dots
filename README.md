@@ -41,7 +41,7 @@ For the public admin console, the same D1 database stores waitlist entries and n
 ### Easiest D1 setup
 
 1. Create a D1 database named `dots-waitlist` in Cloudflare.
-2. Bind it to the Pages project with variable name `DB`.
+2. The repository's `wrangler.toml` binds it to Pages with variable name `DB` and the configured database ID.
 3. Run `schema.sql` against the database using the Cloudflare D1 console or Wrangler:
 
 ```bash
@@ -49,7 +49,7 @@ npx wrangler d1 create dots-waitlist
 npx wrangler d1 execute dots-waitlist --remote --file=./schema.sql
 ```
 
-If Wrangler asks for a database ID, use the ID returned by the create command and bind that database as `DB` in Pages Functions settings.
+If Wrangler asks for a database ID, use the ID returned by the create command and update `wrangler.toml` before deploying.
 4. Redeploy the Pages project.
 
 The private `/admin.html` console becomes the dashboard: it shows the audience, sends updates, and exports CSV. D1 is permanently free within Cloudflare's free usage limits and has no external CRM trial period.
