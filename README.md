@@ -11,6 +11,8 @@ GITHUB_ADMIN_USERNAME=your-github-username
 RESEND_API_KEY=your-resend-key
 RESEND_FROM_EMAIL=verified-sender@your-domain.com
 EMAIL_TO=doyou@usedots.in
+VAPID_PUBLIC_KEY=your-web-push-public-key
+NOTIFICATION_HISTORY=bind-a-cloudflare-kv-namespace
 ```
 
 Start the server with `npm start`, then open `/admin.html`. Enter a GitHub fine-grained PAT belonging to `GITHUB_ADMIN_USERNAME` to send email updates, view the private audience, and export `dots-waitlist.csv`.
@@ -33,3 +35,9 @@ EMAIL_TO=doyou@usedots.in
 ```
 
 Deploy from the repository root with no build command and the project root as the output directory. The public form calls the same-origin `/api/waitlist` Pages Function, so it works on the deployed Cloudflare domain. `server.js` remains available for local development with `npm start`.
+
+### Browser notifications
+
+Create a Cloudflare KV namespace named `PUSH_SUBSCRIPTIONS` and bind it to the Pages project with that exact variable name. Add the public half of a VAPID key pair as `VAPID_PUBLIC_KEY`. The site will then show an `Enable product updates` control, request notification permission from a user click, register `sw.js`, and store subscriptions in KV. Keep the VAPID private key server-side; it is required by a push delivery worker when you begin broadcasting browser notifications.
+
+For the public admin console, also create and bind a KV namespace named `NOTIFICATION_HISTORY`. The admin routes are available under `/api/admin/*` on Cloudflare Pages and validate `x-admin-token` against GitHub using `GITHUB_ADMIN_USERNAME`.

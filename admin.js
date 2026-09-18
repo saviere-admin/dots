@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const waitlistNode = document.querySelector('[data-admin-waitlist]');
   const exportButton = document.querySelector('[data-admin-export]');
   let token = sessionStorage.getItem('dots-admin-token') || '';
+  if (token) tokenInput.value = token;
 
   const setStatus = (message, isError = false) => {
     statusNodes.forEach((node) => {
@@ -20,16 +21,24 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const request = async (url, options = {}) => {
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-token': token,
-        ...(options.headers || {}),
-      },
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.message || 'Admin request failed.');
+    let response;
+    try {
+      response = await fetch(url, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': token,
+          ...(options.headers || {}),
+        },
+      });
+    } catch {
+      throw new Error('The Cloudflare admin API is unavailable. Redeploy the Pages Functions and try again.');
+    }
+    const contentType = response.headers.get('content-type') || '';
+    const result = contentType.includes('application/json')
+      ? await response.json()
+      : { message: await response.text() };
+    if (!response.ok) throw new Error(result.message || `Admin request failed (${response.status}).`);
     return result;
   };
 
@@ -71,7 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const unlock = async () => {
-    token = tokenInput.value.trim();
+    const pastedToken = tokenInput.value.replace(/[\s\u200B-\u200D\uFEFF]/g, '').trim();
+    token = pastedToken || token;
     if (!token) return setStatus('Enter the admin token to continue.', true);
 
     try {

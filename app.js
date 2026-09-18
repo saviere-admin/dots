@@ -3,6 +3,50 @@ document.addEventListener('DOMContentLoaded', () => {
     || (window.location.hostname === 'localhost' && window.location.port === '8000');
   const apiOrigin = isLocalStaticPreview ? 'http://localhost:3000' : window.location.origin;
 
+  const enablePushNotifications = async (button) => {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+      button.textContent = 'Updates unavailable in this browser';
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = 'Enabling updates…';
+
+    try {
+      const configResponse = await fetch(`${apiOrigin}/api/push-config`);
+      const config = await configResponse.json();
+      if (!config.publicKey) throw new Error('Push notifications are not configured yet.');
+
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') throw new Error('Notification permission was not granted.');
+
+      const registration = await navigator.serviceWorker.register('./sw.js');
+
+      const applicationServerKey = Uint8Array.from(atob(config.publicKey.replace(/-/g, '+').replace(/_/g, '/')), (character) => character.charCodeAt(0));
+      const subscription = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey });
+      const response = await fetch(`${apiOrigin}/api/push-subscriptions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(subscription),
+      });
+      if (!response.ok) throw new Error('Could not save notification preferences.');
+
+      button.textContent = 'Updates enabled';
+    } catch (error) {
+      button.disabled = false;
+      button.textContent = error.message || 'Enable product updates';
+    }
+  };
+
+  if ('Notification' in window && 'serviceWorker' in navigator) {
+    const notificationButton = document.createElement('button');
+    notificationButton.className = 'notification-optin';
+    notificationButton.type = 'button';
+    notificationButton.textContent = 'Enable product updates';
+    notificationButton.addEventListener('click', () => enablePushNotifications(notificationButton));
+    document.body.appendChild(notificationButton);
+  }
+
   const menuToggle = document.querySelector('.menu-toggle');
   const mainNav = document.querySelector('.main-nav');
 
