@@ -12,13 +12,22 @@ export async function requireAdmin(request, env) {
       headers: {
         Accept: 'application/vnd.github+json',
         Authorization: `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
         'User-Agent': 'dots-notification-console',
       },
     });
     const identity = await response.json();
 
-    if (!response.ok || String(identity.login || '').toLowerCase() !== username) {
-      return { response: json({ ok: false, message: 'That GitHub PAT is invalid or is not authorized for this console.' }, 401) };
+    if (!response.ok) {
+      const message = response.status === 401
+        ? 'GitHub rejected this PAT. Use the secret value, check that it is not expired or revoked, and create a new token if needed.'
+        : `GitHub identity validation returned ${response.status}.`;
+      return { response: json({ ok: false, message }, 401) };
+    }
+
+    const githubLogin = String(identity.login || '').toLowerCase();
+    if (githubLogin !== username) {
+      return { response: json({ ok: false, message: `This PAT belongs to GitHub user "${identity.login || 'unknown'}", but this console allows "${username}".` }, 401) };
     }
 
     return { token };
