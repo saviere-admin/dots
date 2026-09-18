@@ -30,6 +30,8 @@ RESEND_FROM_EMAIL=verified-sender@your-domain.com
 EMAIL_TO=doyou@usedots.in
 ```
 
+Because this project uses `wrangler.toml`, non-secret values are defined in its `[vars]` section. Keep `RESEND_API_KEY` as an encrypted Cloudflare secret. From a terminal authenticated with Wrangler, set it with `npx wrangler pages secret put RESEND_API_KEY` and paste the key when prompted, or add it from the Pages dashboard under **Settings → Variables and Secrets → Production → Secrets**. Never commit the API key to `wrangler.toml`.
+
 Deploy from the repository root with no build command and the project root as the output directory. The public form calls the same-origin `/api/waitlist` Pages Function, so it works on the deployed Cloudflare domain. `server.js` remains available for local development with `npm start`.
 
 ### Browser notifications

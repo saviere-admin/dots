@@ -6,3 +6,8 @@ pages_build_output_dir = "."
 binding = "DB"
 database_name = "dots-waitlist"
 database_id = "aed66b86-948b-4b7e-a6c0-f664aec2f212"
+
+[vars]
+GITHUB_ADMIN_USERNAME = "saviere-admin"
+EMAIL_TO = "doyou@usedots.in"
+RESEND_FROM_EMAIL = "your-verified-sender@usedots.in"
