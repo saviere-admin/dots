@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>dots. — notification console</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="admin-body">
+    <main class="admin-shell">
+      <div class="admin-header">
+        <a href="./index.html" aria-label="Back to dots. storefront">
+          <img class="admin-logo" src="./public/brand/logos/dh/DotsTBBTWoS.png" alt="dots. logo" />
+        </a>
+        <span class="admin-label">Notification console</span>
+      </div>
+
+      <section class="admin-card" data-admin-login>
+        <p class="kicker">Private access</p>
+        <h1>Talk to your early audience.</h1>
+        <p>Use your authorized GitHub fine-grained PAT to unlock notifications and private waitlist tools. The token name is not the secret.</p>
+        <label class="admin-field">
+          <span>GitHub personal access token</span>
+          <input type="password" data-admin-token autocomplete="current-password" placeholder="Paste your GitHub PAT" />
+        </label>
+        <button class="button button-primary" type="button" data-admin-unlock>Unlock console</button>
+        <p class="status-text" data-admin-status hidden></p>
+      </section>
+
+      <section class="admin-card" data-admin-console hidden>
+        <div class="admin-card-heading">
+          <div>
+            <p class="kicker">Broadcast</p>
+            <h1>Send an update.</h1>
+          </div>
+          <span class="admin-audience" data-admin-audience>Audience loaded securely</span>
+        </div>
+        <form class="admin-form" data-admin-form>
+          <label class="admin-field">
+            <span>Subject</span>
+            <input type="text" name="subject" maxlength="120" required placeholder="A new dots. update" />
+          </label>
+          <label class="admin-field">
+            <span>Message</span>
+            <textarea name="message" rows="7" maxlength="4000" required placeholder="Share what is new with your early access community."></textarea>
+          </label>
+          <button class="button button-primary" type="submit">Send to waitlist</button>
+          <p class="status-text" data-admin-status hidden></p>
+        </form>
+        <div class="admin-history">
+          <p class="kicker">History</p>
+          <div data-admin-history><p class="admin-empty">No notifications sent yet.</p></div>
+        </div>
+
+        <div class="admin-history">
+          <div class="admin-card-heading">
+            <p class="kicker">Audience</p>
+            <button class="button button-secondary admin-export" type="button" data-admin-export>Export CSV</button>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Name</th><th>Email</th><th>Interest</th><th>Joined</th></tr></thead>
+              <tbody data-admin-waitlist><tr><td colspan="4" class="admin-empty">Loading audience…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="./admin.js"></script>
+  </body>
+</html>
