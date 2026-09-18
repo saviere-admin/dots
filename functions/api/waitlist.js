@@ -1,4 +1,4 @@
-import { json, normalizePayload, saveToBaserow, sendEmail } from './_utils.js';
+import { json, normalizePayload, saveToD1, sendEmail } from './_utils.js';
 
 export async function onRequestPost({ request, env }) {
   try {
@@ -8,7 +8,7 @@ export async function onRequestPost({ request, env }) {
     if (normalized.error) return json({ ok: false, message: normalized.error }, 400);
 
     const { entry } = normalized;
-    const baserow = await saveToBaserow(entry, env);
+    const database = await saveToD1(entry, env);
     const teamEmail = await sendEmail({
       to: env.EMAIL_TO || 'doyou@usedots.in',
       subject: `New dots. waitlist signup: ${entry.fullName}`,
@@ -23,11 +23,11 @@ export async function onRequestPost({ request, env }) {
     return json({
       ok: true,
       message: 'Added to the dots. waitlist.',
-      integrations: { baserow, resend: teamEmail, welcomeEmail },
+      integrations: { database, resend: teamEmail, welcomeEmail },
     }, 201);
   } catch (error) {
     console.error('Cloudflare waitlist function failed:', error.message);
-    const isConfigurationError = error.message.includes('Baserow') || error.message.includes('Resend');
+    const isConfigurationError = error.message.includes('D1') || error.message.includes('Resend');
     return json({
       ok: false,
       message: isConfigurationError ? error.message : 'The waitlist service is temporarily unavailable.',

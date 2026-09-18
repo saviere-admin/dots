@@ -14,7 +14,6 @@ const notificationFile = path.join(dataDirectory, 'notifications.json');
 const adminAccessToken = process.env.ADMIN_ACCESS_TOKEN || '';
 const githubAdminUsername = (process.env.GITHUB_ADMIN_USERNAME || '').trim().toLowerCase();
 
-const baserowEnabled = Boolean(process.env.BASEROW_TOKEN && process.env.BASEROW_TABLE_ID);
 const resendEnabled = Boolean(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL);
 
 function readJson(file, fallback) {
@@ -78,35 +77,6 @@ function normalizePayload(body = {}) {
     notes,
     createdAt: new Date().toISOString(),
   };
-}
-
-async function saveToBaserow(entry) {
-  if (!baserowEnabled) return null;
-
-  try {
-    const apiUrl = (process.env.BASEROW_API_URL || 'https://api.baserow.io').replace(/\/$/, '');
-    const response = await fetch(`${apiUrl}/api/database/rows/table/${encodeURIComponent(process.env.BASEROW_TABLE_ID)}/?user_field_names=true`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Token ${process.env.BASEROW_TOKEN}`,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        Name: entry.fullName,
-        Email: entry.email,
-        Phone: entry.phone || '',
-        Category: entry.category || '',
-        Interest: entry.interest || '',
-        Notes: entry.notes || '',
-        'Created At': entry.createdAt,
-      }),
-    });
-    if (!response.ok) throw new Error(`Baserow returned ${response.status}.`);
-    return await response.json();
-  } catch (error) {
-    console.error('Baserow save failed:', error.message);
-    return null;
-  }
 }
 
 async function sendLeadEmail(entry) {
@@ -217,7 +187,7 @@ app.get('/api/health', (req, res) => {
     ok: true,
     message: 'dots. API healthy',
     services: {
-      baserow: baserowEnabled,
+      database: true,
       resend: resendEnabled,
       waitlistCount: waitlistStore.length,
     },
@@ -231,7 +201,6 @@ app.post('/api/waitlist', async (req, res) => {
 
     waitlistStore.push(saved);
     writeJson(waitlistFile, waitlistStore);
-    const baserowRecord = await saveToBaserow(saved);
     const emailRecord = await sendLeadEmail(saved);
     const welcomeEmailRecord = await sendWelcomeEmail(saved);
 
@@ -240,7 +209,7 @@ app.post('/api/waitlist', async (req, res) => {
       message: 'Added to the dots. waitlist.',
       entry: saved,
       integrations: {
-        baserow: baserowRecord ? 'saved' : baserowEnabled ? 'failed' : 'not-configured',
+        database: 'local-file',
         resend: emailRecord ? 'sent' : resendEnabled ? 'failed' : 'not-configured',
         welcomeEmail: welcomeEmailRecord ? 'sent' : resendEnabled ? 'failed' : 'not-configured',
       },

@@ -34,35 +34,20 @@ export function normalizePayload(body = {}) {
   return { entry };
 }
 
-export async function saveToBaserow(entry, env) {
-  if (!env.BASEROW_TOKEN || !env.BASEROW_TABLE_ID) return 'not-configured';
+export async function saveToD1(entry, env) {
+  if (!env.DB) throw new Error('Cloudflare D1 is not configured. Bind the database as DB.');
 
-  const apiUrl = (env.BASEROW_API_URL || 'https://api.baserow.io').replace(/\/$/, '');
-  const response = await fetch(`${apiUrl}/api/database/rows/table/${encodeURIComponent(env.BASEROW_TABLE_ID)}/?user_field_names=true`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Token ${env.BASEROW_TOKEN}`,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      Name: entry.fullName,
-      Email: entry.email,
-      Phone: entry.phone,
-      Category: entry.category,
-      Interest: entry.interest,
-      Notes: entry.notes,
-      'Created At': entry.createdAt,
-    }),
-  });
+  await env.DB.prepare(`
+    INSERT INTO waitlist (full_name, email, phone, category, interest, notes, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(email) DO UPDATE SET
+      full_name = excluded.full_name,
+      phone = excluded.phone,
+      category = excluded.category,
+      interest = excluded.interest,
+      notes = excluded.notes
+  `).bind(entry.fullName, entry.email, entry.phone, entry.category, entry.interest, entry.notes, entry.createdAt).run();
 
-  if (!response.ok) {
-    const details = await response.text();
-    const error = new Error(response.status === 404
-      ? 'Baserow could not find the configured table. Check BASEROW_TABLE_ID and workspace access.'
-      : `Baserow returned ${response.status}.`);
-    console.error('Baserow response:', details);
-    throw error;
-  }
   return 'saved';
 }
 
