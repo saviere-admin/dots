@@ -57,7 +57,14 @@ export async function saveToAirtable(entry, env) {
     }),
   });
 
-  if (!response.ok) throw new Error(`Airtable returned ${response.status}.`);
+  if (!response.ok) {
+    const details = await response.text();
+    const error = new Error(response.status === 404
+      ? 'Airtable could not find the configured base or table. Check AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, and PAT base access.'
+      : `Airtable returned ${response.status}.`);
+    console.error('Airtable response:', details);
+    throw error;
+  }
   return 'saved';
 }
 

@@ -10,7 +10,13 @@ async function readWaitlist(env) {
   const response = await fetch(`https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${table}?pageSize=100`, {
     headers: { Authorization: `Bearer ${env.AIRTABLE_API_KEY}` },
   });
-  if (!response.ok) throw new Error(`Airtable returned ${response.status}.`);
+  if (!response.ok) {
+    const details = await response.text();
+    console.error('Airtable response:', details);
+    throw new Error(response.status === 404
+      ? 'Airtable could not find the configured base or table. Check AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, and PAT base access.'
+      : `Airtable returned ${response.status}.`);
+  }
   const result = await response.json();
 
   return (result.records || []).map(({ fields = {} }) => ({

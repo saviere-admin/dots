@@ -27,6 +27,10 @@ export async function onRequestPost({ request, env }) {
     }, 201);
   } catch (error) {
     console.error('Cloudflare waitlist function failed:', error.message);
-    return json({ ok: false, message: 'The waitlist service is temporarily unavailable.' }, 503);
+    const isConfigurationError = error.message.includes('Airtable') || error.message.includes('Resend');
+    return json({
+      ok: false,
+      message: isConfigurationError ? error.message : 'The waitlist service is temporarily unavailable.',
+    }, 503);
   }
 }

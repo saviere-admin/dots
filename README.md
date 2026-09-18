@@ -41,3 +41,15 @@ Deploy from the repository root with no build command and the project root as th
 Create a Cloudflare KV namespace named `PUSH_SUBSCRIPTIONS` and bind it to the Pages project with that exact variable name. Add the public half of a VAPID key pair as `VAPID_PUBLIC_KEY`. The site will then show an `Enable product updates` control, request notification permission from a user click, register `sw.js`, and store subscriptions in KV. Keep the VAPID private key server-side; it is required by a push delivery worker when you begin broadcasting browser notifications.
 
 For the public admin console, also create and bind a KV namespace named `NOTIFICATION_HISTORY`. The admin routes are available under `/api/admin/*` on Cloudflare Pages and validate `x-admin-token` against GitHub using `GITHUB_ADMIN_USERNAME`.
+
+### Easiest Airtable setup
+
+1. Create an Airtable base named `dots. Waitlist`.
+2. Create a table named exactly `Waitlist`.
+3. Add these fields with these exact names: `Name`, `Email`, `Phone`, `Category`, `Interest`, `Notes`, and `Created At`.
+4. Create an Airtable Personal Access Token with `data.records:read` and `data.records:write`, limited to that base.
+5. Copy the base ID beginning with `app...` from the Airtable URL.
+6. Put the PAT, base ID, and `Waitlist` table name into Cloudflare Pages **Production** variables.
+7. Save, then create a new deployment.
+
+Local success does not automatically transfer to Cloudflare: local `.env` values and local `data/*.json` files stay on the development machine. Cloudflare needs the same values in its dashboard and uses Airtable as the shared production database.
