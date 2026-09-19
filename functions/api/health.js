@@ -1,15 +1,9 @@
 import { json } from './_utils.js';
 
-export function onRequestGet({ env }) {
-  return json({
-    ok: true,
-    message: 'dots. Cloudflare Pages API healthy',
-    version: 'd1-2026-09-18',
-    services: {
-      database: Boolean(env.DB),
-      resend: Boolean(env.RESEND_API_KEY && env.RESEND_FROM_EMAIL),
-      githubAdmin: Boolean(String(env.GITHUB_ADMIN_USERNAME || '').trim()),
-      pushSubscriptions: Boolean(env.PUSH_SUBSCRIPTIONS),
-    },
-  });
+export async function onRequest(context) {
+    return json({ 
+        status: "ok", 
+        service: "dots-api",
+        timestamp: new Date().toISOString() 
+    });
 }

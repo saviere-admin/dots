@@ -3,11 +3,17 @@ export function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-export function generateResponse(data, status = 200) {
+// The missing export causing the build failure
+export function json(data, init = {}) {
     return new Response(JSON.stringify(data), {
-        status: status,
+        ...init,
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            ...(init.headers || {})
         }
     });
+}
+
+export function generateResponse(data, status = 200) {
+    return json(data, { status });
 }

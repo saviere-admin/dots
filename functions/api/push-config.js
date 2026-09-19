@@ -1,8 +1,7 @@
 import { json } from './_utils.js';
 
-export function onRequestGet({ env }) {
-  return json({
-    ok: true,
-    publicKey: env.VAPID_PUBLIC_KEY || '',
-  });
+export async function onRequest(context) {
+    return json({ 
+        publicKey: context.env.VAPID_PUBLIC_KEY || null 
+    });
 }
