@@ -1,13 +1,57 @@
-// Helper function to get auth headers
-const getAuthHeaders = () => ({
-    'Content-Type': 'application/json',
-    'X-Admin-Password': document.getElementById('adminPassword').value,
-    'X-GitHub-Pat': document.getElementById('githubPat').value
+// --- Authentication Management ---
+const authOverlay = document.getElementById('authOverlay');
+const mainApp = document.getElementById('mainApp');
+const authForm = document.getElementById('authForm');
+const logoutBtn = document.getElementById('logoutBtn');
+
+// Check session on load
+window.addEventListener('DOMContentLoaded', () => {
+    if (sessionStorage.getItem('dots_admin_pwd') && sessionStorage.getItem('dots_github_pat')) {
+        unlockConsole();
+    }
 });
 
+authForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const pwd = document.getElementById('modalPassword').value;
+    const pat = document.getElementById('modalPat').value;
+    
+    if(pwd && pat) {
+        sessionStorage.setItem('dots_admin_pwd', pwd);
+        sessionStorage.setItem('dots_github_pat', pat);
+        unlockConsole();
+    }
+});
+
+logoutBtn.addEventListener('click', () => {
+    sessionStorage.removeItem('dots_admin_pwd');
+    sessionStorage.removeItem('dots_github_pat');
+    document.getElementById('modalPassword').value = '';
+    document.getElementById('modalPat').value = '';
+    mainApp.style.display = 'none';
+    authOverlay.style.display = 'flex';
+    document.title = 'dots. | Restricted Node';
+});
+
+function unlockConsole() {
+    authOverlay.style.display = 'none';
+    mainApp.style.display = 'block';
+    document.title = 'dots. | Communication Console';
+}
+
+// Helper to pull stored credentials for API calls
+const getAuthHeaders = () => ({
+    'Content-Type': 'application/json',
+    'X-Admin-Password': sessionStorage.getItem('dots_admin_pwd') || '',
+    'X-GitHub-Pat': sessionStorage.getItem('dots_github_pat') || ''
+});
+
+
+// --- Email Dispatch Logic ---
 document.getElementById('waitlistForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button');
+    const originalText = btn.innerText;
     btn.innerText = 'Sending...';
 
     const payload = {
@@ -20,12 +64,13 @@ document.getElementById('waitlistForm').addEventListener('submit', async (e) => 
     };
 
     await dispatchEmail(payload);
-    btn.innerText = 'Send Notification Broadcast';
+    btn.innerText = originalText;
 });
 
 document.getElementById('customForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button');
+    const originalText = btn.innerText;
     btn.innerText = 'Sending...';
 
     const payload = {
@@ -38,16 +83,10 @@ document.getElementById('customForm').addEventListener('submit', async (e) => {
     };
 
     await dispatchEmail(payload);
-    btn.innerText = 'Send Custom Email';
+    btn.innerText = originalText;
 });
 
 async function dispatchEmail(payload) {
-    // Basic validation to ensure credentials are typed in
-    if (!document.getElementById('adminPassword').value || !document.getElementById('githubPat').value) {
-        alert('Please enter your Admin Password and GitHub PAT at the top.');
-        return;
-    }
-
     try {
         const response = await fetch('/api/send-mail', {
             method: 'POST',
@@ -57,8 +96,12 @@ async function dispatchEmail(payload) {
         
         if (response.ok) {
             alert('Email dispatched successfully.');
+            // Optional: Clear forms on success
+            // document.getElementById('waitlistForm').reset();
+            // document.getElementById('customForm').reset();
         } else if (response.status === 401 || response.status === 403) {
-            alert('Authentication failed. Check your password and PAT.');
+            alert('Authentication failed. Your session credentials are invalid.');
+            logoutBtn.click(); // Force them back to the login screen
         } else {
             const errData = await response.text();
             alert(`Failed to send: ${errData}`);

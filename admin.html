@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dots. | Communication Console</title>
+    <title>dots. | Restricted Node</title>
     <style>
         :root {
             --bg: #f9fafb;
@@ -18,6 +18,63 @@
             background-color: var(--bg);
             color: var(--text-main);
             margin: 0;
+            padding: 0;
+        }
+        
+        /* Auth Overlay Styling (matches image_b14e3c.png vibe) */
+        #authOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #111111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .auth-modal {
+            background: #ffffff;
+            width: 100%;
+            max-width: 380px;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+        }
+        .auth-modal p {
+            margin: 0 0 16px 0;
+            font-size: 15px;
+            color: #333;
+            line-height: 1.4;
+        }
+        .auth-modal input {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            border: 1px solid #007aff; /* iOS blue border style */
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+            outline: none;
+        }
+        .auth-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        .auth-buttons button {
+            background: none;
+            border: none;
+            color: #007aff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 16px;
+        }
+        .auth-buttons button:hover { opacity: 0.8; }
+
+        /* Main App Styling */
+        #mainApp {
+            display: none; /* Hidden until authenticated */
             padding: 40px 20px;
         }
         .container { max-width: 800px; margin: 0 auto; }
@@ -28,97 +85,105 @@
         .card h2 { margin-top: 0; font-size: 1.25rem; margin-bottom: 20px; }
         .form-group { margin-bottom: 20px; }
         label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 8px; }
-        input[type="text"], input[type="email"], input[type="password"], select, textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-family: inherit; }
+        input[type="text"], input[type="email"], select, textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-family: inherit; }
         textarea { resize: vertical; }
         .checkbox-group { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; }
-        button { background-color: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
-        button:hover { opacity: 0.8; }
-        .auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .action-btn { background-color: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+        .action-btn:hover { opacity: 0.8; }
+        
+        /* Logout Header Button */
+        .logout-btn { margin-left: auto; background: none; border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; }
+        .logout-btn:hover { background: #f3f4f6; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo-container">
-                <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots. logo" class="logo">
-            </div>
-            <h1>Communication Console</h1>
-        </div>
 
-        <!-- Global Authentication -->
-        <div class="card">
-            <h2>Authentication credentials</h2>
-            <div class="auth-grid">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Admin Password</label>
-                    <input type="password" id="adminPassword" required>
+    <!-- Security Overlay -->
+    <div id="authOverlay">
+        <div class="auth-modal">
+            <p>Please enter the restricted passcodes to access this node:</p>
+            <form id="authForm">
+                <input type="password" id="modalPassword" placeholder="Admin Password" required>
+                <input type="password" id="modalPat" placeholder="GitHub PAT" required>
+                <div class="auth-buttons">
+                    <button type="submit">OK</button>
                 </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>GitHub PAT</label>
-                    <input type="password" id="githubPat" required>
-                </div>
-            </div>
-        </div>
-
-        <!-- System Notifications & Waitlist -->
-        <div class="card">
-            <h2>Waitlist & System Notifications</h2>
-            <form id="waitlistForm">
-                <div class="form-group">
-                    <label>Subject</label>
-                    <input type="text" id="wlSubject" placeholder="Update from dots." required>
-                </div>
-                <div class="form-group">
-                    <label>Select Recipients (Hold CMD/CTRL to select multiple)</label>
-                    <select id="wlRecipients" multiple size="3">
-                        <option value="all">Entire Waitlist Database</option>
-                        <option value="cohort_1">Cohort 1 (Early Access)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Exclude Emails (Comma separated)</label>
-                    <input type="text" id="wlExclude" placeholder="spam@domain.com, test@usedots.in">
-                </div>
-                <div class="form-group">
-                    <label>Add Extra Mailing Addresses (Comma separated)</label>
-                    <input type="text" id="wlExtra" placeholder="investors@example.com, pr@example.com">
-                </div>
-                <div class="form-group">
-                    <label>Message (Will be wrapped in dots. branding)</label>
-                    <textarea id="wlMessage" rows="5" placeholder="Type your update here..." required></textarea>
-                </div>
-                <button type="submit">Send Notification Broadcast</button>
-            </form>
-        </div>
-
-        <!-- Custom 1:1 Email Sender -->
-        <div class="card">
-            <h2>Send Custom Email</h2>
-            <form id="customForm">
-                <div class="form-group">
-                    <label>Sender Address</label>
-                    <input type="email" id="customSender" value="hello@usedots.in" required>
-                </div>
-                <div class="form-group">
-                    <label>Recipient Address</label>
-                    <input type="email" id="customRecipient" placeholder="user@domain.com" required>
-                </div>
-                <div class="form-group">
-                    <label>Subject</label>
-                    <input type="text" id="customSubject" placeholder="Welcome to dots." required>
-                </div>
-                <div class="form-group">
-                    <label>Message (Will be wrapped in dots. branding)</label>
-                    <textarea id="customMessage" rows="5" required></textarea>
-                </div>
-                <div class="form-group checkbox-group">
-                    <input type="checkbox" id="customTrack" checked>
-                    <label style="margin:0;">Enable Open & Click Tracking</label>
-                </div>
-                <button type="submit">Send Custom Email</button>
             </form>
         </div>
     </div>
+
+    <!-- Main Dashboard -->
+    <div id="mainApp">
+        <div class="container">
+            <div class="header">
+                <div class="logo-container">
+                    <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots. logo" class="logo">
+                </div>
+                <h1>Communication Console</h1>
+                <button class="logout-btn" id="logoutBtn">Lock Console</button>
+            </div>
+
+            <!-- System Notifications & Waitlist -->
+            <div class="card">
+                <h2>Waitlist & System Notifications</h2>
+                <form id="waitlistForm">
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input type="text" id="wlSubject" placeholder="Update from dots." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Recipients (Hold CMD/CTRL to select multiple)</label>
+                        <select id="wlRecipients" multiple size="3">
+                            <option value="all">Entire Waitlist Database</option>
+                            <option value="cohort_1">Cohort 1 (Early Access)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Exclude Emails (Comma separated)</label>
+                        <input type="text" id="wlExclude" placeholder="spam@domain.com, test@usedots.in">
+                    </div>
+                    <div class="form-group">
+                        <label>Add Extra Mailing Addresses (Comma separated)</label>
+                        <input type="text" id="wlExtra" placeholder="investors@example.com, pr@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Message (Will be wrapped in dots. branding)</label>
+                        <textarea id="wlMessage" rows="5" placeholder="Type your update here..." required></textarea>
+                    </div>
+                    <button type="submit" class="action-btn">Send Notification Broadcast</button>
+                </form>
+            </div>
+
+            <!-- Custom 1:1 Email Sender -->
+            <div class="card">
+                <h2>Send Custom Email</h2>
+                <form id="customForm">
+                    <div class="form-group">
+                        <label>Sender Address</label>
+                        <input type="email" id="customSender" value="hello@usedots.in" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Recipient Address</label>
+                        <input type="email" id="customRecipient" placeholder="user@domain.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input type="text" id="customSubject" placeholder="Welcome to dots." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Message (Will be wrapped in dots. branding)</label>
+                        <textarea id="customMessage" rows="5" required></textarea>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="customTrack" checked>
+                        <label style="margin:0;">Enable Open & Click Tracking</label>
+                    </div>
+                    <button type="submit" class="action-btn">Send Custom Email</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="/admin.js"></script>
 </body>
 </html>
