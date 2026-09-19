@@ -1,4 +1,6 @@
 // --- Authentication Management ---
+const HARDCODED_ADMIN_PWD = "9885679895P@$79895w0rd1204002040";
+
 const authOverlay = document.getElementById('authOverlay');
 const mainApp = document.getElementById('mainApp');
 const authForm = document.getElementById('authForm');
@@ -6,7 +8,7 @@ const logoutBtn = document.getElementById('logoutBtn');
 
 // Check session on load
 window.addEventListener('DOMContentLoaded', () => {
-    if (sessionStorage.getItem('dots_admin_pwd') && sessionStorage.getItem('dots_github_pat')) {
+    if (sessionStorage.getItem('dots_admin_pwd') === HARDCODED_ADMIN_PWD && sessionStorage.getItem('dots_github_pat')) {
         unlockConsole();
     }
 });
@@ -15,6 +17,13 @@ authForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const pwd = document.getElementById('modalPassword').value;
     const pat = document.getElementById('modalPat').value;
+    
+    // Hardcoded frontend validation
+    if (pwd !== HARDCODED_ADMIN_PWD) {
+        alert("Access Denied: Invalid Admin Password.");
+        document.getElementById('modalPassword').value = '';
+        return;
+    }
     
     if(pwd && pat) {
         sessionStorage.setItem('dots_admin_pwd', pwd);
@@ -96,11 +105,8 @@ async function dispatchEmail(payload) {
         
         if (response.ok) {
             alert('Email dispatched successfully.');
-            // Optional: Clear forms on success
-            // document.getElementById('waitlistForm').reset();
-            // document.getElementById('customForm').reset();
         } else if (response.status === 401 || response.status === 403) {
-            alert('Authentication failed. Your session credentials are invalid.');
+            alert('Authentication failed at Edge. Your session credentials are invalid.');
             logoutBtn.click(); // Force them back to the login screen
         } else {
             const errData = await response.text();
