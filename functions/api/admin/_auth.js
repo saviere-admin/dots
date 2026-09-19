@@ -63,7 +63,8 @@ export async function withAdmin(arg1, arg2, arg3) {
   if (auth.response) return auth.response;
 
   try {
-    return await handler(auth.token);
+    // CRITICAL FIX: Pass 'env' back into the handler so env.DB is accessible by your routes
+    return await handler(auth.token, env);
   } catch (error) {
     console.error('Admin handler execution failed:', error.message);
     return json({ ok: false, message: error.message || 'Internal handler error.' }, 500);
