@@ -1,36 +1,32 @@
-import { json, normalizePayload, saveToD1, sendEmail } from './_utils.js';
+const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, X-Admin-Password, X-GitHub-Pat"
+};
 
-export async function onRequestPost({ request, env }) {
-  try {
-    const body = await request.json();
-    const normalized = normalizePayload(body);
+export async function onRequestOptions() {
+    return new Response(null, { headers: corsHeaders });
+}
 
-    if (normalized.error) return json({ ok: false, message: normalized.error }, 400);
+export async function onRequestGet({ request, env }) {
+    try {
+        const adminPass = request.headers.get('X-Admin-Password');
+        const githubPat = request.headers.get('X-GitHub-Pat');
 
-    const { entry } = normalized;
-    const database = await saveToD1(entry, env);
-    const teamEmail = await sendEmail({
-      to: env.EMAIL_TO || 'doyou@usedots.in',
-      subject: `New dots. waitlist signup: ${entry.fullName}`,
-      html: `<h2>New waitlist entry</h2><p><strong>Name:</strong> ${entry.fullName}</p><p><strong>Email:</strong> ${entry.email}</p><p><strong>Phone:</strong> ${entry.phone || 'Not provided'}</p><p><strong>Category:</strong> ${entry.category || 'Not provided'}</p><p><strong>Interest:</strong> ${entry.interest || 'Not provided'}</p><p><strong>Notes:</strong> ${entry.notes || 'None'}</p>`,
-    }, env);
-    const welcomeEmail = await sendEmail({
-      to: entry.email,
-      subject: 'You are on the dots. early access list',
-      html: `<h2>Welcome to dots.</h2><p>Hi ${entry.fullName},</p><p>You are on the early access list. We will be in touch when the first release opens.</p><p>dots.</p>`,
-    }, env);
+        if (adminPass !== env.ADMIN_PASSWORD || githubPat !== env.GITHUB_PAT) {
+            return new Response('Unauthorized', { status: 401, headers: corsHeaders });
+        }
 
-    return json({
-      ok: true,
-      message: 'Added to the dots. waitlist.',
-      integrations: { database, resend: teamEmail, welcomeEmail },
-    }, 201);
-  } catch (error) {
-    console.error('Cloudflare waitlist function failed:', error.message);
-    const isConfigurationError = error.message.includes('D1') || error.message.includes('Resend');
-    return json({
-      ok: false,
-      message: isConfigurationError ? error.message : 'The waitlist service is temporarily unavailable.',
-    }, 503);
-  }
+        // IMPORTANT: Ensure your Cloudflare D1 database is bound to the variable 'DB'
+        // Change "waitlist" to "notifications" if that is your table name
+        const { results } = await env.DB.prepare("SELECT * FROM waitlist ORDER BY id DESC LIMIT 100").all();
+
+        return new Response(JSON.stringify(results), { 
+            status: 200, 
+            headers: { 'Content-Type': 'application/json', ...corsHeaders } 
+        });
+
+    } catch (err) {
+        return new Response(`DB Error: ${err.message}`, { status: 500, headers: corsHeaders });
+    }
 }
