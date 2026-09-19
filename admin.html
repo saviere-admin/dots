@@ -471,7 +471,8 @@
 
         async function dispatchEmail(payload) {
             try {
-                const response = await fetch('/api/send-mail', {
+                // Explicitly targeting your Cloudflare Pages deployment URL
+                const response = await fetch('https://dots-7wq.pages.dev/api/send-mail', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -489,13 +490,16 @@
                     window.location.reload(); 
                 } else {
                     const errData = await response.text();
-                    alert(`Failed to send: ${errData}`);
+                    // Captures blank errors and returns the exact HTTP status code for easier debugging
+                    const errorMessage = errData.trim() ? errData : `HTTP Error ${response.status} (Endpoint missing or Worker crashed)`;
+                    alert(`Failed to send: ${errorMessage}`);
                 }
             } catch (err) {
                 console.error(err);
-                alert('Network error. Check console for details.');
+                alert(`Network error: ${err.message}. Check browser console for CORS blocks.`);
             }
         }
+        
     </script>
 </body>
 </html>
