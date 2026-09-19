@@ -3,6 +3,22 @@ document.addEventListener('DOMContentLoaded', () => {
     || (window.location.hostname === 'localhost' && window.location.port === '8000');
   const apiOrigin = isLocalStaticPreview ? 'http://localhost:3000' : window.location.origin;
 
+  // Resilient VAPID key decoder that handles unpadded URL-safe Base64 safely
+  const urlBase64ToUint8Array = (base64String) => {
+    if (!base64String || typeof base64String !== 'string') {
+      throw new Error('VAPID public key is empty or invalid.');
+    }
+    const cleanString = base64String.replace(/[\s\u200B-\u200D\uFEFF]/g, '').trim();
+    const padding = '='.repeat((4 - (cleanString.length % 4)) % 4);
+    const base64 = (cleanString + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  };
+
   const enablePushNotifications = async (button) => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
       button.textContent = 'Updates unavailable in this browser';
@@ -22,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const registration = await navigator.serviceWorker.register('./sw.js');
 
-      const applicationServerKey = Uint8Array.from(atob(config.publicKey.replace(/-/g, '+').replace(/_/g, '/')), (character) => character.charCodeAt(0));
+      const applicationServerKey = urlBase64ToUint8Array(config.publicKey);
       const subscription = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey });
       const response = await fetch(`${apiOrigin}/api/push-subscriptions`, {
         method: 'POST',
