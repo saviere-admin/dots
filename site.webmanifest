@@ -1,21 +1,17 @@
 {
-    "name": "dots.",
+    "name": "dots. Oral Care",
     "short_name": "dots.",
-    "description": "Waterless toothpaste tablets and tooth tabs by dots., a Savière oral care brand.",
+    "description": "Clinical Precision, Zero Waste. Solid-state oral care.",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#F9F9F8",
-    "theme_color": "#520A1E",
+    "background_color": "#FAFAFA",
+    "theme_color": "#111111",
     "icons": [
         {
-            "src": "/public/brand/logos/dh/DotsTBWTWS.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/public/brand/logos/dh/DotsTBWTWS.png",
-            "sizes": "512x512",
-            "type": "image/png"
+            "src": "/public/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
         }
     ]
 }

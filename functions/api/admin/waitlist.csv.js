@@ -1,27 +1,29 @@
-import { json } from '../_utils.js';
-import { withAdmin } from './_auth.js';
-import { readWaitlist } from './waitlist.js';
-
-export async function onRequestGet({ request, env }) {
-  return withAdmin(request, env, async () => {
+export async function onRequestGet(context) {
+    const { env } = context;
     try {
-      const entries = await readWaitlist(env);
-      const fields = ['fullName', 'email', 'phone', 'category', 'interest', 'notes', 'createdAt'];
-      const csvEscape = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
-      const csv = [
-        fields.join(','),
-        ...entries.map((entry) => fields.map((field) => csvEscape(entry[field])).join(',')),
-      ].join('\n');
+        const { results } = await env.DB.prepare("SELECT id, email, source, created_at FROM waitlist ORDER BY created_at DESC").all();
+        
+        if (!results || results.length === 0) {
+            return new Response("No data available", { status: 404 });
+        }
 
-      return new Response(csv, {
-        headers: {
-          'content-type': 'text/csv; charset=utf-8',
-          'content-disposition': 'attachment; filename="dots-waitlist.csv"',
-          'cache-control': 'no-store',
-        },
-      });
+        // Generate CSV Headers
+        const headers = Object.keys(results[0]).join(',');
+        
+        // Generate CSV Rows
+        const rows = results.map(row => {
+            return Object.values(row).map(value => `"${value}"`).join(',');
+        });
+        
+        const csvContent = [headers, ...rows].join('\n');
+
+        return new Response(csvContent, {
+            headers: {
+                "Content-Type": "text/csv",
+                "Content-Disposition": 'attachment; filename="dots-waitlist.csv"'
+            }
+        });
     } catch (error) {
-      return json({ ok: false, message: error.message }, 503);
+        return new Response(`Error generating CSV: ${error.message}`, { status: 500 });
     }
-  });
 }

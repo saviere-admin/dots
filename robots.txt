@@ -1,8 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
-Disallow: /admin.js
 Disallow: /api/
+Disallow: /functions/
 Disallow: /data/
 
 Sitemap: https://usedots.in/sitemap.xml
