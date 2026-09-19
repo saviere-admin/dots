@@ -5,4 +5,9 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "dots-waitlist"
-database_id = "YOUR_DATABASE_ID_HERE" # Replace with your actual D1 database ID from Cloudflare dashboard
+database_id = "aed66b86-948b-4b7e-a6c0-f664aec2f212"
+
+[vars]
+GITHUB_ADMIN_USERNAME = "saviere-admin"
+EMAIL_TO = "doyou@usedots.in"
+RESEND_FROM_EMAIL = "doyou@usedots.in"
