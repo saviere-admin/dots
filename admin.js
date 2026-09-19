@@ -1,3 +1,14 @@
+// 1. Immediate Browser Gate (Runs before page loads)
+const HARDCODED_PASS = '9885679895P@$79895w0rd1204002040';
+const userPass = prompt("Enter the site password to view this page:");
+
+if (userPass !== HARDCODED_PASS) {
+  // Destroy the page content if the password is wrong or cancelled
+  document.documentElement.innerHTML = '<head><title>Unauthorized</title></head><body style="background:#111; color:#fff; display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif;"><h1>401 Unauthorized</h1></body>';
+  throw new Error("Unauthorized access.");
+}
+
+// 2. Normal Dashboard Logic (Protected by GitHub PAT)
 document.addEventListener('DOMContentLoaded', () => {
   const login = document.querySelector('[data-admin-login]');
   const consolePanel = document.querySelector('[data-admin-console]');
@@ -10,13 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const waitlistNode = document.querySelector('[data-admin-waitlist]');
   const exportButton = document.querySelector('[data-admin-export]');
   
-  const HARDCODED_PASS = '9885679895P@$79895w0rd1204002040';
-  
-  // Ensure the console is strictly hidden on load
   consolePanel.hidden = true;
   login.hidden = false;
   
-  let token = sessionStorage.getItem('dots-admin-token') || '';
+  let token = sessionStorage.getItem('dots-admin-pat') || '';
   if (token) tokenInput.value = token;
 
   const setStatus = (message, isError = false) => {
@@ -39,12 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
         },
       });
     } catch {
-      throw new Error('The Cloudflare admin API is unavailable. Redeploy the Pages Functions and try again.');
+      throw new Error('The Cloudflare admin API is unavailable.');
     }
     const contentType = response.headers.get('content-type') || '';
-    const result = contentType.includes('application/json')
-      ? await response.json()
-      : { message: await response.text() };
+    const result = contentType.includes('application/json') ? await response.json() : { message: await response.text() };
     if (!response.ok) throw new Error(result.message || `Admin request failed (${response.status}).`);
     return result;
   };
@@ -55,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
       historyNode.innerHTML = '<p class="admin-empty">No notifications sent yet.</p>';
       return;
     }
-
     notifications.forEach((notification) => {
       const item = document.createElement('article');
       item.className = 'admin-history-item';
@@ -74,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
       waitlistNode.innerHTML = '<tr><td colspan="4" class="admin-empty">No waitlist entries yet.</td></tr>';
       return;
     }
-
     entries.forEach((entry) => {
       const row = document.createElement('tr');
       const emailDisplay = entry.unsubscribed ? `${entry.email} (Unsubscribed)` : entry.email;
@@ -93,21 +97,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const pastedToken = tokenInput.value.trim();
     token = pastedToken || token;
     
-    if (!token) return setStatus('Enter the admin password to continue.', true);
-    
-    // Hardcoded frontend check before attempting backend calls
-    if (token !== HARDCODED_PASS) {
-      return setStatus('Invalid password.', true);
-    }
+    if (!token) return setStatus('Enter your GitHub PAT to unlock the console.', true);
 
     try {
-      setStatus('Authenticating...');
+      setStatus('Authenticating with GitHub...');
       const result = await request('/api/admin/notifications');
       const audience = await request('/api/admin/waitlist');
       
-      sessionStorage.setItem('dots-admin-token', token);
+      sessionStorage.setItem('dots-admin-pat', token);
       
-      // Reveal UI only after successful data fetch
       login.hidden = true;
       consolePanel.hidden = false;
       
@@ -165,5 +163,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  if (token === HARDCODED_PASS) unlock();
+  if (token) unlock();
 });
