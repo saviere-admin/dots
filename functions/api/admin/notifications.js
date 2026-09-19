@@ -1,98 +1,88 @@
-import { json } from '../_utils.js';
-import { withAdmin } from './_auth.js';
-
-// We do not escape HTML for the message body anymore because we want to send raw HTML
-function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
-}
-
-async function readHistory(env) {
-  if (!env.DB) throw new Error('Cloudflare D1 is not configured. Bind the database as DB.');
-  const result = await env.DB.prepare(`
-    SELECT id, subject, message, sent_count AS sent, failed_count AS failed, created_at AS createdAt
-    FROM notifications
-    ORDER BY created_at DESC
-    LIMIT 100
-  `).all();
-  return (result.results || []).map((notification) => ({
-    id: notification.id,
-    subject: notification.subject,
-    message: notification.message,
-    createdAt: notification.createdAt,
-    delivery: { sent: notification.sent, failed: notification.failed, status: 'sent' },
-  }));
-}
-
-async function sendEmail(entry, subject, htmlContent, env) {
-  if (!env.RESEND_API_KEY || !env.RESEND_FROM_EMAIL) return false;
-  
-  const unsubscribeLink = `https://usedots.in/api/unsubscribe?email=${encodeURIComponent(entry.email)}`;
-  
-  // Wrap the admin's HTML content and append the compliant footer
-  const htmlBody = `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #520a1e; max-width: 600px; margin: 0 auto; line-height: 1.6;">
-      ${htmlContent}
-      <hr style="border: none; border-top: 1px solid #eaeaea; margin-top: 40px; margin-bottom: 20px;" />
-      <p style="font-size: 12px; color: #666; text-align: center;">
-        dots. © 2026 All rights reserved.<br>A brand of Savière Group Private Limited.<br><br>
-        <a href="${unsubscribeLink}" style="color: #666; text-decoration: underline;">Unsubscribe from early access updates</a>
-      </p>
+// Preconfigured HTML wrapper with dots. branding
+const getBrandedHTML = (rawMessage) => `
+<!DOCTYPE html>
+<html>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 40px 0;">
+    <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <!-- Header -->
+        <div style="background-color: #000000; padding: 30px; text-align: center;">
+            <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots." style="max-width: 140px; height: auto; display: inline-block;">
+        </div>
+        
+        <!-- Body -->
+        <div style="padding: 40px 30px; color: #111827; font-size: 16px; line-height: 1.6;">
+            ${rawMessage.replace(/\n/g, '<br>')}
+        </div>
+        
+        <!-- Footer -->
+        <div style="background-color: #f3f4f6; padding: 30px; text-align: center; color: #6b7280; font-size: 12px; line-height: 1.5;">
+            <p style="margin: 0 0 10px 0;">Cruelty-Free &bull; Waterless &bull; Clinical Precision</p>
+            <p style="margin: 0;">&copy; 2026 dots. All rights reserved.<br>A brand of Savière Group Private Limited.</p>
+        </div>
     </div>
-  `;
+</body>
+</html>
+`;
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: `"dots." <${env.RESEND_FROM_EMAIL}>`, // Sends as: dots. <doyou@usedots.in>
-      to: [entry.email],
-      subject: subject,
-      html: htmlBody,
-    }),
-  });
-  
-  return response.ok;
-}
+export default {
+    async fetch(request, env) {
+        if (request.method !== 'POST') return new Response('Method Not Allowed', { status: 405 });
 
-export async function onRequestGet(context) {
-  return withAdmin(context, async (_, env) => json({ ok: true, notifications: await readHistory(env) }));
-}
+        const data = await request.json();
+        
+        let from = '';
+        let to = [];
+        let subject = '';
+        let tags = [];
 
-export async function onRequestPost(context) {
-  return withAdmin(context, async (token, env) => {
-    const { request } = context;
-    const body = await request.json();
-    const subject = String(body.subject || '').trim();
-    const message = String(body.message || '').trim(); // This is now HTML
-    
-    if (!subject || !message) return json({ ok: false, message: 'Subject and message are required.' }, 400);
-    if (!env.DB) return json({ ok: false, message: 'Cloudflare D1 is not configured. Bind the database as DB.' }, 503);
+        // Route routing logic
+        if (data.type === 'custom') {
+            from = `dots. <${data.sender}>`;
+            to = [data.recipient];
+            subject = data.subject;
+            if (data.trackOpens) {
+                tags.push({ name: 'tracking', value: 'enabled' });
+            }
+        } else if (data.type === 'notification') {
+            from = 'dots. <notifications@usedots.in>';
+            subject = 'Update from dots.';
+            tags.push({ name: 'category', value: 'notifications' });
+            
+            // 1. Fetch from D1 DB if targetList includes "all"
+            if (data.targetList.includes('all')) {
+                // const { results } = await env.DB.prepare("SELECT email FROM waitlist").all();
+                // to = results.map(row => row.email);
+            }
+            
+            // 2. Append extra emails
+            if (data.extraEmails && data.extraEmails.length > 0) {
+                to = [...new Set([...to, ...data.extraEmails])];
+            }
+        }
 
-    // Fetch waitlist, explicitly excluding people who have unsubscribed
-    const result = await env.DB.prepare(`
-      SELECT email, full_name AS fullName FROM waitlist WHERE unsubscribed = 0 OR unsubscribed IS NULL
-    `).all();
-    const audience = result.results || [];
+        const htmlContent = getBrandedHTML(data.message);
 
-    const results = await Promise.all(audience.map((entry) => sendEmail(entry, subject, message, env)));
-    
-    const delivery = {
-      sent: results.filter(Boolean).length,
-      failed: results.filter((sent) => !sent).length,
-      status: env.RESEND_API_KEY && env.RESEND_FROM_EMAIL ? 'sent' : 'not-configured',
-    };
-    
-    const createdAt = new Date().toISOString();
-    
-    const insertResult = await env.DB.prepare(`
-      INSERT INTO notifications (subject, message, sent_count, failed_count, created_at)
-      VALUES (?, ?, ?, ?, ?)
-    `).bind(subject, message, delivery.sent, delivery.failed, createdAt).run();
-    
-    const notification = { id: insertResult.meta.last_row_id, subject, message, createdAt, delivery };
-    return json({ ok: true, notification }, 201);
-  });
+        // Sending via Resend API (Example)
+        const emailPayload = {
+            from: from,
+            to: to,
+            subject: subject,
+            html: htmlContent,
+            headers: {
+                'X-Entity-Ref-ID': crypto.randomUUID(), // Prevent strict threading issues
+            },
+            tags: tags
+        };
+
+        const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(emailPayload)
+        });
+
+        return new Response(JSON.stringify({ success: res.ok }), { status: res.status });
+    }
 }
