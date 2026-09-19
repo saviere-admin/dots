@@ -1,33 +1,29 @@
-/* Custom Scrollbar for dots. */
-::-webkit-scrollbar {
-    width: 8px;
-}
+/* Core Styling & Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #FAFAFA; }
+::-webkit-scrollbar-thumb { background: #111; border-radius: 10px; }
 
-::-webkit-scrollbar-track {
-    background: #FAFAFA;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #E5E7EB;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #D1D5DB;
-}
-
-/* Ensure smooth scrolling globally */
 html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hide scrollbar for the admin table overflow */
-.hide-scroll::-webkit-scrollbar {
-    display: none;
+/* 3D Utilities */
+.perspective-1000 { perspective: 1000px; }
+.transform-style-3d { transform-style: preserve-3d; }
+.will-change-transform { will-change: transform; }
+
+/* Entrance Animations */
+.reveal-up {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.hide-scroll {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+.reveal-up.active {
+    opacity: 1;
+    transform: translateY(0);
 }
+.delay-100 { transition-delay: 0.1s; }
+.delay-200 { transition-delay: 0.2s; }
+.delay-300 { transition-delay: 0.3s; }

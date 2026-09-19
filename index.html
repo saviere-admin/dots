@@ -8,125 +8,133 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
     <link rel="icon" type="image/svg+xml" href="/public/favicon.svg">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #FAFAFA; color: #111111; }
-        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .fade-in-up { animation: fadeInUp 1s ease-out forwards; opacity: 0; transform: translateY(20px); }
-        .delay-100 { animation-delay: 0.1s; }
-        .delay-200 { animation-delay: 0.2s; }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-    </style>
 </head>
-<body class="antialiased selection:bg-black selection:text-white">
+<body class="antialiased selection:bg-black selection:text-white bg-[#FAFAFA] text-[#111111] overflow-x-hidden">
 
     <!-- Navigation -->
-    <nav class="fixed w-full top-0 z-50 glass-panel transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <img src="/public/brand/logos/dh/DotsTBBTWS.png" alt="dots. logo" class="h-6">
-            <a href="#waitlist" class="text-sm font-medium hover:text-gray-500 transition">Join Waitlist</a>
+    <nav class="fixed w-full top-0 z-50 transition-all duration-500" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+            <!-- Light/Dark Logo Logic -->
+            <img src="https://usedots.in/public/brand/logos/dh/DotsTBBTWoS.png" alt="dots. logo" class="h-6 md:h-8 w-auto object-contain transition-opacity duration-300" id="nav-logo-light">
+            <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots. logo" class="h-6 md:h-8 w-auto object-contain absolute opacity-0 transition-opacity duration-300" id="nav-logo-dark">
+            
+            <a href="#waitlist" class="text-sm font-semibold tracking-wide hover:opacity-60 transition-opacity duration-300 uppercase" id="nav-link">Join Waitlist</a>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="min-h-screen flex flex-col justify-center items-center text-center px-6 pt-20">
-        <span class="text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-6 fade-in-up">In Daily Life</span>
-        <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-8 max-w-4xl fade-in-up delay-100">
-            Thoughtful products for <br/><span class="text-gray-400">everyday life.</span>
-        </h1>
-        <a href="#discover" class="px-8 py-4 mt-4 bg-black text-white rounded-full font-medium hover:bg-gray-800 hover:scale-105 transition-all fade-in-up delay-200 shadow-lg">
-            Discover dots.
-        </a>
+    <!-- 3D Hero Section -->
+    <section class="relative min-h-screen flex flex-col justify-center items-center text-center px-6 pt-20 perspective-1000">
+        <div class="hero-content transform-style-3d will-change-transform" id="hero-container">
+            <span class="block text-xs font-bold tracking-[0.3em] uppercase text-gray-400 mb-8 reveal-up">In Daily Life</span>
+            <h1 class="text-6xl md:text-8xl lg:text-[7rem] font-bold tracking-tighter mb-10 leading-[0.9] reveal-up delay-100">
+                Thoughtful products <br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-200">for everyday life.</span>
+            </h1>
+            <div class="reveal-up delay-200">
+                <a href="#discover" class="inline-flex items-center justify-center px-10 py-5 bg-black text-white rounded-full font-medium hover:scale-105 hover:shadow-[0_0_40px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out">
+                    Discover dots.
+                </a>
+            </div>
+        </div>
     </section>
 
-    <!-- The Habit Section -->
-    <section id="discover" class="py-24 bg-white">
+    <!-- The Habit Section (3D Bento Grid) -->
+    <section id="discover" class="py-32 bg-white relative z-10">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div>
-                    <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-4">You use it every day.</h2>
-                    <h3 class="text-4xl md:text-5xl font-semibold tracking-tight leading-tight text-gray-900">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                <div class="parallax-element" data-speed="0.05">
+                    <h2 class="text-xs font-bold tracking-[0.3em] uppercase text-gray-400 mb-6">You use it every day.</h2>
+                    <h3 class="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.1] text-gray-900">
                         What if the product you rely on twice a day was fundamentally engineered differently?
                     </h3>
                 </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-6">
-                    <div class="p-8 bg-gray-50 rounded-3xl border border-gray-100">
-                        <div class="text-4xl md:text-5xl font-bold mb-2">365</div>
-                        <div class="text-sm font-medium text-gray-500">Days a year</div>
+                
+                <!-- 3D Interactive Cards -->
+                <div class="grid grid-cols-2 gap-4 md:gap-6 perspective-1000">
+                    <div class="bento-card p-10 bg-[#FAFAFA] rounded-[2rem] border border-gray-100 transform transition-transform duration-200 ease-out">
+                        <div class="text-5xl md:text-6xl font-bold mb-3 tracking-tighter">365</div>
+                        <div class="text-sm font-semibold tracking-wide text-gray-500 uppercase">Days a year</div>
                     </div>
-                    <div class="p-8 bg-gray-50 rounded-3xl border border-gray-100">
-                        <div class="text-4xl md:text-5xl font-bold mb-2">2</div>
-                        <div class="text-sm font-medium text-gray-500">Times a day</div>
+                    <div class="bento-card p-10 bg-[#FAFAFA] rounded-[2rem] border border-gray-100 transform transition-transform duration-200 ease-out">
+                        <div class="text-5xl md:text-6xl font-bold mb-3 tracking-tighter">2</div>
+                        <div class="text-sm font-semibold tracking-wide text-gray-500 uppercase">Times a day</div>
                     </div>
-                    <div class="p-8 bg-gray-50 rounded-3xl border border-gray-100 col-span-2 flex items-center justify-between">
+                    <div class="bento-card p-10 bg-[#FAFAFA] rounded-[2rem] border border-gray-100 col-span-2 flex items-center justify-between transform transition-transform duration-200 ease-out">
                         <div>
-                            <div class="text-5xl md:text-6xl font-bold mb-2">730</div>
-                            <div class="text-sm font-medium text-gray-500">Brushing moments</div>
+                            <div class="text-6xl md:text-8xl font-bold mb-3 tracking-tighter">730</div>
+                            <div class="text-sm font-semibold tracking-wide text-gray-500 uppercase">Brushing moments</div>
                         </div>
-                        <div class="text-5xl opacity-20">💧</div>
+                        <div class="text-6xl md:text-8xl opacity-10">💧</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Science Section -->
-    <section class="py-32 bg-[#0a0a0a] text-white">
-        <div class="max-w-4xl mx-auto px-6 text-center">
-            <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-gray-500 mb-6">Biological purity.</h2>
-            <h3 class="text-5xl md:text-7xl font-bold tracking-tight mb-8">Zero water weight.</h3>
-            <p class="text-xl md:text-2xl text-gray-400 leading-relaxed font-light mb-12">
-                Standard formulations carry up to 50% dead-weight water. <strong class="text-white font-semibold">dots.</strong> strips away unnecessary logistics, delivering Nano-Hydroxyapatite (Nano-HAp) in a precise, solid-state format.
+    <!-- Dark Science Section -->
+    <section class="py-40 bg-[#0a0a0a] text-white relative overflow-hidden" id="dark-section">
+        <!-- Abstract Background Glow -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white opacity-[0.02] rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="max-w-5xl mx-auto px-6 text-center relative z-10 parallax-element" data-speed="-0.03">
+            <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots." class="h-10 w-auto mx-auto mb-16 opacity-50 object-contain">
+            <h2 class="text-xs font-bold tracking-[0.4em] uppercase text-gray-500 mb-8">Biological purity.</h2>
+            <h3 class="text-6xl md:text-8xl lg:text-[8rem] font-bold tracking-tighter mb-12 leading-none">Zero water<br/>weight.</h3>
+            <p class="text-2xl md:text-3xl text-gray-400 leading-tight font-light max-w-3xl mx-auto">
+                Standard formulations carry up to 50% dead-weight water. <strong class="text-white font-medium">dots.</strong> strips away unnecessary logistics, delivering Nano-Hydroxyapatite in a precise, solid-state format.
             </p>
         </div>
     </section>
 
     <!-- Live Architecture / Impact -->
-    <section class="py-32 bg-white">
+    <section class="py-40 bg-white relative z-10">
         <div class="max-w-7xl mx-auto px-6 text-center">
-            <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-4">Live Architecture</h2>
-            <h3 class="text-4xl md:text-5xl font-semibold tracking-tight mb-16">The format changes the equation.</h3>
+            <h2 class="text-xs font-bold tracking-[0.3em] uppercase text-gray-400 mb-6">Live Architecture</h2>
+            <h3 class="text-5xl md:text-7xl font-bold tracking-tighter mb-24">The format changes the equation.</h3>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <div class="p-12 border border-gray-200 rounded-[2rem] bg-gray-50/50">
-                    <div class="text-gray-500 text-sm font-bold mb-6 uppercase tracking-wider">Plastic Packaging Avoided</div>
-                    <div class="text-7xl font-bold tracking-tighter text-gray-900" id="plastic-counter">0</div>
-                    <div class="text-xl font-medium text-gray-400 mt-2">grams</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto perspective-1000">
+                <div class="bento-card p-16 border border-gray-100 rounded-[3rem] bg-white shadow-[0_20px_40px_rgba(0,0,0,0.03)]">
+                    <div class="text-gray-400 text-xs font-bold mb-8 uppercase tracking-[0.2em]">Plastic Packaging Avoided</div>
+                    <div class="text-7xl md:text-8xl font-bold tracking-tighter text-gray-900" id="plastic-counter">0</div>
+                    <div class="text-xl font-medium text-gray-400 mt-4">grams</div>
                 </div>
-                <div class="p-12 border border-gray-200 rounded-[2rem] bg-gray-50/50">
-                    <div class="text-gray-500 text-sm font-bold mb-6 uppercase tracking-wider">Freight Mass Reduction</div>
-                    <div class="text-7xl font-bold tracking-tighter text-gray-900" id="freight-counter">0</div>
-                    <div class="text-xl font-medium text-gray-400 mt-2">kg</div>
+                <div class="bento-card p-16 border border-gray-100 rounded-[3rem] bg-white shadow-[0_20px_40px_rgba(0,0,0,0.03)]">
+                    <div class="text-gray-400 text-xs font-bold mb-8 uppercase tracking-[0.2em]">Freight Mass Reduction</div>
+                    <div class="text-7xl md:text-8xl font-bold tracking-tighter text-gray-900" id="freight-counter">0</div>
+                    <div class="text-xl font-medium text-gray-400 mt-4">kg</div>
                 </div>
             </div>
-            <p class="mt-8 text-sm font-medium text-gray-400">Household Variables</p>
+            <p class="mt-12 text-sm font-semibold tracking-widest uppercase text-gray-300">* Household Variables</p>
         </div>
     </section>
 
     <!-- Waitlist Section -->
-    <section id="waitlist" class="py-24 bg-gray-50 border-t border-gray-200">
-        <div class="max-w-xl mx-auto px-6 text-center">
-            <h3 class="text-3xl font-semibold tracking-tight mb-4">There is another way.</h3>
-            <p class="text-gray-500 mb-8">Rethinking everyday oral care through precise, solid-state formulations. Join the waitlist to be notified when dots. launches.</p>
+    <section id="waitlist" class="py-32 bg-[#FAFAFA] border-t border-gray-200">
+        <div class="max-w-2xl mx-auto px-6 text-center parallax-element" data-speed="0.04">
+            <h3 class="text-4xl md:text-5xl font-bold tracking-tighter mb-6">There is another way.</h3>
+            <p class="text-gray-500 text-lg mb-12 font-light">Rethinking everyday oral care through precise, solid-state formulations. Join the waitlist to be notified when dots. launches.</p>
             
-            <form id="waitlistForm" class="flex flex-col sm:flex-row gap-3">
-                <input type="email" id="waitlistEmail" required placeholder="Enter your email" class="flex-1 px-5 py-4 rounded-full border border-gray-200 focus:outline-none focus:border-black transition">
-                <button type="submit" id="waitlistBtn" class="px-8 py-4 bg-black text-white rounded-full font-medium hover:bg-gray-800 transition shadow-md">
+            <form id="waitlistForm" class="flex flex-col sm:flex-row gap-4 relative z-20">
+                <input type="email" id="waitlistEmail" required placeholder="Enter your email address" class="flex-1 px-8 py-5 rounded-full border border-gray-200 bg-white text-lg focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all shadow-sm">
+                <button type="submit" id="waitlistBtn" class="px-10 py-5 bg-black text-white rounded-full font-medium text-lg hover:bg-gray-800 hover:scale-105 transition-all shadow-xl">
                     Join
                 </button>
             </form>
-            <div id="waitlistMsg" class="mt-4 text-sm font-medium hidden"></div>
+            <div id="waitlistMsg" class="mt-6 text-sm font-medium hidden"></div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-12 bg-white border-t border-gray-100">
+    <footer class="py-16 bg-white border-t border-gray-100">
         <div class="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
-            <div class="flex gap-4 mb-8">
-                <span class="px-4 py-2 bg-gray-50 rounded-full text-xs font-bold tracking-[0.1em] uppercase text-gray-500">Cruelty-Free</span>
-                <span class="px-4 py-2 bg-gray-50 rounded-full text-xs font-bold tracking-[0.1em] uppercase text-gray-500">Waterless</span>
+            <img src="https://usedots.in/public/brand/logos/dh/DotsTBBTWoS.png" alt="dots." class="h-6 md:h-8 w-auto object-contain mb-12 opacity-50">
+            
+            <div class="flex gap-4 mb-12">
+                <span class="px-5 py-2.5 bg-gray-50 rounded-full text-xs font-bold tracking-[0.15em] uppercase text-gray-400">Cruelty-Free</span>
+                <span class="px-5 py-2.5 bg-gray-50 rounded-full text-xs font-bold tracking-[0.15em] uppercase text-gray-400">Waterless</span>
             </div>
-            <div class="text-sm text-gray-400">
-                dots. © 2026 All rights reserved. A brand of Savière Group Private Limited.
+            <div class="text-xs font-medium tracking-widest uppercase text-gray-400">
+                dots. © 2026. A brand of Savière Group Private Limited.
             </div>
         </div>
     </footer>

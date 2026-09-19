@@ -6,98 +6,95 @@
     <title>dots. | System Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #FAFAFA; }
+        body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; color: white; }
         .hidden { display: none !important; }
+        .glitch-bg { background: radial-gradient(circle at center, #222 0%, #0a0a0a 100%); }
     </style>
 </head>
-<body class="text-gray-900 antialiased">
+<body class="antialiased h-screen overflow-hidden glitch-bg">
 
-    <!-- Navbar -->
-    <nav class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center fixed w-full top-0 z-50">
-        <div class="flex items-center gap-3">
-            <!-- Referencing existing logo -->
-            <img src="/public/brand/logos/primary/dots-primary.svg" alt="dots. logo" class="h-6">
-            <span class="text-sm font-semibold tracking-widest uppercase text-gray-400 border-l border-gray-200 pl-3">Admin Console</span>
+    <!-- Custom JS Modal overlay for the primary password -->
+    <div id="passwordModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl transition-opacity duration-300">
+        <div class="bg-[#111] border border-gray-800 p-8 rounded-2xl w-full max-w-sm text-center shadow-2xl transform transition-transform scale-95" id="pwdModalInner">
+            <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots." class="h-6 mx-auto mb-6 opacity-80 object-contain">
+            <h2 class="text-sm font-bold tracking-widest uppercase text-gray-400 mb-6">Restricted Access</h2>
+            <input type="password" id="sysPasswordInput" placeholder="System Password" class="w-full bg-black border border-gray-700 rounded-lg px-4 py-3 text-white text-center mb-4 focus:outline-none focus:border-gray-500 transition">
+            <button id="sysPasswordBtn" class="w-full bg-white text-black font-semibold py-3 rounded-lg hover:bg-gray-200 transition">Unlock Protocol</button>
+            <p id="pwdError" class="text-red-500 text-xs mt-4 hidden">Invalid Authorization Code</p>
         </div>
-        <button id="logoutBtn" class="hidden text-sm font-medium text-red-500 hover:text-red-700">Lock Console</button>
-    </nav>
+    </div>
 
-    <!-- Login View -->
-    <main id="loginView" class="min-h-screen flex items-center justify-center px-4">
-        <div class="bg-white p-10 rounded-2xl shadow-sm border border-gray-200 w-full max-w-md">
-            <h1 class="text-2xl font-bold mb-2">System Authorization</h1>
-            <p class="text-sm text-gray-500 mb-8">Level 2 Security Clearance Required.</p>
+    <!-- Step 2: GitHub PAT Auth (Hidden initially) -->
+    <main id="githubView" class="hidden h-full flex flex-col items-center justify-center px-4 relative z-10">
+        <div class="text-center w-full max-w-md reveal-up active">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-900/30 text-green-500 mb-6 border border-green-500/20">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            </div>
+            <h1 class="text-3xl font-bold tracking-tight mb-2">Protocol Unlocked</h1>
+            <p class="text-gray-400 mb-8">Enter Developer Token (PAT) for <span class="text-white font-mono">saviere-admin</span>.</p>
             
-            <div id="loginError" class="hidden bg-red-50 text-red-600 text-sm p-3 rounded-lg mb-6 border border-red-100"></div>
-
-            <form id="authForm" class="space-y-5">
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Admin Password</label>
-                    <input type="password" id="adminPwd" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">GitHub PAT (saviere-admin)</label>
-                    <input type="password" id="githubToken" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition">
-                </div>
-                <button type="submit" id="loginBtn" class="w-full bg-black text-white font-medium py-3 rounded-lg hover:bg-gray-800 transition shadow-md mt-4">
-                    Authenticate
+            <form id="patForm" class="space-y-4">
+                <input type="password" id="githubToken" required placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="w-full px-5 py-4 bg-[#111] border border-gray-800 rounded-xl focus:outline-none focus:border-gray-500 text-center font-mono transition shadow-inner">
+                <button type="submit" id="patBtn" class="w-full bg-white text-black font-semibold py-4 rounded-xl hover:scale-[1.02] transition-transform shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                    Connect Backend
                 </button>
             </form>
+            <p id="patError" class="text-red-500 text-sm mt-6 hidden"></p>
         </div>
     </main>
 
-    <!-- Dashboard View -->
-    <main id="dashboardView" class="hidden pt-24 pb-12 px-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <!-- Left Col: Waitlist Database -->
-        <div class="lg:col-span-2 space-y-6">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="px-6 py-5 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-                    <h2 class="text-lg font-semibold">Waitlist Database</h2>
-                    <span id="waitlistCount" class="bg-black text-white text-xs font-bold px-3 py-1 rounded-full">0 Users</span>
+    <!-- Dashboard View (Hidden initially) -->
+    <main id="dashboardView" class="hidden h-full flex flex-col bg-[#FAFAFA] text-black overflow-y-auto">
+        <nav class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+            <img src="https://usedots.in/public/brand/logos/dh/DotsTBBTWoS.png" alt="dots." class="h-5 w-auto object-contain">
+            <button id="logoutBtn" class="text-xs font-bold uppercase tracking-widest text-red-500 hover:text-red-700">Lock Console</button>
+        </nav>
+
+        <div class="p-8 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Waitlist DB -->
+            <div class="lg:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-sm p-8">
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold tracking-tight">Waitlist Database</h2>
+                        <p class="text-sm text-gray-500 mt-1">Live edge-SQL synchronization.</p>
+                    </div>
+                    <span id="waitlistCount" class="bg-black text-white text-sm font-bold px-4 py-2 rounded-full">0</span>
                 </div>
-                <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+                <div class="overflow-y-auto max-h-[500px] pr-2">
                     <table class="w-full text-sm text-left">
-                        <thead class="text-xs text-gray-500 uppercase bg-gray-50 sticky top-0">
+                        <thead class="text-xs text-gray-400 uppercase tracking-wider sticky top-0 bg-white pb-2">
                             <tr>
-                                <th class="px-6 py-3 font-medium">Email</th>
-                                <th class="px-6 py-3 font-medium">Source</th>
-                                <th class="px-6 py-3 font-medium">Joined Date</th>
+                                <th class="py-3 font-semibold">Email Target</th>
+                                <th class="py-3 font-semibold text-right">Timestamp</th>
                             </tr>
                         </thead>
-                        <tbody id="waitlistTableBody" class="divide-y divide-gray-100">
-                            <!-- Injected via JS -->
-                        </tbody>
+                        <tbody id="waitlistTableBody" class="divide-y divide-gray-100"></tbody>
                     </table>
                 </div>
             </div>
-        </div>
 
-        <!-- Right Col: Notification Publisher -->
-        <div class="space-y-6">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                <h2 class="text-lg font-semibold mb-1">Broadcast Notification</h2>
-                <p class="text-xs text-gray-500 mb-6">Dispatch email to entire waitlist via Resend.</p>
+            <!-- Broadcast Engine -->
+            <div class="bg-[#111] text-white rounded-3xl border border-gray-800 shadow-2xl p-8">
+                <h2 class="text-xl font-bold tracking-tight mb-1">Broadcast Engine</h2>
+                <p class="text-xs text-gray-500 mb-8">Via Resend API Architecture.</p>
                 
-                <div id="notifyStatus" class="hidden text-sm p-3 rounded-lg mb-4"></div>
+                <div id="notifyStatus" class="hidden text-sm p-4 rounded-xl mb-6"></div>
 
-                <form id="notifyForm" class="space-y-4">
+                <form id="notifyForm" class="space-y-5">
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Subject Line</label>
-                        <input type="text" id="emailSubject" required placeholder="e.g. dots. is now live." class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-black transition">
+                        <input type="text" id="emailSubject" required placeholder="Subject Line" class="w-full px-4 py-3 bg-black border border-gray-800 rounded-xl focus:outline-none focus:border-gray-500 transition text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Email Body (HTML supported)</label>
-                        <textarea id="emailBody" required rows="8" placeholder="<h1>Hello from dots.</h1>..." class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-black transition"></textarea>
+                        <textarea id="emailBody" required rows="6" placeholder="HTML Body Content..." class="w-full px-4 py-3 bg-black border border-gray-800 rounded-xl focus:outline-none focus:border-gray-500 transition text-white font-mono text-sm"></textarea>
                     </div>
-                    <button type="submit" id="sendBtn" class="w-full bg-blue-600 text-white font-medium py-3 rounded-lg hover:bg-blue-700 transition shadow-sm">
-                        Send Broadcast
+                    <button type="submit" id="sendBtn" class="w-full bg-white text-black font-semibold py-4 rounded-xl hover:bg-gray-200 transition">
+                        Dispatch Payload
                     </button>
                 </form>
             </div>
         </div>
-
     </main>
 
     <script src="/admin.js"></script>
