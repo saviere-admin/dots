@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+  <script>
+    const HARDCODED_PASS = '9885679895P@$$79895w0rd1204002040';
+    const userPass = prompt("Please enter the Editorial Passcode to access this node:");
+    
+    if (userPass !== HARDCODED_PASS) {
+      // Replaces the entire document with a blank screen if incorrect
+      document.documentElement.innerHTML = '<head><title>Unauthorized</title></head><body style="background:#111; color:#fff; display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif;"><h1>401 Unauthorized</h1></body>';
+      window.stop(); // Stops any further scripts or images from loading
+    }
+  </script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />

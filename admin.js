@@ -1,14 +1,3 @@
-// 1. Immediate Browser Gate (Runs before page loads)
-const HARDCODED_PASS = '9885679895P@$79895w0rd1204002040';
-const userPass = prompt("Enter the site password to view this page:");
-
-if (userPass !== HARDCODED_PASS) {
-  // Destroy the page content if the password is wrong or cancelled
-  document.documentElement.innerHTML = '<head><title>Unauthorized</title></head><body style="background:#111; color:#fff; display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif;"><h1>401 Unauthorized</h1></body>';
-  throw new Error("Unauthorized access.");
-}
-
-// 2. Normal Dashboard Logic (Protected by GitHub PAT)
 document.addEventListener('DOMContentLoaded', () => {
   const login = document.querySelector('[data-admin-login]');
   const consolePanel = document.querySelector('[data-admin-console]');
