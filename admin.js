@@ -9,6 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const audienceNode = document.querySelector('[data-admin-audience]');
   const waitlistNode = document.querySelector('[data-admin-waitlist]');
   const exportButton = document.querySelector('[data-admin-export]');
+  
+  const HARDCODED_PASS = '9885679895P@$79895w0rd1204002040';
+  
+  // Ensure the console is strictly hidden on load
+  consolePanel.hidden = true;
+  login.hidden = false;
+  
   let token = sessionStorage.getItem('dots-admin-token') || '';
   if (token) tokenInput.value = token;
 
@@ -55,10 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
       item.innerHTML = `<strong></strong><time></time><div class="html-preview"></div><small></small>`;
       item.querySelector('strong').textContent = notification.subject;
       item.querySelector('time').textContent = new Date(notification.createdAt).toLocaleString();
-      
-      // Render the HTML safely in the admin preview
       item.querySelector('.html-preview').innerHTML = notification.message; 
-      
       item.querySelector('small').textContent = `${notification.delivery.sent} delivered${notification.delivery.failed ? `, ${notification.delivery.failed} failed` : ''}`;
       historyNode.appendChild(item);
     });
@@ -73,13 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     entries.forEach((entry) => {
       const row = document.createElement('tr');
-      // Added a check to show if a user unsubscribed
       const emailDisplay = entry.unsubscribed ? `${entry.email} (Unsubscribed)` : entry.email;
       
       [entry.fullName, emailDisplay, entry.interest || entry.category || '—', new Date(entry.createdAt).toLocaleDateString()].forEach((value) => {
         const cell = document.createElement('td');
         cell.textContent = value;
-        if (entry.unsubscribed) cell.style.color = '#999'; // Gray out unsubscribed users
+        if (entry.unsubscribed) cell.style.color = '#999'; 
         row.appendChild(cell);
       });
       waitlistNode.appendChild(row);
@@ -87,20 +90,30 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const unlock = async () => {
-    const pastedToken = tokenInput.value.replace(/[\s\u200B-\u200D\uFEFF]/g, '').trim();
+    const pastedToken = tokenInput.value.trim();
     token = pastedToken || token;
-    if (!token) return setStatus('Enter the admin token to continue.', true);
+    
+    if (!token) return setStatus('Enter the admin password to continue.', true);
+    
+    // Hardcoded frontend check before attempting backend calls
+    if (token !== HARDCODED_PASS) {
+      return setStatus('Invalid password.', true);
+    }
 
     try {
+      setStatus('Authenticating...');
       const result = await request('/api/admin/notifications');
       const audience = await request('/api/admin/waitlist');
+      
       sessionStorage.setItem('dots-admin-token', token);
+      
+      // Reveal UI only after successful data fetch
       login.hidden = true;
       consolePanel.hidden = false;
+      
       renderHistory(result.notifications);
       renderWaitlist(audience.waitlist);
       
-      // Filter active audience count for display
       const activeCount = audience.waitlist.filter(user => !user.unsubscribed).length;
       audienceNode.textContent = `${activeCount} active waitlist member(s)`;
       
@@ -152,5 +165,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  if (token) unlock();
+  if (token === HARDCODED_PASS) unlock();
 });
