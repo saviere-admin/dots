@@ -1,109 +1,95 @@
-import { impactMetrics } from './data/impact.js';
-
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- 1. Dark/Light Nav Logo Switcher ---
-    const navbar = document.getElementById('navbar');
-    const navLogoLight = document.getElementById('nav-logo-light');
-    const navLogoDark = document.getElementById('nav-logo-dark');
-    const navLink = document.getElementById('nav-link');
-    const darkSection = document.getElementById('dark-section');
+    // --- 1. Smooth Scrolling (Lenis) ---
+    const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smooth: true,
+    });
+    function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
 
-    window.addEventListener('scroll', () => {
-        // Glassmorphism on scroll
-        if (window.scrollY > 50) {
-            navbar.classList.add('bg-white/80', 'backdrop-blur-md', 'border-b', 'border-gray-200/50');
-        } else {
-            navbar.classList.remove('bg-white/80', 'backdrop-blur-md', 'border-b', 'border-gray-200/50');
-        }
+    // --- 2. GSAP Animations ---
+    gsap.registerPlugin(ScrollTrigger);
 
-        // Detect if dark section is behind navbar to swap logos
-        if (darkSection) {
-            const rect = darkSection.getBoundingClientRect();
-            // If the top of the dark section is above the nav AND bottom is below the nav
-            if (rect.top <= 80 && rect.bottom >= 50) {
-                navLogoLight.style.opacity = '0';
-                navLogoDark.style.opacity = '1';
-                navLink.classList.replace('text-gray-900', 'text-white');
-                navbar.classList.remove('bg-white/80', 'border-gray-200/50');
-                navbar.classList.add('bg-black/50', 'border-gray-800/50');
-            } else {
-                navLogoLight.style.opacity = '1';
-                navLogoDark.style.opacity = '0';
-                navLink.classList.replace('text-white', 'text-gray-900');
-                navbar.classList.remove('bg-black/50', 'border-gray-800/50');
-            }
-        }
+    // Hero Animation
+    gsap.from(".hero-elem", {
+        y: 50,
+        opacity: 0,
+        duration: 1.2,
+        stagger: 0.15,
+        ease: "power3.out",
+        delay: 0.2
+    });
+    gsap.to(".hero-bg", {
+        yPercent: 30,
+        ease: "none",
+        scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: true }
     });
 
-    // --- 2. 3D Mouse Tracking for Bento Cards ---
-    const cards = document.querySelectorAll('.bento-card');
-    cards.forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            
-            const rotateX = ((y - centerY) / centerY) * -5; // Max rotation 5deg
-            const rotateY = ((x - centerX) / centerX) * 5;
-
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-        });
-
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    // Staggered Reveals for light sections
+    gsap.utils.toArray('.gs-reveal').forEach(elem => {
+        gsap.from(elem, {
+            y: 50, opacity: 0, duration: 1, ease: "power3.out",
+            scrollTrigger: { trigger: elem, start: "top 85%" }
         });
     });
 
-    // --- 3. Scroll Parallax Engine ---
-    const parallaxElements = document.querySelectorAll('.parallax-element');
-    window.addEventListener('scroll', () => {
-        const scrolled = window.scrollY;
-        parallaxElements.forEach(el => {
-            const speed = el.getAttribute('data-speed');
-            el.style.transform = `translateY(${scrolled * speed}px)`;
+    // Reveals for dark section
+    gsap.utils.toArray('.gs-reveal-dark').forEach(elem => {
+        gsap.from(elem, {
+            y: 50, opacity: 0, duration: 1, ease: "power3.out",
+            scrollTrigger: { trigger: elem, start: "top 85%" }
         });
     });
 
-    // --- 4. Entrance Reveals ---
-    const reveals = document.querySelectorAll('.reveal-up');
-    setTimeout(() => {
-        reveals.forEach(el => el.classList.add('active'));
-    }, 100);
+    // --- 3. Interactive Impact Calculator ---
+    const sliderPeople = document.getElementById('slider-people');
+    const sliderMonths = document.getElementById('slider-months');
+    const valPeople = document.getElementById('val-people');
+    const valMonths = document.getElementById('val-months');
+    const outTubes = document.getElementById('out-tubes');
+    const outPlastic = document.getElementById('out-plastic');
+    const outWater = document.getElementById('out-water');
 
-    // --- 5. Impact Counters Animation ---
-    const plasticCounter = document.getElementById('plastic-counter');
-    const freightCounter = document.getElementById('freight-counter');
-    
-    const animateValue = (obj, start, end, duration) => {
-        let startTimestamp = null;
-        const step = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const easeOut = 1 - Math.pow(1 - progress, 4); // Quartic ease out
-            obj.innerHTML = Math.floor(easeOut * (end - start) + start).toLocaleString();
-            if (progress < 1) window.requestAnimationFrame(step);
-            else obj.innerHTML = end.toLocaleString();
-        };
-        window.requestAnimationFrame(step);
-    };
+    function calculateImpact() {
+        const people = parseInt(sliderPeople.value);
+        const months = parseInt(sliderMonths.value);
+        
+        // Update Labels
+        valPeople.innerText = people;
+        valMonths.innerText = months;
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                animateValue(plasticCounter, 0, impactMetrics.plasticGramsAvoided, 2500);
-                animateValue(freightCounter, 0, impactMetrics.freightKgReduced, 2500);
-                observer.unobserve(entry.target);
-            }
+        // The Math: 
+        // 1 person uses ~1 tube every 2 months (0.5 tubes/month)
+        // 1 tube = 20g plastic
+        // 1 tube = 0.1 liters (100ml) water weight
+        const totalTubes = Math.round(people * (months * 0.5));
+        const totalPlasticGrams = totalTubes * 20;
+        const totalWaterLiters = (totalTubes * 0.1).toFixed(1);
+
+        // Animate numbers (using a quick GSAP counter)
+        gsap.to(outTubes, { innerHTML: totalTubes, roundProps: "innerHTML", duration: 0.5, ease: "power2.out" });
+        gsap.to(outPlastic, { innerHTML: totalPlasticGrams, roundProps: "innerHTML", duration: 0.5, ease: "power2.out" });
+        
+        // Water is a float, needs custom update
+        let dummy = { val: parseFloat(outWater.innerText) || 0 };
+        gsap.to(dummy, {
+            val: totalWaterLiters, duration: 0.5, ease: "power2.out",
+            onUpdate: function() { outWater.innerText = this.targets()[0].val.toFixed(1); }
         });
-    }, { threshold: 0.3 });
+    }
 
-    if (plasticCounter) observer.observe(plasticCounter.closest('section'));
+    if (sliderPeople && sliderMonths) {
+        sliderPeople.addEventListener('input', calculateImpact);
+        sliderMonths.addEventListener('input', calculateImpact);
+        calculateImpact(); // Init
+    }
 
-    // --- 6. Waitlist API Hook ---
+    // --- 4. Waitlist API Hook ---
     const waitlistForm = document.getElementById('waitlistForm');
     const waitlistBtn = document.getElementById('waitlistBtn');
     const waitlistMsg = document.getElementById('waitlistMsg');
@@ -112,9 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
         waitlistForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('waitlistEmail').value;
-            
             waitlistBtn.disabled = true;
-            waitlistBtn.textContent = 'Joining...';
+            waitlistBtn.textContent = 'Processing...';
             waitlistMsg.classList.add('hidden');
 
             try {
@@ -130,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 waitlistMsg.textContent = error.message;
                 waitlistMsg.className = 'mt-4 text-sm font-medium text-red-500 block';
                 waitlistBtn.disabled = false;
-                waitlistBtn.textContent = 'Join';
+                waitlistBtn.textContent = 'Request Access';
             }
         });
     }
