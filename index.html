@@ -1,547 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#520a1e" />
-    <meta name="description" content="Discover dots. toothpaste tablets: waterless tooth tabs with Nano-Hydroxyapatite, vegan-friendly ingredients, zero plastic tubes, and travel-ready oral care by Savière." />
-    <meta name="keywords" content="toothpaste tablets, tooth tabs, toothpaste tablets India, vegan toothpaste tablets, waterless toothpaste, Nano-Hydroxyapatite toothpaste, plastic-free toothpaste, travel toothpaste tablets, Savière, dots toothpaste" />
-    <meta name="robots" content="index,follow" />
-    <link rel="canonical" href="https://usedots.in/" />
-    
-    <!-- High-Res Vector SVG Favicon: Maroon with Gold Dot -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%235C071B'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23D8A448'/%3E%3C/svg%3E" />
-    <link rel="alternate icon" type="image/png" href="./public/brand/logos/DotsScBWTWS.png" />
-    <link rel="apple-touch-icon" href="./public/brand/logos/DotsScBWTWS.png" />
-    
-    <link rel="manifest" href="./site.webmanifest" />
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dots. | Clinical Precision, Zero Waste</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="icon" type="image/svg+xml" href="/public/favicon.svg">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #FAFAFA; color: #111111; }
+        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .fade-in-up { animation: fadeInUp 1s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="antialiased selection:bg-black selection:text-white">
 
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://usedots.in/" />
-    <meta property="og:title" content="dots. toothpaste tablets — waterless tooth tabs by Savière" />
-    <meta property="og:description" content="Waterless, vegan-friendly toothpaste tablets with Nano-Hydroxyapatite, zero plastic tubes, and a travel-ready oral care routine." />
-    <meta property="og:image" content="https://usedots.in/public/brand/og/dots-og.svg" />
-    <meta property="og:site_name" content="dots." />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="dots. toothpaste tablets — waterless tooth tabs by Savière" />
-    <meta name="twitter:description" content="Solid-state, vegan-friendly toothpaste tablets with Nano-Hydroxyapatite for a cleaner, travel-ready oral care ritual." />
-    <meta name="twitter:image" content="https://usedots.in/public/brand/og/dots-og.svg" />
+    <!-- Navigation -->
+    <nav class="fixed w-full top-0 z-50 glass-panel transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <img src="/public/brand/logos/dh/DotsTBBTWS.png" alt="dots. logo" class="h-6">
+            <a href="#waitlist" class="text-sm font-medium hover:text-gray-500 transition">Join Waitlist</a>
+        </div>
+    </nav>
 
-    <title>Toothpaste Tablets & Tooth Tabs | dots. by Savière</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css" />
-
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "dots. toothpaste tablets",
-        "alternateName": "dots. tooth tabs by Savière",
-        "url": "https://usedots.in/"
-      }
-    </script>
-
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "dots.",
-        "legalName": "Savière Group Private Limited",
-        "url": "https://usedots.in/",
-        "logo": "https://usedots.in/public/brand/logos/dh/DotsTBBTWoS.png",
-        "alternateName": ["dots. toothpaste tablets", "dots. tooth tabs", "Savière oral care"],
-        "keywords": "toothpaste tablets, tooth tabs, vegan toothpaste tablets, waterless toothpaste, Nano-Hydroxyapatite toothpaste, plastic-free oral care, travel toothpaste tablets",
-        "description": "dots. is a brand by Savière Group Private Limited manufacturing precision solid-state toothpaste tablets for modern oral care.",
-        "sameAs": [
-          "https://x.com/UseDots_In",
-          "https://www.instagram.com/usedots.in/",
-          "https://www.linkedin.com/showcase/dotsbysaviere",
-          "https://www.threads.com/@usedots.in",
-          "https://www.facebook.com/usedots.in"
-        ],
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "IN"
-        }
-      }
-    </script>
-
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        "name": "dots. toothpaste tablets",
-        "alternateName": ["dots. tooth tabs", "dots. waterless toothpaste tablets", "dots. vegan toothpaste tablets"],
-        "brand": {
-          "@type": "Brand",
-          "name": "dots."
-        },
-        "manufacturer": {
-          "@type": "Organization",
-          "name": "Savière Group Private Limited"
-        },
-        "category": "Oral Care",
-        "description": "Waterless solid-state toothpaste tablets, also known as tooth tabs, formulated with Nano-Hydroxyapatite for enamel support and designed for a vegan-friendly, plastic-free oral care routine.",
-        "image": "https://usedots.in/public/brand/og/dots-og.svg",
-        "offers": {
-          "@type": "Offer",
-          "priceCurrency": "INR",
-          "availability": "https://schema.org/PreOrder",
-          "url": "https://usedots.in/"
-        },
-        "material": "Solid-state dental tablet",
-        "keywords": "toothpaste tablets, tooth tabs, vegan toothpaste tablets, waterless toothpaste, travel toothpaste, Nano-Hydroxyapatite toothpaste",
-        "additionalProperty": [
-          {
-            "@type": "PropertyValue",
-            "name": "Nano-Hydroxyapatite",
-            "value": "Remineralization"
-          },
-          {
-            "@type": "PropertyValue",
-            "name": "Water weight",
-            "value": "Zero"
-          },
-          {
-            "@type": "PropertyValue",
-            "name": "Plastic tube elimination",
-            "value": "Yes"
-          }
-        ]
-      }
-    </script>
-
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "What makes dots. different from conventional toothpaste?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "dots. uses a solid-state formulation that removes heavy water content and eliminates plastic tubes. The formula is built around Nano-Hydroxyapatite for biomimetic remineralization, helping support enamel and oral care without the waste profile of standard pastes."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Is dots. travel-friendly?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes. The tablets are spill-proof, lightweight, and compliant with liquid restrictions, making them convenient for trips and daily carry without compromising the brushing ritual."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Does dots. reduce plastic waste?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Absolutely. The solid-state format removes the need for unrecyclable multi-laminate plastic and aluminum composite tubes while minimizing shipping weight and waste across the supply chain."
-            }
-          }
-        ]
-      }
-    </script>
-
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "https://usedots.in/"
-          }
-        ]
-      }
-    </script>
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="nav-shell container" role="navigation" aria-label="Main navigation">
-        <a class="brand" href="#top" aria-label="dots. home">
-          <img src="./public/brand/logos/dh/DotsTBBTWoS.png" alt="dots. logo" />
+    <!-- Hero Section -->
+    <section class="min-h-screen flex flex-col justify-center items-center text-center px-6 pt-20">
+        <span class="text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-6 fade-in-up">In Daily Life</span>
+        <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-8 max-w-4xl fade-in-up delay-100">
+            Thoughtful products for <br/><span class="text-gray-400">everyday life.</span>
+        </h1>
+        <a href="#discover" class="px-8 py-4 mt-4 bg-black text-white rounded-full font-medium hover:bg-gray-800 hover:scale-105 transition-all fade-in-up delay-200 shadow-lg">
+            Discover dots.
         </a>
+    </section>
 
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation">
-          <span class="menu-toggle-label">Menu</span>
-          <span class="menu-toggle-icon" aria-hidden="true"><i></i><i></i></span>
-        </button>
-
-        <nav id="primary-navigation" class="main-nav" aria-label="Primary navigation">
-          <a href="#science">Science</a>
-          <a href="#benefits">Benefits</a>
-          <a href="#impact">Impact</a>
-          <a href="#faq">FAQ</a>
-          <a href="./coming-soon.html">Coming soon</a>
-          <a href="./waitlist.html">Waitlist</a>
-        </nav>
-
-        <a class="button button-primary nav-cta" href="./waitlist.html" aria-label="Join dots. waitlist">Join waitlist</a>
-      </div>
-    </header>
-
-    <main id="top">
-      <section class="hero" aria-labelledby="page-title">
-        <div class="hero-grid">
-          <div class="hero-copy">
-            <div class="eyebrow">in daily life</div>
-            <h1 id="page-title">Precision oral care, reimagined.</h1>
-            <p>
-              dots. replaces the conventional squeeze tube with a solid-state toothpaste tablet, also known as a tooth tab,
-              engineered for clinical efficacy, zero water weight, and meaningful waste reduction.
-            </p>
-
-            <div class="hero-actions">
-              <a class="button button-primary" href="#science">Explore the science</a>
-              <a class="button button-secondary" href="#impact">See the impact</a>
-            </div>
-
-            <ul class="hero-metrics" aria-label="Key product metrics">
-              <li>
-                <strong>0%</strong>
-                <span>water weight</span>
-              </li>
-              <li>
-                <strong>0</strong>
-                <span>plastic tubes</span>
-              </li>
-              <li>
-                <strong>2x</strong>
-                <span>daily ritual</span>
-              </li>
-            </ul>
-          </div>
-
-          <div class="product-visual" aria-label="dots. toothpaste tablet product illustration">
-            <div class="product-scene">
-              <div class="product-pack" aria-label="dots. product packaging mockup">
-                <div class="product-topbar">
-                  <img class="product-wordmark" src="./public/brand/logos/dh/DotsTBBTWoS.png" alt="dots." />
-                  <span class="product-mark" aria-hidden="true"></span>
-                </div>
-
+    <!-- The Habit Section -->
+    <section id="discover" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div>
-                  <div class="product-logo" aria-label="dots. wordmark">
-                    <img src="./public/brand/logos/dh/DotsTBBTWoS.png" alt="dots." />
-                  </div>
-                  <div class="product-copy">solid-state toothpaste</div>
+                    <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-4">You use it every day.</h2>
+                    <h3 class="text-4xl md:text-5xl font-semibold tracking-tight leading-tight text-gray-900">
+                        What if the product you rely on twice a day was fundamentally engineered differently?
+                    </h3>
                 </div>
-
-                <div class="product-badges" aria-label="feature badges">
-                  <span>nano-hAp</span>
-                  <span>travel</span>
-                  <span>waterless</span>
+                <div class="grid grid-cols-2 gap-4 md:gap-6">
+                    <div class="p-8 bg-gray-50 rounded-3xl border border-gray-100">
+                        <div class="text-4xl md:text-5xl font-bold mb-2">365</div>
+                        <div class="text-sm font-medium text-gray-500">Days a year</div>
+                    </div>
+                    <div class="p-8 bg-gray-50 rounded-3xl border border-gray-100">
+                        <div class="text-4xl md:text-5xl font-bold mb-2">2</div>
+                        <div class="text-sm font-medium text-gray-500">Times a day</div>
+                    </div>
+                    <div class="p-8 bg-gray-50 rounded-3xl border border-gray-100 col-span-2 flex items-center justify-between">
+                        <div>
+                            <div class="text-5xl md:text-6xl font-bold mb-2">730</div>
+                            <div class="text-sm font-medium text-gray-500">Brushing moments</div>
+                        </div>
+                        <div class="text-5xl opacity-20">💧</div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
         </div>
-      </section>
+    </section>
 
-      <section id="science" class="section" aria-labelledby="science-title">
-        <div class="section-head">
-          <div>
-            <p class="kicker">Science first</p>
-            <h2 id="science-title">A format built for the body and the planet.</h2>
-          </div>
-          <p class="lead">
-            Conventional toothpaste is mostly water and packaging. dots. reengineers the format around performance: biomimetic enamel support,
-            no dead-weight water, and no unrecyclable tube architecture.
-          </p>
+    <!-- Science Section -->
+    <section class="py-32 bg-[#0a0a0a] text-white">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-gray-500 mb-6">Biological purity.</h2>
+            <h3 class="text-5xl md:text-7xl font-bold tracking-tight mb-8">Zero water weight.</h3>
+            <p class="text-xl md:text-2xl text-gray-400 leading-relaxed font-light mb-12">
+                Standard formulations carry up to 50% dead-weight water. <strong class="text-white font-semibold">dots.</strong> strips away unnecessary logistics, delivering Nano-Hydroxyapatite (Nano-HAp) in a precise, solid-state format.
+            </p>
         </div>
+    </section>
 
-        <div class="feature-grid">
-          <article class="feature-card">
-            <div class="feature-icon" aria-hidden="true">🧬</div>
-            <h3>Nano-HAp</h3>
-            <p>Biomimetic hydroxyapatite supports enamel remineralization with a clinical, precision-led approach.</p>
-          </article>
-
-          <article class="feature-card">
-            <div class="feature-icon" aria-hidden="true">💧</div>
-            <h3>Zero water weight</h3>
-            <p>Solid-state delivery removes unnecessary water from the formula while preserving the brushing ritual.</p>
-          </article>
-
-          <article class="feature-card">
-            <div class="feature-icon" aria-hidden="true">♻️</div>
-            <h3>Plastic-free system</h3>
-            <p>Eliminates multi-laminate tubes and composite packaging that rarely get recycled in practice.</p>
-          </article>
-
-          <article class="feature-card">
-            <div class="feature-icon" aria-hidden="true">✈️</div>
-            <h3>Travel ready</h3>
-            <p>Spill-proof, lightweight, and compliant with liquid restrictions for daily carry and flights.</p>
-          </article>
-        </div>
-      </section>
-
-      <section class="section story-band" id="benefits" aria-labelledby="benefits-title">
-        <div class="story-layout">
-          <div class="story-panel">
-            <p class="kicker">Why it matters</p>
-            <h2 id="benefits-title">The daily ritual should not come at a hidden environmental cost.</h2>
-            <ul>
-              <li><span class="checkmark" aria-hidden="true">✓</span><span>Biomimetic mineral support designed around modern oral care science.</span></li>
-              <li><span class="checkmark" aria-hidden="true">✓</span><span>Zero water weight eliminates dead mass and preserves shelf efficiency.</span></li>
-              <li><span class="checkmark" aria-hidden="true">✓</span><span>Solid-state dosage avoids chemical preservatives required in water-heavy formulations.</span></li>
-            </ul>
-          </div>
-
-          <div class="story-panel">
-            <p class="kicker">Design logic</p>
-            <h2>Minimal form. Clinical intent.</h2>
-            <div class="compact-grid">
-              <div class="compact-tile">
-                <strong>1</strong>
-                <span>tablet</span>
-              </div>
-              <div class="compact-tile">
-                <strong>2x</strong>
-                <span>per day</span>
-              </div>
-              <div class="compact-tile">
-                <strong>0</strong>
-                <span>liquid weight</span>
-              </div>
-              <div class="compact-tile">
-                <strong>∞</strong>
-                <span>less waste</span>
-              </div>
+    <!-- Live Architecture / Impact -->
+    <section class="py-32 bg-white">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-4">Live Architecture</h2>
+            <h3 class="text-4xl md:text-5xl font-semibold tracking-tight mb-16">The format changes the equation.</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="p-12 border border-gray-200 rounded-[2rem] bg-gray-50/50">
+                    <div class="text-gray-500 text-sm font-bold mb-6 uppercase tracking-wider">Plastic Packaging Avoided</div>
+                    <div class="text-7xl font-bold tracking-tighter text-gray-900" id="plastic-counter">0</div>
+                    <div class="text-xl font-medium text-gray-400 mt-2">grams</div>
+                </div>
+                <div class="p-12 border border-gray-200 rounded-[2rem] bg-gray-50/50">
+                    <div class="text-gray-500 text-sm font-bold mb-6 uppercase tracking-wider">Freight Mass Reduction</div>
+                    <div class="text-7xl font-bold tracking-tighter text-gray-900" id="freight-counter">0</div>
+                    <div class="text-xl font-medium text-gray-400 mt-2">kg</div>
+                </div>
             </div>
-          </div>
+            <p class="mt-8 text-sm font-medium text-gray-400">Household Variables</p>
         </div>
-      </section>
+    </section>
 
-      <section id="impact" class="section" aria-labelledby="impact-title">
-        <div class="section-head">
-          <div>
-            <p class="kicker">Impact model</p>
-            <h2 id="impact-title">The format changes the equation.</h2>
-          </div>
-          <p class="lead">
-            A household using dots. each day avoids the hidden waste of conventional tubes, shipping weight, and unrecyclable packaging.
-          </p>
+    <!-- Waitlist Section -->
+    <section id="waitlist" class="py-24 bg-gray-50 border-t border-gray-200">
+        <div class="max-w-xl mx-auto px-6 text-center">
+            <h3 class="text-3xl font-semibold tracking-tight mb-4">There is another way.</h3>
+            <p class="text-gray-500 mb-8">Rethinking everyday oral care through precise, solid-state formulations. Join the waitlist to be notified when dots. launches.</p>
+            
+            <form id="waitlistForm" class="flex flex-col sm:flex-row gap-3">
+                <input type="email" id="waitlistEmail" required placeholder="Enter your email" class="flex-1 px-5 py-4 rounded-full border border-gray-200 focus:outline-none focus:border-black transition">
+                <button type="submit" id="waitlistBtn" class="px-8 py-4 bg-black text-white rounded-full font-medium hover:bg-gray-800 transition shadow-md">
+                    Join
+                </button>
+            </form>
+            <div id="waitlistMsg" class="mt-4 text-sm font-medium hidden"></div>
         </div>
+    </section>
 
-        <div class="impact-layout">
-          <div class="calculator" aria-label="Waste reduction calculator">
-            <div class="input-group">
-              <div class="input-row">
-                <label for="people">People in household</label>
-                <strong id="val-people">1</strong>
-              </div>
-              <input id="people" type="range" min="1" max="10" value="1" />
+    <!-- Footer -->
+    <footer class="py-12 bg-white border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
+            <div class="flex gap-4 mb-8">
+                <span class="px-4 py-2 bg-gray-50 rounded-full text-xs font-bold tracking-[0.1em] uppercase text-gray-500">Cruelty-Free</span>
+                <span class="px-4 py-2 bg-gray-50 rounded-full text-xs font-bold tracking-[0.1em] uppercase text-gray-500">Waterless</span>
             </div>
-
-            <div class="input-group">
-              <div class="input-row">
-                <label for="years">Timeframe (years)</label>
-                <strong id="val-years">1</strong>
-              </div>
-              <input id="years" type="range" min="1" max="10" value="1" />
+            <div class="text-sm text-gray-400">
+                dots. © 2026 All rights reserved. A brand of Savière Group Private Limited.
             </div>
-          </div>
-
-          <div class="result-stack" aria-live="polite">
-            <div class="result-box">
-              <span class="label">Plastic packaging avoided</span>
-              <div class="result-value">
-                <span id="plastic-value">0</span>
-                <span class="result-unit">g</span>
-              </div>
-              <div class="result-bar"><span id="plastic-bar"></span></div>
-            </div>
-
-            <div class="result-box">
-              <span class="label">Freight mass reduction</span>
-              <div class="result-value">
-                <span id="mass-value">0</span>
-                <span class="result-unit">kg</span>
-              </div>
-              <div class="result-bar"><span id="mass-bar"></span></div>
-            </div>
-          </div>
         </div>
-      </section>
-
-      <section class="section" aria-labelledby="ingredients-title">
-        <div class="section-head">
-          <div>
-            <p class="kicker">Formulation</p>
-            <h2 id="ingredients-title">Clinical precision without the waste tax.</h2>
-          </div>
-          <p class="lead">Modern oral care does not need dead weight, unstable chemistry, or oversized packaging. dots. was engineered to remove them.</p>
-        </div>
-
-        <div class="ingredients-wrap">
-          <article class="info-card">
-            <div class="tag">Remineralization</div>
-            <h3>Nano-HAp</h3>
-            <p>A biomimetic mineral system designed to support enamel resilience while keeping the formula minimalist and performance-led.</p>
-          </article>
-
-          <article class="info-card">
-            <div class="tag">No water</div>
-            <h3>Solid-state</h3>
-            <p>Eliminates the water-heavy burden of standard toothpaste and removes the need for conventional liquid preservation systems.</p>
-          </article>
-
-          <article class="info-card">
-            <div class="tag">No plastic</div>
-            <h3>Tube-free</h3>
-            <p>By replacing squeeze tubes and composite laminate packaging, dots. reduces both consumer waste and distribution inefficiency.</p>
-          </article>
-        </div>
-      </section>
-
-      <section id="faq" class="section" aria-labelledby="faq-title">
-        <div class="faq-wrap">
-          <div>
-            <p class="kicker">FAQ</p>
-            <h2 id="faq-title">Questions people ask before switching.</h2>
-          </div>
-
-          <div class="faq-list">
-            <details class="faq-item" open>
-              <summary><span>What is the core difference between dots. and conventional toothpaste?</span><span>+</span></summary>
-              <p>dots. is a solid-state oral care tablet designed around Nano-Hydroxyapatite and a waterless format. It removes the dead-weight water and discarded tube architecture common to traditional pastes.</p>
-            </details>
-
-            <details class="faq-item">
-              <summary><span>Does it help with remineralization?</span><span>+</span></summary>
-              <p>Yes. The formula is designed around Nano-Hydroxyapatite, a mineral system commonly associated with enamel support and biomimetic oral care.</p>
-            </details>
-
-            <details class="faq-item">
-              <summary><span>Why is this better for travel?</span><span>+</span></summary>
-              <p>The format is compact, spill-proof, and lighter than liquid toothpaste, making it ideal for travel and personal carry with fewer compliance concerns.</p>
-            </details>
-
-            <details class="faq-item">
-              <summary><span>How does it reduce waste?</span><span>+</span></summary>
-              <p>By removing heavy water content, conventional plastic tubes, and composite lamination from the product and shipping equation, the overall environmental footprint is materially lower.</p>
-            </details>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <div class="footer-grid container">
-        <div class="footer-brand">
-          <img src="./public/brand/logos/dh/DotsTBWTWoS.png" alt="dots. logo" />
-          <p class="footer_brand_text">Precision oral care for the everyday ritual. Built for modern routines, lower waste, and cleaner design.</p>
-        </div>
-
-        <div class="footer-column">
-          <h3>Explore</h3>
-          <ul>
-            <li><a href="#science">Science</a></li>
-            <li><a href="#benefits">Benefits</a></li>
-            <li><a href="#impact">Impact</a></li>
-            <li><a href="#faq">FAQ</a></li>
-            <li><a href="./coming-soon.html">Coming soon</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-column">
-          <h3>Follow</h3>
-          <div class="socials" aria-label="Social media links">
-            <a class="social-link" href="https://x.com/UseDots_In" target="_blank" rel="noreferrer" aria-label="X">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2h3.4l-7.4 8.5L22.5 22h-6.7l-5.2-7.6L4.7 22H1.3l7.9-9.1L1.3 2h6.9l4.7 7.1L18.9 2Zm-1.2 18.1h1.9L7.1 3.8H5.1L17.7 20.1Z"/></svg>
-            </a>
-            <a class="social-link" href="https://www.instagram.com/usedots.in/" target="_blank" rel="noreferrer" aria-label="Instagram">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7Zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.5 5.5 0 0 1 12 7.5Zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5Zm5.4-3.1a1.4 1.4 0 1 1-1.4 1.4 1.4 1.4 0 0 1 1.4-1.4Z"/></svg>
-            </a>
-            <a class="social-link" href="https://www.linkedin.com/showcase/dotsbysaviere" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM3.56 9h3.56v11.45H3.56V9Z"/></svg>
-            </a>
-            <a class="social-link" href="https://www.threads.com/@usedots.in" target="_blank" rel="noreferrer" aria-label="Threads">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c-5.25 0-9.5 3.9-9.5 9.5s4.25 9.5 9.5 9.5 9.5-3.9 9.5-9.5S17.25 2.5 12 2.5Zm0 2c4.15 0 7.5 3.15 7.5 7.5s-3.35 7.5-7.5 7.5-7.5-3.15-7.5-7.5S7.85 4.5 12 4.5Zm0 2.5c-2.35 0-4.25 1.8-4.25 4s1.9 4 4.25 4c1.05 0 2-.35 2.75-.95-.35 1.8-1.45 2.85-3.15 2.85-1.15 0-2.05-.5-2.5-1.35l-1.7.9c.8 1.5 2.3 2.45 4.2 2.45 3.1 0 5.15-2.15 5.15-5.45 0-3.75-2.1-6.45-4.75-6.45Zm0 2c1.35 0 2.45.9 2.45 2s-1.1 2-2.45 2-2.25-.85-2.25-2 1-2 2.25-2Z"/></svg>
-            </a>
-            <a class="social-link" href="https://www.facebook.com/usedots.in" target="_blank" rel="noreferrer" aria-label="Facebook">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.8 22v-8h2.7l.4-3.1h-3.1V7.1c0-.9.3-1.5 1.6-1.5H17V2.7c-.3 0-1.3-.1-2.4-.1-2.4 0-4.1 1.5-4.1 4.2v2.4H8v3.1h2.5v8h3.3Z"/></svg>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="footer-meta container">
-        <span>dots. © 2026</span>
-        <span>A brand of Savière Group Private Limited</span>
-      </div>
     </footer>
 
-    <button class="floating-waitlist" type="button" data-waitlist-open>
-      <span class="floating-waitlist-dot" aria-hidden="true"></span>
-      <span>Join the waitlist</span>
-    </button>
-
-    <div class="waitlist-modal" data-waitlist-modal hidden>
-      <div class="waitlist-modal-backdrop" data-waitlist-close></div>
-      <section class="waitlist-dialog" role="dialog" aria-modal="true" aria-labelledby="waitlist-dialog-title">
-        <button class="modal-close" type="button" data-waitlist-close aria-label="Close waitlist form">&times;</button>
-        <p class="kicker">Early access</p>
-        <h2 id="waitlist-dialog-title">Be first to try <img class="modal-logo" src="./public/brand/logos/dh/DotsTBBTWoS.png" alt="dots." />.</h2>
-        <p class="modal-copy">Leave your details and we’ll let you know when the first release opens.</p>
-        <form class="modal-form" data-waitlist-form data-redirect="true">
-          <label>
-            <span>Full name</span>
-            <input type="text" name="fullName" autocomplete="name" placeholder="Your name" required />
-          </label>
-          <label>
-            <span>Email</span>
-            <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
-          </label>
-          <button class="button button-primary full-width" type="submit">Add me to the waitlist</button>
-          <p class="status-text" data-form-status hidden></p>
-        </form>
-      </section>
-    </div>
-
-    <script src="./data/impact.js"></script>
-    <script>
-      const peopleEl = document.getElementById('people');
-      const yearsEl = document.getElementById('years');
-      const plasticValue = document.getElementById('plastic-value');
-      const massValue = document.getElementById('mass-value');
-      const plasticBar = document.getElementById('plastic-bar');
-      const massBar = document.getElementById('mass-bar');
-
-      function updateImpact() {
-        const people = Number(peopleEl.value);
-        const years = Number(yearsEl.value);
-
-        document.getElementById('val-people').textContent = people;
-        document.getElementById('val-years').textContent = years;
-
-        const totalTubes = people * years * 6;
-        const plasticAvoided = totalTubes * 15;
-        const massAvoided = Number(((totalTubes * 0.05)).toFixed(2));
-
-        plasticValue.textContent = plasticAvoided;
-        massValue.textContent = massAvoided;
-
-        const maxPlastic = 10 * 10 * 6 * 15;
-        const maxMass = 10 * 10 * 6 * 0.05;
-
-        plasticBar.style.width = `${Math.max(8, (plasticAvoided / maxPlastic) * 100)}%`;
-        massBar.style.width = `${Math.max(8, (massAvoided / maxMass) * 100)}%`;
-      }
-
-      peopleEl.addEventListener('input', updateImpact);
-      yearsEl.addEventListener('input', updateImpact);
-      updateImpact();
-    </script>
-    <script src="./app.js"></script>
-  </body>
+    <script type="module" src="/app.js"></script>
+</body>
 </html>

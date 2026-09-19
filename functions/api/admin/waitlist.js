@@ -1,28 +1,11 @@
-import { json } from '../_utils.js';
-import { withAdmin } from './_auth.js';
-
-export async function readWaitlist(env) {
-  if (!env.DB) throw new Error('Cloudflare D1 is not configured. Bind the database as DB.');
-
-  const result = await env.DB.prepare(`
-    SELECT full_name AS fullName, email, phone, category, interest, notes, created_at AS createdAt
-    FROM waitlist
-    ORDER BY created_at DESC
-  `).all();
-  return result.results || [];
-}
-
-export async function onRequestGet({ request, env }) {
-  return withAdmin(request, env, async () => {
+export async function onRequestGet(context) {
+    const { env } = context;
     try {
-      return json({ ok: true, waitlist: await readWaitlist(env) });
+        const { results } = await env.DB.prepare("SELECT * FROM waitlist ORDER BY created_at DESC").all();
+        return new Response(JSON.stringify({ success: true, data: results }), {
+            headers: { "Content-Type": "application/json" }
+        });
     } catch (error) {
-      console.error('Cloudflare D1 waitlist read failed:', error.message);
-      return json({ ok: false, message: error.message }, 503);
+        return new Response(JSON.stringify({ error: error.message }), { status: 500 });
     }
-  });
-}
-
-export async function onRequestOptions() {
-  return new Response(null, { status: 204 });
 }

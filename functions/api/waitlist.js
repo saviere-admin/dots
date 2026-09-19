@@ -1,32 +1,23 @@
-const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, X-Admin-Password, X-GitHub-Pat"
-};
-
-export async function onRequestOptions() {
-    return new Response(null, { headers: corsHeaders });
-}
-
-export async function onRequestGet({ request, env }) {
+export async function onRequestPost(context) {
+    const { request, env } = context;
     try {
-        const adminPass = request.headers.get('X-Admin-Password');
-        const githubPat = request.headers.get('X-GitHub-Pat');
-
-        if (adminPass !== env.ADMIN_PASSWORD || githubPat !== env.GITHUB_PAT) {
-            return new Response('Unauthorized', { status: 401, headers: corsHeaders });
+        const { email } = await request.json();
+        
+        if (!email || !email.includes('@')) {
+            return new Response(JSON.stringify({ error: "Invalid email address provided." }), { status: 400 });
         }
 
-        // IMPORTANT: Ensure your Cloudflare D1 database is bound to the variable 'DB'
-        // Change "waitlist" to "notifications" if that is your table name
-        const { results } = await env.DB.prepare("SELECT * FROM waitlist ORDER BY id DESC LIMIT 100").all();
+        await env.DB.prepare("INSERT INTO waitlist (email) VALUES (?)")
+            .bind(email)
+            .run();
 
-        return new Response(JSON.stringify(results), { 
-            status: 200, 
-            headers: { 'Content-Type': 'application/json', ...corsHeaders } 
+        return new Response(JSON.stringify({ success: true }), {
+            headers: { "Content-Type": "application/json" }
         });
-
-    } catch (err) {
-        return new Response(`DB Error: ${err.message}`, { status: 500, headers: corsHeaders });
+    } catch (error) {
+        if (error.message.includes('UNIQUE constraint failed')) {
+            return new Response(JSON.stringify({ error: "This email is already on the waitlist." }), { status: 400 });
+        }
+        return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
     }
 }
