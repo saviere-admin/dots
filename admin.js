@@ -52,10 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
     notifications.forEach((notification) => {
       const item = document.createElement('article');
       item.className = 'admin-history-item';
-      item.innerHTML = `<strong></strong><time></time><p></p><small></small>`;
+      item.innerHTML = `<strong></strong><time></time><div class="html-preview"></div><small></small>`;
       item.querySelector('strong').textContent = notification.subject;
       item.querySelector('time').textContent = new Date(notification.createdAt).toLocaleString();
-      item.querySelector('p').textContent = notification.message;
+      
+      // Render the HTML safely in the admin preview
+      item.querySelector('.html-preview').innerHTML = notification.message; 
+      
       item.querySelector('small').textContent = `${notification.delivery.sent} delivered${notification.delivery.failed ? `, ${notification.delivery.failed} failed` : ''}`;
       historyNode.appendChild(item);
     });
@@ -70,9 +73,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     entries.forEach((entry) => {
       const row = document.createElement('tr');
-      [entry.fullName, entry.email, entry.interest || entry.category || '—', new Date(entry.createdAt).toLocaleDateString()].forEach((value) => {
+      // Added a check to show if a user unsubscribed
+      const emailDisplay = entry.unsubscribed ? `${entry.email} (Unsubscribed)` : entry.email;
+      
+      [entry.fullName, emailDisplay, entry.interest || entry.category || '—', new Date(entry.createdAt).toLocaleDateString()].forEach((value) => {
         const cell = document.createElement('td');
         cell.textContent = value;
+        if (entry.unsubscribed) cell.style.color = '#999'; // Gray out unsubscribed users
         row.appendChild(cell);
       });
       waitlistNode.appendChild(row);
@@ -92,7 +99,11 @@ document.addEventListener('DOMContentLoaded', () => {
       consolePanel.hidden = false;
       renderHistory(result.notifications);
       renderWaitlist(audience.waitlist);
-      audienceNode.textContent = `${audience.waitlist.length} waitlist member(s)`;
+      
+      // Filter active audience count for display
+      const activeCount = audience.waitlist.filter(user => !user.unsubscribed).length;
+      audienceNode.textContent = `${activeCount} active waitlist member(s)`;
+      
       setStatus('');
     } catch (error) {
       setStatus(error.message, true);
