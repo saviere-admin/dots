@@ -24,7 +24,7 @@
             justify-content: center;
         }
         
-        /* macOS Style Auth Overlay matching image_b1c5e5.png */
+        /* macOS Style Auth Overlay */
         #authContainer {
             width: 100%;
             max-width: 320px;
@@ -119,11 +119,12 @@
         .action-btn { background-color: #000; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
         .action-btn:hover { opacity: 0.8; }
         .logout-btn { margin-left: auto; background: none; border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text-main); }
-        .dash-footer { text-align: center; color: #6b7280; font-size: 12px; margin-top: 40px; }
+        .dash-footer { text-align: center; color: #6b7280; font-size: 12px; margin-top: 40px; line-height: 1.5; }
     </style>
 </head>
 <body>
 
+    <!-- Authentication Overlay -->
     <div id="authContainer">
         <form id="authForm">
             <div class="auth-top">
@@ -147,7 +148,219 @@
         </form>
     </div>
 
-    <!-- Note the corrected script path (no leading slash) -->
-    <script src="admin.js"></script>
+    <!-- JavaScript is now safely embedded inline to prevent loading failures -->
+    <script>
+        const HARDCODED_ADMIN_PWD = "9885679895P@$79895w0rd1204002040";
+        
+        // Memory fallback in case the browser blocks sessionStorage locally
+        let memoryAuth = { pwd: '', pat: '' };
+
+        function saveAuth(pwd, pat) {
+            try {
+                sessionStorage.setItem('dots_admin_pwd', pwd);
+                sessionStorage.setItem('dots_github_pat', pat);
+            } catch (err) {
+                console.warn("Local storage blocked, using memory session.");
+            }
+            memoryAuth.pwd = pwd;
+            memoryAuth.pat = pat;
+        }
+
+        function getAuth(key) {
+            try {
+                return sessionStorage.getItem(key) || (key === 'dots_admin_pwd' ? memoryAuth.pwd : memoryAuth.pat);
+            } catch (err) {
+                return key === 'dots_admin_pwd' ? memoryAuth.pwd : memoryAuth.pat;
+            }
+        }
+
+        function clearAuth() {
+            try { sessionStorage.clear(); } catch(err) {}
+            memoryAuth = { pwd: '', pat: '' };
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const authForm = document.getElementById('authForm');
+            
+            if (getAuth('dots_admin_pwd') === HARDCODED_ADMIN_PWD && getAuth('dots_github_pat')) {
+                renderDashboard();
+            } else if (authForm) {
+                authForm.addEventListener('submit', (e) => {
+                    e.preventDefault(); // Stop page from reloading
+                    
+                    const pwd = document.getElementById('modalPassword').value.trim();
+                    const pat = document.getElementById('modalPat').value.trim();
+                    
+                    if (pwd !== HARDCODED_ADMIN_PWD) {
+                        alert("Access Denied: Invalid Editorial Passcode.");
+                        document.getElementById('modalPassword').value = '';
+                        return;
+                    }
+                    
+                    if (!pat) {
+                        alert("GitHub PAT is required.");
+                        return;
+                    }
+                    
+                    saveAuth(pwd, pat);
+                    renderDashboard();
+                });
+            }
+        });
+
+        function renderDashboard() {
+            document.title = 'dots. | Editorial Console';
+            document.body.className = 'dash-body'; 
+            
+            document.body.innerHTML = `
+                <div class="container">
+                    <div class="header">
+                        <div class="logo-container">
+                            <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots. logo" class="logo">
+                        </div>
+                        <h1>Communication Console</h1>
+                        <button class="logout-btn" id="logoutBtn">Lock Console</button>
+                    </div>
+
+                    <div class="card">
+                        <h2>Waitlist & System Notifications</h2>
+                        <form id="waitlistForm">
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" class="dash-input" id="wlSubject" placeholder="Update from dots." required>
+                            </div>
+                            <div class="form-group">
+                                <label>Select Recipients (Hold CMD/CTRL for multiple)</label>
+                                <select id="wlRecipients" class="dash-input" multiple size="3">
+                                    <option value="all">Entire Waitlist Database</option>
+                                    <option value="cohort_1">Cohort 1 (Early Access)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Exclude Emails (Comma separated)</label>
+                                <input type="text" class="dash-input" id="wlExclude" placeholder="spam@domain.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Add Extra Mailing Addresses (Comma separated)</label>
+                                <input type="text" class="dash-input" id="wlExtra" placeholder="investors@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Message Payload (Wrapped in dots. branding)</label>
+                                <textarea id="wlMessage" class="dash-input" rows="6" placeholder="Type your update here..." required></textarea>
+                            </div>
+                            <button type="submit" class="action-btn">Broadcast Notification</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <h2>Dispatch Custom Email</h2>
+                        <form id="customForm">
+                            <div class="form-group">
+                                <label>Sender Address</label>
+                                <input type="email" class="dash-input" id="customSender" value="hello@usedots.in" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Recipient Address</label>
+                                <input type="email" class="dash-input" id="customRecipient" placeholder="user@domain.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" class="dash-input" id="customSubject" placeholder="Welcome to dots." required>
+                            </div>
+                            <div class="form-group">
+                                <label>Message Payload (Wrapped in dots. branding)</label>
+                                <textarea id="customMessage" class="dash-input" rows="6" required></textarea>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="customTrack" checked>
+                                <label style="margin:0;">Enable Analytics Tracking</label>
+                            </div>
+                            <button type="submit" class="action-btn">Dispatch Email</button>
+                        </form>
+                    </div>
+                    
+                    <div class="dash-footer">
+                        Cruelty-Free &bull; Waterless &bull; Clinical Precision<br>
+                        &copy; 2026 dots. All rights reserved. A brand of Savière Group Private Limited.
+                    </div>
+                </div>
+            `;
+
+            bindDashboardEvents();
+        }
+
+        function bindDashboardEvents() {
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                clearAuth();
+                window.location.reload(); 
+            });
+
+            document.getElementById('waitlistForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector('button');
+                const originalText = btn.innerText;
+                btn.innerText = 'Dispatching...';
+
+                const payload = {
+                    type: 'notification',
+                    subject: document.getElementById('wlSubject').value,
+                    targetList: Array.from(document.getElementById('wlRecipients').selectedOptions).map(o => o.value),
+                    extraEmails: document.getElementById('wlExtra').value.split(',').map(email => email.trim()).filter(Boolean),
+                    excludeEmails: document.getElementById('wlExclude').value.split(',').map(email => email.trim()).filter(Boolean),
+                    message: document.getElementById('wlMessage').value
+                };
+
+                await dispatchEmail(payload);
+                btn.innerText = originalText;
+            });
+
+            document.getElementById('customForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector('button');
+                const originalText = btn.innerText;
+                btn.innerText = 'Dispatching...';
+
+                const payload = {
+                    type: 'custom',
+                    sender: document.getElementById('customSender').value,
+                    recipient: document.getElementById('customRecipient').value,
+                    subject: document.getElementById('customSubject').value,
+                    message: document.getElementById('customMessage').value,
+                    trackOpens: document.getElementById('customTrack').checked
+                };
+
+                await dispatchEmail(payload);
+                btn.innerText = originalText;
+            });
+        }
+
+        async function dispatchEmail(payload) {
+            try {
+                const response = await fetch('/api/send-mail', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Password': getAuth('dots_admin_pwd') || '',
+                        'X-GitHub-Pat': getAuth('dots_github_pat') || ''
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    alert('Email dispatched successfully.');
+                } else if (response.status === 401 || response.status === 403) {
+                    alert('Authentication failed at Edge. Session invalidated.');
+                    clearAuth();
+                    window.location.reload(); 
+                } else {
+                    const errData = await response.text();
+                    alert(`Failed to send: ${errData}`);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Network error. Check console for details.');
+            }
+        }
+    </script>
 </body>
 </html>
