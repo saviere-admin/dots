@@ -27,13 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- STEP 1: PASSWORD AUTHENTICATION ---
     pwdForm.addEventListener("submit", (e) => {
-        e.preventDefault(); // STRICTLY PREVENTS PAGE RELOAD BUG
+        e.preventDefault(); 
         const val = document.getElementById("sysPwd").value.trim();
         
         if (val === REQUIRED_PWD) {
             activePwd = val;
             authError.classList.add("hidden");
-            // Swap Forms
             pwdForm.classList.replace("block", "hidden");
             gitForm.classList.replace("hidden", "block");
         } else {
@@ -44,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- STEP 2: GITHUB PAT AUTHENTICATION ---
     gitForm.addEventListener("submit", async (e) => {
-        e.preventDefault(); // STRICTLY PREVENTS PAGE RELOAD BUG
+        e.preventDefault(); 
         const gitToken = document.getElementById("gitToken").value.trim();
         const btn = document.getElementById("btnGit");
         
@@ -53,10 +52,14 @@ document.addEventListener("DOMContentLoaded", () => {
         authError.classList.add("hidden");
 
         try {
-            // Ping the backend to verify the token is active and belongs to dots-company
+            // Ping the backend to verify the token via the middleware
             const res = await fetch("/api/admin/waitlist", {
-                headers: { "X-Admin-Password": activePwd, "X-GitHub-Token": gitToken }
+                headers: { 
+                    "X-Admin-Password": activePwd, 
+                    "X-GitHub-Token": gitToken 
+                }
             });
+            
             const data = await res.json();
             
             if (!res.ok) throw new Error(data.error || "GitHub verification failed.");
@@ -122,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- STEP 5: SELECTION & ACTION BAR LOGIC ---
+    // --- STEP 5: SELECTION LOGIC ---
     const selectionActionBar = document.getElementById("selectionActionBar");
     const composerPanel = document.getElementById("composerPanel");
 
@@ -153,7 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Composer Toggles
     document.getElementById("composeBtn").addEventListener("click", () => {
         composerPanel.classList.remove("hidden");
     });
