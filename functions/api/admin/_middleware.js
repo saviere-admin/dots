@@ -1,7 +1,7 @@
 export async function onRequest(context) {
     const { request, env, next } = context;
 
-    // Handle CORS for the admin SPA
+    // CORS for Admin SPA
     if (request.method === "OPTIONS") {
         return new Response(null, {
             headers: {
@@ -15,15 +15,15 @@ export async function onRequest(context) {
     const githubToken = request.headers.get("X-GitHub-Token");
 
     if (!adminPassword || !githubToken) {
-        return new Response(JSON.stringify({ error: "Missing System Password or GitHub PAT." }), { status: 401 });
+        return new Response(JSON.stringify({ error: "Missing authorization headers." }), { status: 401 });
     }
 
-    // Level 1: Master Password
+    // 1. Master Password Check
     if (adminPassword !== env.ADMIN_PASSWORD) {
         return new Response(JSON.stringify({ error: "Invalid System Password." }), { status: 401 });
     }
 
-    // Level 2: GitHub PAT Validation (Made Foolproof)
+    // 2. GitHub Token Verification
     try {
         const ghResponse = await fetch("https://api.github.com/user", {
             headers: {
@@ -36,17 +36,18 @@ export async function onRequest(context) {
         if (!ghResponse.ok) {
             const ghError = await ghResponse.json();
             return new Response(JSON.stringify({ 
-                error: `GitHub Rejected Token: ${ghError.message}. Ensure PAT has 'read:user' permissions.` 
+                error: `GitHub rejected token: ${ghError.message}. Check token scopes.` 
             }), { status: 401 });
         }
 
         const ghUser = await ghResponse.json();
         const loginName = ghUser.login.toLowerCase();
+        const expectedUser = (env.GITHUB_ADMIN_USERNAME || "saviere-admin").toLowerCase();
         
-        // FOOLPROOF FIX: Explicitly allowing 'dots-company' alongside 'saviere-admin'
-        if (loginName !== "saviere-admin" && loginName !== "dots-company") {
+        // FOOLPROOF FIX: Allow either "saviere-admin" OR "dots-company" to authenticate
+        if (loginName !== expectedUser && loginName !== "dots-company") {
              return new Response(JSON.stringify({ 
-                error: `Unauthorized User: Token belongs to ${ghUser.login}, expected dots-company.` 
+                error: `Token belongs to ${ghUser.login}. Expected dots-company or ${expectedUser}.` 
             }), { status: 403 });
         }
 
@@ -54,6 +55,5 @@ export async function onRequest(context) {
         return new Response(JSON.stringify({ error: `Cloudflare Network Error: ${err.message}` }), { status: 500 });
     }
 
-    // Auth Passed!
-    return next();
+    return next(); // Auth passed, proceed to API
 }
