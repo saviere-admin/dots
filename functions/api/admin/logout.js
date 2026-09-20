@@ -1,20 +1,26 @@
 import { json } from "../_utils.js";
 import { requireAdmin, clearSessionCookie } from "./_auth.js";
 
-export async function onRequestPost(context) {
-  const { request, env } = context;
+export async function onRequestPost({ request, env }) {
   const auth = await requireAdmin(request, env);
 
-  // Logging out should remain idempotent.
-  if (!auth.ok && auth.response.status !== 401) return auth.response;
+  if (!auth.ok) {
+    return auth.response;
+  }
 
-  return json(
-    { success: true },
+  return new Response(
+    JSON.stringify({ success: true }),
     {
+      status: 200,
       headers: {
-        "Set-Cookie": clearSessionCookie(),
-        "Cache-Control": "no-store"
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+        "Set-Cookie": clearSessionCookie()
       }
     }
   );
+}
+
+export async function onRequestOptions() {
+  return new Response(null, { status: 204 });
 }

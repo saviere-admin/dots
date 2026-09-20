@@ -17,7 +17,9 @@ export function corsHeaders(request) {
   ];
 
   return {
-    "Access-Control-Allow-Origin": allowed.includes(origin) ? origin : "https://usedots.in",
+    "Access-Control-Allow-Origin": allowed.includes(origin)
+      ? origin
+      : "https://usedots.in",
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
@@ -27,4 +29,13 @@ export function corsHeaders(request) {
 export function isValidEmail(email) {
   return typeof email === "string" &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
+export function requireSameOrigin(request) {
+  const origin = request.headers.get("Origin");
+
+  if (!origin) return true;
+
+  return origin === "https://usedots.in" ||
+    origin === "https://www.usedots.in";
 }
