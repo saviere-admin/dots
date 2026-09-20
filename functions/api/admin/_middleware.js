@@ -1,6 +1,7 @@
 export async function onRequest(context) {
     const { request, env, next } = context;
 
+    // Handle CORS for the Admin SPA
     if (request.method === "OPTIONS") {
         return new Response(null, {
             headers: {
@@ -17,16 +18,21 @@ export async function onRequest(context) {
         return new Response(JSON.stringify({ error: "Missing System Password or Developer Token." }), { status: 401 });
     }
 
-    if (adminPassword !== env.ADMIN_PASSWORD) {
+    // THE FIX: Fallback to the hardcoded password if Cloudflare env variables aren't set up yet
+    const expectedPassword = env.ADMIN_PASSWORD || "Saviere@798959885#";
+
+    if (adminPassword !== expectedPassword) {
         return new Response(JSON.stringify({ error: "Invalid System Password." }), { status: 401 });
     }
 
+    // Enforce the ghp_ prefix so the user doesn't accidentally type the token name
     if (!githubToken.startsWith("ghp_") && !githubToken.startsWith("github_pat_")) {
         return new Response(JSON.stringify({ 
             error: "Invalid Token Format. A GitHub PAT must start with 'ghp_' or 'github_pat_'." 
         }), { status: 401 });
     }
 
+    // Verify the token is active via GitHub Rate Limit endpoint (Bypasses strict scope requirements)
     try {
         const ghResponse = await fetch("https://api.github.com/rate_limit", {
             headers: {
@@ -47,5 +53,6 @@ export async function onRequest(context) {
         return new Response(JSON.stringify({ error: `Cloudflare Network Error: ${err.message}` }), { status: 500 });
     }
 
+    // Auth Passed! Route to the requested database endpoint
     return next();
 }
