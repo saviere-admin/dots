@@ -13,23 +13,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     requestAnimationFrame(raf);
 
-    // 2. GSAP Animations
     gsap.registerPlugin(ScrollTrigger);
 
-    // --- THE STENCIL ZOOM ---
+    // --- 2. THE STENCIL ZOOM EFFECT ---
     const stencilTl = gsap.timeline({
         scrollTrigger: {
             trigger: "#stencil-scene",
             start: "top top",
-            end: "+=300%", // Pin for 3 screen heights
+            end: "+=350%", // Pin for 3.5x screen height to make the zoom slow and dramatic
             pin: true,
             scrub: 1
         }
     });
 
     stencilTl.to("#stencil-text", {
-        scale: 150, // Massively scale the text so the transparent cutout fills the screen
-        transformOrigin: "center center",
+        scale: 250, // Massive scale to fly exactly through the 'o'
+        transformOrigin: "35% 50%", // Adjusted origin to fly through the letter 'o' in 'dots.'
         ease: "power2.inOut"
     })
     .to("#stencil-mask", {
@@ -39,15 +38,15 @@ document.addEventListener('DOMContentLoaded', () => {
     .to("#post-zoom-content", {
         opacity: 1,
         pointerEvents: "auto",
-        duration: 0.4
+        duration: 0.5
     });
 
-    // --- Pinned Habit Section ---
+    // --- 3. Pinned Section: The Habit Cards ---
     const tlPin = gsap.timeline({
         scrollTrigger: {
             trigger: "#habit-pin",
             start: "top top",
-            end: "+=100%",
+            end: "+=120%",
             pin: true,
             scrub: 1
         }
@@ -60,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ease: "power3.out"
     });
 
-    // --- General Reveals ---
+    // --- 4. Content Reveals ---
     gsap.utils.toArray('.gs-fade').forEach(elem => {
         gsap.from(elem, {
             y: 50, opacity: 0, duration: 1.2, ease: "power3.out",
@@ -75,47 +74,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 3D Card Interactivity ---
+    // --- 5. Interactive 3D Cards ---
     document.querySelectorAll('.3d-card').forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left - rect.width / 2;
             const y = e.clientY - rect.top - rect.height / 2;
-            card.style.transform = `perspective(1000px) rotateX(${-y / 20}deg) rotateY(${x / 20}deg) scale(1.02)`;
+            card.style.transform = `perspective(1000px) rotateX(${-y / 25}deg) rotateY(${x / 25}deg) scale(1.02)`;
         });
         card.addEventListener('mouseleave', () => {
             card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)`;
         });
     });
 
-    // --- Live Calculator ---
+    // --- 6. Live Architecture Calculator ---
     const sliderPeople = document.getElementById('slider-people');
     const sliderMonths = document.getElementById('slider-months');
-    const valPeople = document.getElementById('val-people');
-    const valMonths = document.getElementById('val-months');
     const outTubes = document.getElementById('out-tubes');
     const outPlastic = document.getElementById('out-plastic');
     const outWater = document.getElementById('out-water');
 
     function calculateImpact() {
-        if (!sliderPeople || !sliderMonths) return;
+        if (!sliderPeople) return;
         
         const people = parseInt(sliderPeople.value);
         const months = parseInt(sliderMonths.value);
         
-        valPeople.innerText = people;
-        valMonths.innerText = months;
+        document.getElementById('val-people').innerText = people;
+        document.getElementById('val-months').innerText = months;
 
         const totalTubes = Math.round(people * (months * 0.5));
         const totalPlastic = totalTubes * 20;
         const totalWater = (totalTubes * 0.1).toFixed(1);
 
-        gsap.to(outTubes, { innerHTML: totalTubes, roundProps: "innerHTML", duration: 0.5, ease: "power2.out" });
-        gsap.to(outPlastic, { innerHTML: totalPlastic, roundProps: "innerHTML", duration: 0.5, ease: "power2.out" });
+        gsap.to(outTubes, { innerHTML: totalTubes, roundProps: "innerHTML", duration: 0.6, ease: "power2.out" });
+        gsap.to(outPlastic, { innerHTML: totalPlastic, roundProps: "innerHTML", duration: 0.6, ease: "power2.out" });
         
         let dummy = { val: parseFloat(outWater.innerText) || 0 };
         gsap.to(dummy, {
-            val: totalWater, duration: 0.5, ease: "power2.out",
+            val: totalWater, duration: 0.6, ease: "power2.out",
             onUpdate: function() { outWater.innerText = this.targets()[0].val.toFixed(1); }
         });
     }
@@ -126,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateImpact(); 
     }
 
-    // --- Waitlist Form ---
+    // --- 7. Waitlist API ---
     const waitlistForm = document.getElementById('waitlistForm');
     if (waitlistForm) {
         waitlistForm.addEventListener('submit', async (e) => {

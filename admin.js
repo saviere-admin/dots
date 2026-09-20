@@ -4,17 +4,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectedEmails = new Set();
     let waitlistData = [];
 
-    // Elements
     const authModal = document.getElementById("authModal");
     const stepPwd = document.getElementById("stepPwd");
     const stepGit = document.getElementById("stepGit");
     const authError = document.getElementById("authError");
     const dashboardView = document.getElementById("dashboardView");
-    const waitlistBody = document.getElementById("waitlistTableBody");
-    const selectionActionBar = document.getElementById("selectionActionBar");
-    const composerPanel = document.getElementById("composerPanel");
 
-    // Check Session
+    // Persisted Session Check
     const sPwd = sessionStorage.getItem("dots_admin_pwd");
     const sGit = sessionStorage.getItem("dots_admin_git");
     if (sPwd === REQUIRED_PWD && sGit) {
@@ -32,14 +28,15 @@ document.addEventListener("DOMContentLoaded", () => {
             authError.classList.add("hidden");
         } else {
             showError("Invalid Authorization Code.");
+            document.getElementById("sysPwd").value = "";
         }
     });
 
-    // Step 2: GitHub PAT
+    // Step 2: GitHub PAT (Handles the error display from the new middleware)
     document.getElementById("btnGit").addEventListener("click", async () => {
         const git = document.getElementById("gitToken").value.trim();
         const btn = document.getElementById("btnGit");
-        btn.textContent = "Verifying...";
+        btn.textContent = "Verifying Identity...";
         authError.classList.add("hidden");
 
         try {
@@ -47,7 +44,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: { "X-Admin-Password": activePwd, "X-GitHub-Token": git }
             });
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error);
+            
+            if (!res.ok) {
+                // This prints the exact reason why the token failed (e.g. Scope missing, wrong user)
+                throw new Error(data.error || "Network error communicating with GitHub.");
+            }
 
             sessionStorage.setItem("dots_admin_pwd", activePwd);
             sessionStorage.setItem("dots_admin_git", git);
@@ -92,7 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
             </tr>
         `).join('');
 
-        // Row click logic
         document.querySelectorAll('.row-select').forEach(row => {
             row.addEventListener('click', (e) => {
                 if(e.target.type !== 'checkbox') {
@@ -125,6 +125,9 @@ document.addEventListener("DOMContentLoaded", () => {
         updateActionBar();
     }
 
+    const selectionActionBar = document.getElementById("selectionActionBar");
+    const composerPanel = document.getElementById("composerPanel");
+
     function updateActionBar() {
         document.getElementById("selectedCount").textContent = selectedEmails.size;
         document.getElementById("recipientCountLabel").textContent = selectedEmails.size;
@@ -136,7 +139,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Composer UI
     document.getElementById("composeBtn").addEventListener("click", () => {
         composerPanel.classList.remove("hidden");
     });
@@ -144,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
         composerPanel.classList.add("hidden");
     });
 
-    // Send Broadcast
+    // Send Broadcast via Resend
     document.getElementById("notifyForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const subject = document.getElementById("emailSubject").value;
