@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
     // 1. Lenis Smooth Scrolling
     const lenis = new Lenis({
         duration: 1.5,
@@ -15,52 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // --- 2. THE GOLDEN DOT ZOOM EFFECT ---
-    const stencilTl = gsap.timeline({
-        scrollTrigger: {
-            trigger: "#stencil-scene",
-            start: "top top",
-            end: "+=400%", // Long, luxurious zoom distance
-            pin: true,
-            scrub: 1
-        }
+    // 2. Hero Fade In
+    gsap.to(".gs-hero", {
+        y: 0, opacity: 1, duration: 1.5, stagger: 0.15, ease: "power4.out", delay: 0.2
     });
 
-    stencilTl.to("#svg-logo", {
-        scale: 250, 
-        // 93.5% X and 72.5% Y is the exact center of the golden dot in the provided SVG
-        transformOrigin: "93.5% 72.5%", 
-        ease: "power2.inOut"
-    })
-    .to("#svg-container", {
-        opacity: 0,
-        duration: 0.1
-    }, "-=0.2")
-    .to("#post-zoom-content", {
-        opacity: 1,
-        pointerEvents: "auto",
-        duration: 0.5
-    });
-
-    // --- 3. Pinned Section: The Habit Cards ---
-    const tlPin = gsap.timeline({
-        scrollTrigger: {
-            trigger: "#habit-pin",
-            start: "top top",
-            end: "+=120%",
-            pin: true,
-            scrub: 1
-        }
-    });
-    tlPin.from(".pin-cards > div", {
-        y: window.innerHeight,
-        opacity: 0,
-        stagger: 0.2,
-        duration: 1,
-        ease: "power3.out"
-    });
-
-    // --- 4. Content Reveals ---
+    // 3. Content Reveals
     gsap.utils.toArray('.gs-fade').forEach(elem => {
         gsap.from(elem, {
             y: 50, opacity: 0, duration: 1.2, ease: "power3.out",
@@ -75,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 5. Interactive 3D Cards ---
+    // 4. Interactive 3D Cards
     document.querySelectorAll('.3d-card').forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
@@ -88,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 6. Live Architecture Calculator ---
+    // 5. Live Architecture Calculator
     const sliderPeople = document.getElementById('slider-people');
     const sliderMonths = document.getElementById('slider-months');
     const outTubes = document.getElementById('out-tubes');
@@ -97,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function calculateImpact() {
         if (!sliderPeople) return;
-        
         const people = parseInt(sliderPeople.value);
         const months = parseInt(sliderMonths.value);
         
@@ -124,11 +82,11 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateImpact(); 
     }
 
-    // --- 7. Waitlist API (With Inline Success) ---
+    // 6. Waitlist API with Custom UI Success
     const waitlistForm = document.getElementById('waitlistForm');
     if (waitlistForm) {
         waitlistForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Stop reload
+            e.preventDefault();
             const name = document.getElementById('waitlistName').value.trim();
             const email = document.getElementById('waitlistEmail').value.trim();
             const btn = document.getElementById('waitlistBtn');
@@ -147,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (!response.ok) throw new Error(data.error || 'Failed to join waitlist.');
 
-                // Gorgeous inline success message
                 waitlistForm.classList.add('hidden');
                 msg.innerHTML = `<span class="text-4xl block mb-4">✨</span> Welcome to the dots. family, <b>${name}</b>.<br/>You're officially on the list.`;
                 msg.className = 'mt-8 text-xl text-gray-600 block animate-[fadeInUp_0.5s_ease-out]';

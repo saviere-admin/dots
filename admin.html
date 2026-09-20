@@ -10,26 +10,25 @@
         body { font-family: 'Poppins', sans-serif; background-color: #050505; color: #fff; }
         .glass-panel { background: rgba(20, 20, 20, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
         .hidden { display: none !important; }
-        .custom-checkbox { width: 18px; height: 18px; accent-color: #d0a84f; cursor: pointer; }
+        .custom-checkbox { width: 18px; height: 18px; accent-color: #D3A354; cursor: pointer; }
     </style>
 </head>
 <body class="antialiased h-screen overflow-hidden flex items-center justify-center">
 
-    <!-- Auth Modal -->
     <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-[#050505]">
         <div class="glass-panel p-10 rounded-[2rem] w-full max-w-md text-center shadow-2xl relative">
-            <h2 class="text-white font-bold text-3xl tracking-tighter mb-8">dots<span class="text-[#d0a84f]">.</span></h2>
+            <h2 class="text-white font-bold text-3xl tracking-tighter mb-8">dots<span class="text-[#D3A354]">.</span></h2>
             
             <form id="pwdForm" class="block" onsubmit="event.preventDefault(); return false;">
                 <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-6">System Access</h2>
-                <input type="password" id="sysPwd" required placeholder="Admin Password" class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-4 text-white text-center mb-4 focus:outline-none focus:border-[#d0a84f] transition-colors">
+                <input type="password" id="sysPwd" required placeholder="Admin Password" class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-4 text-white text-center mb-4 focus:outline-none focus:border-[#D3A354] transition-colors">
                 <button type="submit" id="btnPwd" class="w-full bg-white text-black font-semibold py-4 rounded-xl hover:scale-[1.02] transition-transform">Verify Password</button>
             </form>
 
             <form id="gitForm" class="hidden" onsubmit="event.preventDefault(); return false;">
-                <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-[#d0a84f] mb-6">Password Verified</h2>
-                <input type="password" id="gitToken" required placeholder="GitHub PAT (ghp_...)" class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-4 text-white text-center mb-4 focus:outline-none focus:border-[#d0a84f] font-mono text-sm transition-colors">
-                <button type="submit" id="btnGit" class="w-full bg-[#d0a84f] text-black font-bold py-4 rounded-xl hover:scale-[1.02] transition-transform">Connect Database</button>
+                <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-green-400 mb-6">Password Verified</h2>
+                <input type="password" id="gitToken" required placeholder="GitHub PAT (ghp_...)" class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-4 text-white text-center mb-4 focus:outline-none focus:border-[#D3A354] font-mono text-sm transition-colors">
+                <button type="submit" id="btnGit" class="w-full bg-[#D3A354] text-black font-bold py-4 rounded-xl hover:scale-[1.02] transition-transform">Connect Database</button>
             </form>
 
             <p id="authError" class="text-red-400 text-xs mt-6 hidden bg-red-900/20 p-3 rounded-lg border border-red-900/50"></p>
@@ -39,11 +38,11 @@
     <!-- Main Dashboard -->
     <div id="dashboardView" class="hidden h-full w-full flex flex-col relative">
         <nav class="glass-panel px-8 py-4 flex justify-between items-center sticky top-0 z-40">
-            <h2 class="text-white font-bold text-xl tracking-tighter">dots<span class="text-[#d0a84f]">.</span></h2>
+            <h2 class="text-white font-bold text-xl tracking-tighter">dots<span class="text-[#D3A354]">.</span></h2>
             <button id="logoutBtn" class="text-xs font-bold uppercase tracking-[0.1em] text-red-400 hover:text-red-300 transition-colors">Lock Terminal</button>
         </nav>
 
-        <div class="flex-1 overflow-hidden flex flex-col max-w-screen-xl mx-auto w-full p-6">
+        <div class="flex-1 overflow-hidden flex flex-col max-w-screen-2xl mx-auto w-full p-6">
             
             <div class="flex-1 glass-panel rounded-3xl flex flex-col overflow-hidden relative">
                 <div class="p-6 border-b border-white/5 flex justify-between items-center">
@@ -52,7 +51,7 @@
                         <p class="text-xs text-gray-400 mt-1">Live D1 SQL Synchronization</p>
                     </div>
                     <div class="flex gap-4 items-center">
-                        <span class="text-xs font-bold text-[#d0a84f]"><span id="totalCount">0</span> Total Users</span>
+                        <span class="text-xs font-bold text-[#D3A354]"><span id="totalCount">0</span> Total Users</span>
                     </div>
                 </div>
                 
@@ -70,14 +69,14 @@
                     </table>
                 </div>
 
-                <div id="selectionActionBar" class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-[#d0a84f] text-black px-6 py-3 rounded-full flex items-center gap-6 shadow-2xl transition-all duration-300 translate-y-24 opacity-0 pointer-events-none">
+                <div id="selectionActionBar" class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-[#D3A354] text-black px-6 py-3 rounded-full flex items-center gap-6 shadow-2xl transition-all duration-300 translate-y-24 opacity-0 pointer-events-none">
                     <span class="text-sm font-bold"><span id="selectedCount">0</span> Selected</span>
                     <button id="composeBtn" class="bg-black text-white text-xs font-bold uppercase tracking-wider px-5 py-2 rounded-full hover:bg-gray-800 transition-colors">Compose Broadcast</button>
                 </div>
             </div>
         </div>
 
-        <!-- Composer Modal (Foolproof Overlay) -->
+        <!-- Composer Modal -->
         <div id="composerModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden">
             <div class="w-full max-w-2xl glass-panel rounded-3xl p-8 flex flex-col">
                 <div class="flex justify-between items-center mb-8">
@@ -90,18 +89,18 @@
                 <form id="notifyForm" class="flex flex-col gap-5" onsubmit="event.preventDefault(); return false;">
                     <div class="bg-black/40 p-4 rounded-xl border border-white/5">
                         <label class="text-xs text-gray-500 uppercase tracking-wider block mb-1">Recipients</label>
-                        <div class="text-sm font-medium text-[#d0a84f]"><span id="recipientCountLabel">0</span> addresses targeted</div>
+                        <div class="text-sm font-medium text-[#D3A354]"><span id="recipientCountLabel">0</span> addresses targeted</div>
                     </div>
                     
                     <div>
-                        <input type="text" id="emailSubject" required placeholder="Subject Line" class="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-[#d0a84f] transition text-white">
+                        <input type="text" id="emailSubject" required placeholder="Subject Line" class="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-[#D3A354] transition text-white">
                     </div>
                     
                     <div>
-                        <textarea id="emailBody" required placeholder="HTML Body Content..." rows="8" class="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-[#d0a84f] transition text-white font-mono text-sm resize-none"></textarea>
+                        <textarea id="emailBody" required placeholder="HTML Body Content..." rows="8" class="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-[#D3A354] transition text-white font-mono text-sm resize-none"></textarea>
                     </div>
                     
-                    <button type="submit" id="sendBtn" class="w-full bg-[#d0a84f] text-black font-bold py-4 rounded-xl hover:scale-[1.02] transition-transform">Dispatch via Resend</button>
+                    <button type="submit" id="sendBtn" class="w-full bg-[#D3A354] text-black font-bold py-4 rounded-xl hover:scale-[1.02] transition-transform">Dispatch via Resend</button>
                 </form>
             </div>
         </div>
