@@ -1,0 +1,172 @@
+:root {
+  --dots-gold: #d0a84f;
+  --dots-ink: #111111;
+  --dots-paper: #fafafa;
+  --dots-muted: #737988;
+}
+
+html {
+  scroll-behavior: auto;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--dots-gold);
+  color: white;
+}
+
+::-webkit-scrollbar { width: 7px; }
+::-webkit-scrollbar-track { background: var(--dots-paper); }
+::-webkit-scrollbar-thumb {
+  background: var(--dots-gold);
+  border-radius: 999px;
+}
+
+#navbar {
+  transform: translateY(0);
+  transition: transform .55s cubic-bezier(.22, 1, .36, 1);
+  will-change: transform;
+}
+
+#navbar.nav-hidden {
+  transform: translateY(-110%);
+}
+
+.3d-card {
+  transition: transform .35s cubic-bezier(.22, 1, .36, 1), box-shadow .35s ease;
+  will-change: transform;
+}
+
+.3d-card:hover {
+  box-shadow: 0 22px 55px rgba(0,0,0,.07);
+}
+
+.slider-container {
+  width: 100%;
+  position: relative;
+}
+
+.impact-slider {
+  appearance: none;
+  width: 100%;
+  height: 7px;
+  margin: 15px 0;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--dots-gold) 0%,
+    var(--dots-gold) var(--slider-progress, 50%),
+    #e5e7eb var(--slider-progress, 50%),
+    #e5e7eb 100%
+  );
+  outline: none;
+  touch-action: pan-y;
+}
+
+.impact-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #e5e7eb;
+  box-shadow: 0 5px 16px rgba(0,0,0,.12);
+  cursor: grab;
+}
+
+.impact-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.08);
+}
+
+.impact-slider::-moz-range-thumb {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #e5e7eb;
+  box-shadow: 0 5px 16px rgba(0,0,0,.12);
+  cursor: grab;
+}
+
+.waitlist-message {
+  max-width: 560px;
+  margin: 26px auto 0;
+  padding: 18px 20px;
+  border-radius: 18px;
+  line-height: 1.6;
+  animation: dotsMessageIn .55s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.waitlist-message.success {
+  color: #5d522d;
+  background: #fbf7e9;
+  border: 1px solid rgba(208,168,79,.25);
+}
+
+.waitlist-message.error {
+  color: #a33b36;
+  background: #fff5f4;
+  border: 1px solid rgba(163,59,54,.15);
+}
+
+#waitlistForm {
+  transition: opacity .35s ease, transform .55s cubic-bezier(.22, 1, .36, 1), max-height .55s cubic-bezier(.22, 1, .36, 1);
+}
+
+#waitlistForm.is-complete {
+  opacity: 0;
+  transform: translateY(-12px);
+  pointer-events: none;
+  max-height: 0;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+#waitlistSuccess {
+  opacity: 0;
+  transform: translateY(18px);
+  visibility: hidden;
+  transition: opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1), visibility .6s;
+}
+
+#waitlistSuccess.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+@keyframes dotsMessageIn {
+  from { opacity: 0; transform: translateY(12px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 768px) {
+  .impact-slider { height: 8px; }
+  .impact-slider::-webkit-slider-thumb { width: 34px; height: 34px; }
+  .impact-slider::-moz-range-thumb { width: 34px; height: 34px; }
+
+  .3d-card:hover {
+    box-shadow: none;
+  }
+
+  #hero-scene {
+    min-height: 100svh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
