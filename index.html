@@ -9,12 +9,13 @@
     <meta name="keywords" content="toothpaste tablets, toothpaste tablets in India, solid state toothpaste, Savière Group, eco-friendly oral care, Nano-Hydroxyapatite, zero waste toothpaste">
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Animation Stack: GSAP & Lenis -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js" defer></script>
     
     <style>
         body { font-family: 'Poppins', sans-serif; }
@@ -76,6 +77,7 @@
             to { opacity: 1; transform: translate3d(0, 0, 0); }
         }
     </style>
+    <script src="/app.js" defer></script>
 </head>
 <body class="antialiased selection:bg-[#d0a84f] selection:text-white bg-[#FAFAFA] text-[#111111] overflow-x-hidden font-poppins">
 
@@ -226,14 +228,20 @@
             </p>
             
             <!-- Guaranteed non-reloading form execution -->
-            <form id="waitlistForm" class="flex flex-col gap-5 max-w-lg mx-auto relative z-20" onsubmit="event.preventDefault(); window.submitWaitlist(); return false;">
-                <input type="text" id="waitlistName" required placeholder="Name" class="w-full px-8 py-5 rounded-full border border-gray-200 bg-[#FAFAFA] text-lg focus:outline-none focus:border-[#d0a84f] transition-all font-poppins text-center">
-                <input type="email" id="waitlistEmail" required placeholder="Email Address" class="w-full px-8 py-5 rounded-full border border-gray-200 bg-[#FAFAFA] focus:bg-[#fefce8] text-lg focus:outline-none focus:border-[#d0a84f] transition-all font-poppins text-center">
+            <form id="waitlistForm" class="flex flex-col gap-5 max-w-lg mx-auto relative z-20">
+                <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden"><label>Website<input id="waitlistWebsite" name="website" tabindex="-1" autocomplete="off"></label></div>
+                <input type="text" id="waitlistName" name="name" autocomplete="name" required placeholder="Name" class="w-full px-8 py-5 rounded-full border border-gray-200 bg-[#FAFAFA] text-lg focus:outline-none focus:border-[#d0a84f] transition-all font-poppins text-center">
+                <input type="email" id="waitlistEmail" name="email" autocomplete="email" inputmode="email" required placeholder="Email Address" class="w-full px-8 py-5 rounded-full border border-gray-200 bg-[#FAFAFA] focus:bg-[#fefce8] text-lg focus:outline-none focus:border-[#d0a84f] transition-all font-poppins text-center">
                 <button type="submit" id="waitlistBtn" class="w-full py-5 bg-[#111] text-white rounded-full font-semibold text-lg hover:bg-black hover:-translate-y-1 transition-all shadow-lg font-poppins mt-2">
                     Join Waitlist
                 </button>
             </form>
-            <div id="waitlistMsg" class="mt-8 text-lg font-medium hidden"></div>
+            <div id="waitlistSuccess" aria-live="polite">
+                <div class="text-5xl mb-5">✓</div>
+                <h4 class="text-3xl md:text-5xl font-bold tracking-tight text-[#111]">You're on the list.</h4>
+                <p class="mt-4 text-gray-500 text-base md:text-lg">Check your inbox for your confirmation from dots.</p>
+            </div>
+            <div id="waitlistMsg" class="hidden" aria-live="polite"></div>
         </div>
     </section>
 
@@ -270,234 +278,5 @@
             </div>
         </div>
     </footer>
-
-    <!-- INLINED JAVASCRIPT FOR ZERO-FAILURE EXECUTION -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            
-            // 1. Lenis Smooth Scrolling
-            let lenis;
-            try {
-                lenis = new Lenis({
-                    duration: 1.2,
-                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                    smooth: true,
-                    wheelMultiplier: 1,
-                });
-                function raf(time) {
-                    lenis.raf(time);
-                    requestAnimationFrame(raf);
-                }
-                requestAnimationFrame(raf);
-            } catch(e) { console.error("Lenis init failed:", e); }
-
-            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-            gsap.registerPlugin(ScrollTrigger);
-
-            // --- NAVBAR HIDE/SHOW LOGIC ---
-            const navbar = document.getElementById("navbar");
-            let lastScrollY = window.scrollY;
-            if(navbar) {
-                window.addEventListener("scroll", () => {
-                    if (window.scrollY > 50) {
-                        if (window.scrollY > lastScrollY) {
-                            navbar.style.transform = "translateY(-100%)";
-                        } else {
-                            navbar.style.transform = "translateY(0)";
-                        }
-                    } else {
-                        navbar.style.transform = "translateY(0)";
-                    }
-                    lastScrollY = window.scrollY;
-                });
-            }
-
-            // --- THE GOLDEN DOT ZOOM & SCATTER ---
-            const textElement = document.getElementById("scatter-text");
-            if(textElement) {
-                const text = textElement.innerText;
-                textElement.innerHTML = "";
-                text.split(" ").forEach(word => {
-                    const wordSpan = document.createElement("span");
-                    wordSpan.className = "inline-block mr-[0.3em] whitespace-nowrap";
-                    word.split("").forEach(char => {
-                        const charSpan = document.createElement("span");
-                        charSpan.innerText = char;
-                        charSpan.className = "scatter-char inline-block opacity-0 translate-y-4";
-                        wordSpan.appendChild(charSpan);
-                    });
-                    textElement.appendChild(wordSpan);
-                });
-            }
-
-            const heroScene = document.getElementById("hero-scene");
-            if (heroScene) {
-                const heroTl = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: "#hero-scene",
-                        start: "top top",
-                        end: "+=350%", 
-                        pin: true,
-                        scrub: 1
-                    }
-                });
-
-                heroTl.to("#hero-svg", {
-                    scale: 180, 
-                    transformOrigin: "93.4% 71.6%", 
-                    ease: "power1.inOut",
-                    duration: 2
-                })
-                .to("#black-letters", { opacity: 0, duration: 0.1 }, "-=0.5")
-                .to("#hero-scene", { backgroundColor: "#d0a84f", duration: 0.3 }, "-=0.5")
-                .to("#post-zoom-content", {
-                    opacity: 1,
-                    pointerEvents: "auto",
-                    duration: 0.1
-                }, "-=0.2")
-                .to(".scatter-char", {
-                    opacity: 1,
-                    y: 0,
-                    stagger: 0.02,
-                    duration: 0.5,
-                    ease: "back.out(1.7)"
-                })
-                .to("#hero-cta", { opacity: 1, y: 0, duration: 0.5 }, "-=0.2")
-                .to(".scatter-char", {
-                    x: () => (Math.random() - 0.5) * 1200,
-                    y: () => (Math.random() - 0.5) * 1200,
-                    z: () => Math.random() * 800,
-                    rotationX: () => Math.random() * 720,
-                    rotationY: () => Math.random() * 720,
-                    opacity: 0,
-                    filter: "blur(15px)",
-                    stagger: 0.01,
-                    duration: 1.5,
-                    ease: "power3.inOut"
-                })
-                .to("#hero-cta, #hero-tagline", { opacity: 0, duration: 0.5 }, "-=1.5");
-            }
-
-            // --- Pinned Section: The Habit Cards ---
-            if (window.innerWidth > 768 && document.getElementById("habit-pin")) {
-                const tlPin = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: "#habit-pin",
-                        start: "top top",
-                        end: "+=100%",
-                        pin: true,
-                        scrub: 1
-                    }
-                });
-                
-                tlPin.from(".pin-cards > div", {
-                    y: window.innerHeight,
-                    opacity: 0,
-                    stagger: 0.2,
-                    duration: 1,
-                    ease: "power3.out"
-                });
-
-                tlPin.to("#count-days", { innerHTML: 365, roundProps: "innerHTML", duration: 1, ease: "power2.out" }, "-=0.5");
-                tlPin.to("#count-times", { innerHTML: 2, roundProps: "innerHTML", duration: 1, ease: "power2.out" }, "-=0.5");
-                tlPin.to("#count-moments", { innerHTML: 730, roundProps: "innerHTML", duration: 1, ease: "power2.out" }, "-=0.5");
-            }
-
-            // --- General Reveals ---
-            gsap.utils.toArray('.gs-fade').forEach(elem => {
-                gsap.from(elem, {
-                    y: 40, opacity: 0, duration: 1, ease: "power3.out",
-                    scrollTrigger: { trigger: elem, start: "top 85%" }
-                });
-            });
-
-            gsap.utils.toArray('.gs-scale').forEach(elem => {
-                gsap.from(elem, {
-                    scale: 0.95, opacity: 0, duration: 1.2, ease: "power3.out",
-                    scrollTrigger: { trigger: elem, start: "top 85%" }
-                });
-            });
-
-            // --- Interactive 3D Cards ---
-            document.querySelectorAll('.3d-card').forEach(card => {
-                card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left - rect.width / 2;
-                    const y = e.clientY - rect.top - rect.height / 2;
-                    card.style.transform = `perspective(1000px) rotateX(${-y / 25}deg) rotateY(${x / 25}deg) scale(1.02)`;
-                });
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)`;
-                });
-            });
-
-            // --- Live Architecture Calculator (Vanilla JS) ---
-            const sliderPeople = document.getElementById('slider-people');
-            const sliderMonths = document.getElementById('slider-months');
-            const valP = document.getElementById('val-people');
-            const valM = document.getElementById('val-months');
-            const outPlastic = document.getElementById('out-tubes');
-            const outFreight = document.getElementById('out-water');
-            
-            function updateCalculator() {
-                if (!sliderPeople || !sliderMonths) return;
-                
-                const people = parseInt(sliderPeople.value);
-                const months = parseInt(sliderMonths.value);
-                
-                if(valP) valP.textContent = people;
-                if(valM) valM.textContent = months;
-
-                const tubes = Math.round(people * (months * 0.5));
-                const plasticGrams = tubes * 20;
-                const waterKg = (tubes * 0.1).toFixed(1);
-
-                if(outPlastic) outPlastic.textContent = plasticGrams;
-                if(outFreight) outFreight.textContent = waterKg;
-            }
-
-            if (sliderPeople && sliderMonths) {
-                sliderPeople.addEventListener('input', updateCalculator);
-                sliderMonths.addEventListener('input', updateCalculator);
-                updateCalculator(); 
-            }
-
-            // --- Waitlist API Hook ---
-            window.submitWaitlist = async function() {
-                const name = document.getElementById('waitlistName').value.trim();
-                const email = document.getElementById('waitlistEmail').value.trim();
-                const btn = document.getElementById('waitlistBtn');
-                const msg = document.getElementById('waitlistMsg');
-                
-                btn.disabled = true; 
-                btn.textContent = 'Processing...';
-                msg.classList.add('hidden');
-
-                try {
-                    const response = await fetch('/api/waitlist', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, email })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (!response.ok) {
-                        throw new Error(data.error || 'Failed to join waitlist.');
-                    }
-
-                    document.getElementById('waitlistForm').style.display = 'none';
-                    msg.innerHTML = `<span class="text-4xl block mb-4">✨</span> Welcome to the dots. family, <br/><b>${name}</b>.<br/><br/>You're officially on the list.`;
-                    msg.className = 'mt-8 text-xl text-gray-600 block animate-[fadeInUp_0.5s_ease-out]';
-                    
-                } catch (error) {
-                    msg.textContent = error.message;
-                    msg.className = 'mt-6 text-sm font-medium text-red-500 block';
-                    btn.disabled = false; 
-                    btn.textContent = 'Join Waitlist';
-                }
-            };
-        });
-    </script>
 </body>
 </html>

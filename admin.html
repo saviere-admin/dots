@@ -1,270 +1,163 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dots. | Command Center</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #050505; color: #fff; }
-        .glass-panel { background: rgba(20, 20, 20, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .hidden { display: none !important; }
-        .custom-checkbox { width: 18px; height: 18px; accent-color: #d0a84f; cursor: pointer; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080808">
+  <meta name="robots" content="noindex,nofollow">
+  <title>dots. — Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin.css">
 </head>
-<body class="antialiased h-screen overflow-hidden flex items-center justify-center">
+<body>
+  <main id="authView" class="auth-shell">
+    <section class="auth-card" aria-labelledby="authTitle">
+      <div class="brand">dots<span>.</span></div>
+      <p class="eyebrow">Private command center</p>
+      <h1 id="authTitle">Welcome back.</h1>
+      <p class="muted">Authenticate with the admin password and the authorized GitHub account.</p>
 
-    <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-[#050505]">
-        <div class="glass-panel p-10 rounded-[2rem] w-full max-w-md text-center shadow-2xl relative">
-            <h2 class="text-white font-bold text-4xl tracking-tighter mb-8">dots<span class="text-[#d0a84f]">.</span></h2>
-            
-            <form id="pwdForm" class="block" onsubmit="event.preventDefault(); window.handlePwdSubmit(); return false;">
-                <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-6">System Access</h2>
-                <input type="password" id="sysPwd" required placeholder="Admin Password" class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-4 text-white text-center mb-4 focus:outline-none focus:border-[#d0a84f] transition-colors">
-                <button type="submit" id="btnPwd" class="w-full bg-white text-black font-semibold py-4 rounded-xl hover:scale-[1.02] transition-transform">Verify Password</button>
-            </form>
+      <form id="authForm" autocomplete="off">
+        <label>
+          <span>Admin password</span>
+          <input id="adminPassword" name="password" type="password" autocomplete="current-password" required>
+        </label>
 
-            <form id="gitForm" class="hidden" onsubmit="event.preventDefault(); window.handleGitSubmit(); return false;">
-                <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-green-400 mb-6">Password Verified</h2>
-                <input type="password" id="gitToken" required placeholder="GitHub PAT (ghp_...)" class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-4 text-white text-center mb-4 focus:outline-none focus:border-[#d0a84f] font-mono text-sm transition-colors">
-                <button type="submit" id="btnGit" class="w-full bg-[#d0a84f] text-black font-bold py-4 rounded-xl hover:scale-[1.02] transition-transform">Connect Database</button>
-            </form>
+        <label>
+          <span>GitHub personal access token</span>
+          <input id="githubToken" name="githubToken" type="password" autocomplete="off" spellcheck="false" required>
+        </label>
 
-            <p id="authError" class="text-red-400 text-xs mt-6 hidden bg-red-900/20 p-3 rounded-lg border border-red-900/50"></p>
+        <button id="authButton" class="primary-button" type="submit">Unlock command center</button>
+        <p id="authError" class="status error hidden" role="alert"></p>
+      </form>
+
+      <p class="security-note">Your GitHub token is verified server-side and is never stored in the browser.</p>
+    </section>
+  </main>
+
+  <main id="dashboardView" class="dashboard hidden">
+    <header class="topbar">
+      <div>
+        <div class="brand">dots<span>.</span></div>
+        <p>Command center</p>
+      </div>
+      <div class="top-actions">
+        <button id="refreshButton" class="ghost-button">Refresh</button>
+        <button id="exportButton" class="ghost-button">Export CSV</button>
+        <button id="logoutButton" class="danger-button">Lock</button>
+      </div>
+    </header>
+
+    <section class="dashboard-content">
+      <div class="hero-row">
+        <div>
+          <p class="eyebrow">Audience</p>
+          <h1>Waitlist directory.</h1>
+          <p class="muted">A live view of everyone who has raised their hand.</p>
         </div>
+        <div class="stats">
+          <div class="stat">
+            <span id="totalCount">0</span>
+            <small>Contacts</small>
+          </div>
+          <div class="stat">
+            <span id="notificationCount">0</span>
+            <small>Campaigns</small>
+          </div>
+        </div>
+      </div>
+
+      <section class="panel directory-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Waitlist</h2>
+            <p>Select contacts to compose a broadcast.</p>
+          </div>
+          <label class="select-all">
+            <input id="selectAll" type="checkbox">
+            <span>Select all</span>
+          </label>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody id="waitlistBody"></tbody>
+          </table>
+        </div>
+
+        <div id="waitlistEmpty" class="empty-state hidden">
+          <strong>No waitlist contacts yet.</strong>
+          <span>New signups will appear here automatically.</span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Notification history</h2>
+            <p>The latest 50 broadcasts sent from the command center.</p>
+          </div>
+        </div>
+        <div id="notificationList" class="notification-list"></div>
+        <div id="notificationEmpty" class="empty-state hidden">
+          <strong>No broadcasts yet.</strong>
+          <span>Your sent campaigns will appear here.</span>
+        </div>
+      </section>
+    </section>
+
+    <div id="selectionBar" class="selection-bar">
+      <span><strong id="selectedCount">0</strong> selected</span>
+      <button id="composeButton" class="dark-button">Compose email</button>
     </div>
+  </main>
 
-    <!-- Main Dashboard -->
-    <div id="dashboardView" class="hidden h-full w-full flex flex-col relative">
-        <nav class="glass-panel px-8 py-4 flex justify-between items-center sticky top-0 z-40">
-            <h2 class="text-white font-bold text-2xl tracking-tighter">dots<span class="text-[#d0a84f]">.</span></h2>
-            <button id="logoutBtn" onclick="sessionStorage.clear(); location.reload();" class="text-xs font-bold uppercase tracking-[0.1em] text-red-400 hover:text-red-300 transition-colors">Lock Terminal</button>
-        </nav>
-
-        <div class="flex-1 overflow-hidden flex flex-col max-w-screen-xl mx-auto w-full p-4 md:p-6">
-            <div class="flex-1 glass-panel rounded-3xl flex flex-col overflow-hidden relative">
-                <div class="p-6 border-b border-white/5 flex justify-between items-center">
-                    <div>
-                        <h2 class="text-xl font-semibold tracking-tight">Waitlist Directory</h2>
-                        <p class="text-xs text-gray-400 mt-1">Live D1 SQL Synchronization</p>
-                    </div>
-                    <div class="flex gap-4 items-center">
-                        <span class="text-xs font-bold text-[#d0a84f]"><span id="totalCount">0</span> Total Users</span>
-                    </div>
-                </div>
-                
-                <div class="flex-1 overflow-y-auto p-0">
-                    <table class="w-full text-sm text-left">
-                        <thead class="text-xs text-gray-500 uppercase tracking-wider sticky top-0 bg-[#0a0a0a] z-10 border-b border-white/5">
-                            <tr>
-                                <th class="px-6 py-4 w-12"><input type="checkbox" id="selectAll" class="custom-checkbox" onchange="window.toggleAll(this)"></th>
-                                <th class="px-6 py-4 font-medium hidden md:table-cell">Name</th>
-                                <th class="px-6 py-4 font-medium">Target Address</th>
-                                <th class="px-6 py-4 font-medium text-right">Acquisition Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="waitlistBody" class="divide-y divide-white/5"></tbody>
-                    </table>
-                </div>
-
-                <div id="selectionActionBar" class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-[#d0a84f] text-black px-6 py-3 rounded-full flex items-center gap-6 shadow-2xl transition-all duration-300 translate-y-24 opacity-0 pointer-events-none">
-                    <span class="text-sm font-bold"><span id="selectedCount">0</span> Selected</span>
-                    <button onclick="document.getElementById('composerModal').classList.remove('hidden')" class="bg-black text-white text-xs font-bold uppercase tracking-wider px-5 py-2 rounded-full hover:bg-gray-800 transition-colors">Compose Broadcast</button>
-                </div>
-            </div>
+  <div id="composerModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="composerTitle">
+    <div class="composer-card">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Resend</p>
+          <h2 id="composerTitle">Compose broadcast.</h2>
         </div>
+        <button id="closeComposer" class="close-button" type="button" aria-label="Close">&times;</button>
+      </div>
 
-        <!-- Composer Modal -->
-        <div id="composerModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
-            <div class="w-full max-w-2xl glass-panel rounded-3xl p-6 md:p-8 flex flex-col">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-xl font-semibold tracking-tight">Payload Composer</h2>
-                    <button onclick="document.getElementById('composerModal').classList.add('hidden')" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
-                </div>
-                
-                <div id="notifyStatus" class="hidden text-xs p-4 rounded-xl mb-6"></div>
+      <div class="recipient-pill">
+        <span>Recipients</span>
+        <strong id="recipientCount">0</strong>
+      </div>
 
-                <form id="notifyForm" class="flex flex-col gap-5" onsubmit="event.preventDefault(); window.handleNotifySubmit(); return false;">
-                    <div class="bg-black/40 p-4 rounded-xl border border-white/5">
-                        <label class="text-xs text-gray-500 uppercase tracking-wider block mb-1">Recipients</label>
-                        <div class="text-sm font-medium text-[#d0a84f]"><span id="recipientCountLabel">0</span> addresses targeted</div>
-                    </div>
-                    
-                    <div>
-                        <input type="text" id="emailSubject" required placeholder="Subject Line" class="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-[#d0a84f] transition text-white">
-                    </div>
-                    
-                    <div>
-                        <textarea id="emailBody" required placeholder="HTML Body Content..." rows="6" class="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl focus:outline-none focus:border-[#d0a84f] transition text-white font-mono text-sm resize-none"></textarea>
-                    </div>
-                    
-                    <button type="submit" id="sendBtn" class="w-full bg-[#d0a84f] text-black font-bold py-4 rounded-xl hover:scale-[1.02] transition-transform">Dispatch via Resend</button>
-                </form>
-            </div>
-        </div>
+      <form id="notifyForm">
+        <label>
+          <span>Subject</span>
+          <input id="emailSubject" type="text" maxlength="200" required placeholder="A clear, concise subject">
+        </label>
+
+        <label>
+          <span>HTML body</span>
+          <textarea id="emailBody" required placeholder="<h1>Hello</h1>"></textarea>
+        </label>
+
+        <p id="notifyStatus" class="status hidden"></p>
+
+        <button id="sendButton" class="primary-button" type="submit">Send via Resend</button>
+      </form>
+
+      <p class="security-note">Each recipient receives an individual email. Addresses are never exposed to other recipients.</p>
     </div>
+  </div>
 
-    <!-- Script Block -->
-    <script>
-        const REQUIRED_PWD = "Saviere@798959885#";
-        let activePwd = null;
-        let selectedEmails = new Set();
-        let waitlistData = [];
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const sPwd = sessionStorage.getItem("dots_admin_pwd");
-            const sGit = sessionStorage.getItem("dots_admin_git");
-            if (sPwd === REQUIRED_PWD && sGit) {
-                activePwd = sPwd;
-                unlockSystem(sGit);
-            }
-        });
-
-        function showError(msg) {
-            const err = document.getElementById("authError");
-            err.innerHTML = msg;
-            err.classList.remove("hidden");
-        }
-
-        window.handlePwdSubmit = function() {
-            const val = document.getElementById("sysPwd").value.trim();
-            if (val === REQUIRED_PWD) {
-                activePwd = val;
-                document.getElementById("authError").classList.add("hidden");
-                document.getElementById("pwdForm").classList.replace("block", "hidden");
-                document.getElementById("gitForm").classList.replace("hidden", "block");
-            } else {
-                showError("Invalid System Password.");
-                document.getElementById("sysPwd").value = "";
-            }
-        };
-
-        window.handleGitSubmit = async function() {
-            const gitToken = document.getElementById("gitToken").value.trim();
-            const btn = document.getElementById("btnGit");
-            
-            btn.textContent = "Verifying...";
-            btn.disabled = true;
-            document.getElementById("authError").classList.add("hidden");
-
-            try {
-                const res = await fetch("/api/admin/waitlist", {
-                    headers: { "X-Admin-Password": activePwd, "X-GitHub-Token": gitToken }
-                });
-                const data = await res.json();
-                
-                if (!res.ok) throw new Error(data.error || "GitHub verification failed.");
-
-                sessionStorage.setItem("dots_admin_pwd", activePwd);
-                sessionStorage.setItem("dots_admin_git", gitToken);
-                unlockSystem(gitToken);
-            } catch (err) {
-                showError(`<strong>Auth Failed:</strong> ${err.message}`);
-                btn.textContent = "Connect Database";
-                btn.disabled = false;
-            }
-        };
-
-        function unlockSystem(gitToken) {
-            document.body.classList.remove("items-center", "justify-center");
-            document.getElementById("authModal").classList.add("hidden");
-            document.getElementById("dashboardView").classList.remove("hidden");
-            fetchWaitlist(gitToken);
-        }
-
-        async function fetchWaitlist(gitToken) {
-            try {
-                const res = await fetch("/api/admin/waitlist", {
-                    headers: { "X-Admin-Password": activePwd, "X-GitHub-Token": gitToken }
-                });
-                const { data } = await res.json();
-                waitlistData = data || [];
-                
-                document.getElementById("totalCount").textContent = waitlistData.length;
-                
-                const tbody = document.getElementById("waitlistBody");
-                tbody.innerHTML = waitlistData.map(u => `
-                    <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="window.rowClick('${u.email}', event)">
-                        <td class="px-6 py-4"><input type="checkbox" class="custom-checkbox row-check" value="${u.email}" onclick="event.stopPropagation(); window.checkClick(this)"></td>
-                        <td class="px-6 py-4 text-white hidden md:table-cell">${u.name || 'Guest'}</td>
-                        <td class="px-6 py-4 font-medium text-gray-300">${u.email}</td>
-                        <td class="px-6 py-4 text-gray-500 text-xs text-right">${new Date(u.created_at).toLocaleString()}</td>
-                    </tr>
-                `).join('');
-            } catch (e) { console.error("Database sync failed", e); }
-        }
-
-        window.toggleAll = function(el) {
-            const isChecked = el.checked;
-            document.querySelectorAll('.row-check').forEach(cb => {
-                cb.checked = isChecked;
-                if (isChecked) selectedEmails.add(cb.value);
-                else selectedEmails.delete(cb.value);
-            });
-            updateActionBar();
-        };
-
-        window.rowClick = function(email, e) {
-            if(e.target.type !== 'checkbox') {
-                const cb = document.querySelector(`input[value="${email}"]`);
-                cb.checked = !cb.checked;
-                window.checkClick(cb);
-            }
-        };
-
-        window.checkClick = function(cb) {
-            if (cb.checked) selectedEmails.add(cb.value);
-            else selectedEmails.delete(cb.value);
-            updateActionBar();
-        };
-
-        function updateActionBar() {
-            document.getElementById("selectedCount").textContent = selectedEmails.size;
-            document.getElementById("recipientCountLabel").textContent = selectedEmails.size;
-            
-            const bar = document.getElementById("selectionActionBar");
-            if (selectedEmails.size > 0) {
-                bar.classList.remove("translate-y-24", "opacity-0", "pointer-events-none");
-            } else {
-                bar.classList.add("translate-y-24", "opacity-0", "pointer-events-none");
-                document.getElementById('composerModal').classList.add("hidden");
-            }
-        }
-
-        window.handleNotifySubmit = async function() {
-            const subject = document.getElementById("emailSubject").value;
-            const html = document.getElementById("emailBody").value;
-            const btn = document.getElementById("sendBtn");
-            const statusBox = document.getElementById("notifyStatus");
-
-            btn.disabled = true; 
-            btn.textContent = "Dispatching Payload...";
-            statusBox.classList.add("hidden");
-
-            try {
-                const res = await fetch("/api/admin/notifications", {
-                    method: "POST",
-                    headers: {
-                        "X-Admin-Password": activePwd,
-                        "X-GitHub-Token": sessionStorage.getItem("dots_admin_git"),
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ subject, html, selectedEmails: Array.from(selectedEmails) })
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error);
-
-                statusBox.innerHTML = `Payload delivered to <b>${data.count}</b> targets.`;
-                statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-green-900/30 text-green-400 block";
-                document.getElementById("notifyForm").reset();
-            } catch (err) {
-                statusBox.textContent = err.message;
-                statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-red-900/30 text-red-400 block";
-            } finally {
-                btn.disabled = false; btn.textContent = "Dispatch via Resend";
-            }
-        };
-    </script>
+  <script src="/admin.js" defer></script>
 </body>
 </html>
