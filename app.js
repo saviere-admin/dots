@@ -1,12 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     
     // 1. Lenis Smooth Scrolling
+    let lenis;
     try {
-        const lenis = new Lenis({
-            duration: 1.5,
+        lenis = new Lenis({
+            duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             smooth: true,
-            wheelMultiplier: 1.2,
+            wheelMultiplier: 1,
         });
         function raf(time) {
             lenis.raf(time);
@@ -15,65 +16,132 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(raf);
     } catch(e) { console.error("Lenis error:", e); }
 
-    gsap.registerPlugin(ScrollTrigger, TextPlugin);
+    gsap.registerPlugin(ScrollTrigger);
 
-    // --- 2. THE GOLDEN DOT ZOOM & SCATTER ---
+    // --- NAVBAR HIDE/SHOW LOGIC ---
+    const navbar = document.getElementById("navbar");
+    let lastScrollY = window.scrollY;
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 50) {
+            if (window.scrollY > lastScrollY) {
+                // Scrolling down - hide navbar
+                navbar.style.transform = "translateY(-100%)";
+            } else {
+                // Scrolling up - show frosted navbar
+                navbar.style.transform = "translateY(0)";
+            }
+        } else {
+            navbar.style.transform = "translateY(0)";
+        }
+        lastScrollY = window.scrollY;
+    });
+
+    // --- THE GOLDEN DOT ZOOM & SCATTER EXPERIENCE ---
+    
+    // Prepare the text for scattering by splitting it into spans
+    const textElement = document.getElementById("scatter-text");
+    if(textElement) {
+        const text = textElement.innerText;
+        textElement.innerHTML = "";
+        text.split(" ").forEach(word => {
+            const wordSpan = document.createElement("span");
+            wordSpan.className = "inline-block mr-[0.2em] whitespace-nowrap";
+            word.split("").forEach(char => {
+                const charSpan = document.createElement("span");
+                charSpan.innerText = char;
+                charSpan.className = "scatter-char inline-block opacity-0 translate-y-4";
+                wordSpan.appendChild(charSpan);
+            });
+            textElement.appendChild(wordSpan);
+        });
+    }
+
     const heroTl = gsap.timeline({
         scrollTrigger: {
             trigger: "#hero-scene",
             start: "top top",
-            end: "+=400%", // Pin for 4 screen heights for an epic sequence
+            end: "+=400%", // Very long pin for full experience
             pin: true,
             scrub: 1
         }
     });
 
-    // A. Zoom into the Golden Dot (Calculated exact center: 95.3% 71.5%)
+    // A. Zoom into the Golden Dot (Calculated exact center: 93.5% 72%)
     heroTl.to("#hero-svg", {
-        scale: 250, 
-        transformOrigin: "95.3% 71.5%", 
-        ease: "power2.inOut"
+        scale: 180, 
+        transformOrigin: "93.5% 72%", 
+        ease: "power1.inOut",
+        duration: 2
     })
     // B. Fade out black letters, turn background gold
-    .to("#black-letters", { opacity: 0, duration: 0.1 }, "-=0.3")
-    .to("#hero-scene", { backgroundColor: "#d0a84f", duration: 0.2 }, "-=0.3")
-    // C. Typewriter Effect
-    .to("#typewriter-container", { opacity: 1, duration: 0.1 })
-    .to("#typed-text", {
-        text: "Thoughtful products for everyday life.",
-        duration: 0.8,
-        ease: "none"
-    })
-    // D. Scatter the letters (Explosion)
-    .to("#typed-text", {
-        scale: 4,
-        opacity: 0,
-        filter: "blur(20px)",
-        duration: 0.6,
-        ease: "power2.in"
-    })
-    .to("#scatter-text-wrapper", { display: "block", opacity: 1, duration: 0.2 });
-
-    // --- 3. Pinned Section: The Habit Cards ---
-    const tlPin = gsap.timeline({
-        scrollTrigger: {
-            trigger: "#habit-pin",
-            start: "top top",
-            end: "+=120%",
-            pin: true,
-            scrub: 1
-        }
-    });
+    .to("#black-letters", { opacity: 0, duration: 0.1 }, "-=0.5")
+    .to("#hero-scene", { backgroundColor: "#d0a84f", duration: 0.3 }, "-=0.5")
     
-    tlPin.from(".pin-cards > div", {
-        y: window.innerHeight,
-        opacity: 0,
-        stagger: 0.2,
-        duration: 1,
-        ease: "power3.out"
-    });
+    // C. Reveal the container
+    .to("#post-zoom-content", {
+        opacity: 1,
+        pointerEvents: "auto",
+        duration: 0.1
+    }, "-=0.2")
 
-    // --- 4. Content Reveals ---
+    // D. Typewriter / Fade up the individual letters
+    .to(".scatter-char", {
+        opacity: 1,
+        y: 0,
+        stagger: 0.02,
+        duration: 0.5,
+        ease: "back.out(1.7)"
+    })
+    .to("#hero-cta", { opacity: 1, y: 0, duration: 0.5 }, "-=0.2")
+
+    // E. SCATTER EXPLOSION! As you keep scrolling, the letters fly away
+    .to(".scatter-char", {
+        x: () => (Math.random() - 0.5) * 1000,
+        y: () => (Math.random() - 0.5) * 1000,
+        z: () => Math.random() * 500,
+        rotateX: () => Math.random() * 360,
+        rotateY: () => Math.random() * 360,
+        opacity: 0,
+        filter: "blur(10px)",
+        stagger: 0.01,
+        duration: 1.5,
+        ease: "power3.inOut"
+    })
+    .to("#hero-cta, #hero-tagline", { opacity: 0, duration: 0.5 }, "-=1.5");
+
+    // --- Pinned Section: The Habit Cards ---
+    // Only pin on desktop to prevent mobile overlapping issues
+    if (window.innerWidth > 768) {
+        const tlPin = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#habit-pin",
+                start: "top top",
+                end: "+=120%",
+                pin: true,
+                scrub: 1
+            }
+        });
+        
+        tlPin.from(".pin-cards > div", {
+            y: window.innerHeight,
+            opacity: 0,
+            stagger: 0.2,
+            duration: 1,
+            ease: "power3.out"
+        });
+    } else {
+        // Simple fade up for mobile
+        gsap.from(".pin-cards > div", {
+            y: 50,
+            opacity: 0,
+            stagger: 0.2,
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: { trigger: ".pin-cards", start: "top 80%" }
+        });
+    }
+
+    // --- General Reveals ---
     gsap.utils.toArray('.gs-fade').forEach(elem => {
         gsap.from(elem, {
             y: 50, opacity: 0, duration: 1.2, ease: "power3.out",
@@ -88,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 5. Interactive 3D Cards ---
+    // --- Interactive 3D Cards ---
     document.querySelectorAll('.3d-card').forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
@@ -101,12 +169,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 6. Live Architecture Calculator ---
+    // --- Live Architecture Calculator ---
     const sliderPeople = document.getElementById('slider-people');
     const sliderMonths = document.getElementById('slider-months');
     
     function calculateImpact() {
-        if (!sliderPeople) return;
+        if (!sliderPeople || !sliderMonths) return;
+        
         const people = parseInt(sliderPeople.value);
         const months = parseInt(sliderMonths.value);
         
@@ -114,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('val-months').innerText = months;
 
         const totalTubes = Math.round(people * (months * 0.5));
+        const totalPlastic = totalTubes * 20;
         const totalWater = (totalTubes * 0.1).toFixed(1);
 
         document.getElementById('out-tubes').innerHTML = totalTubes;
@@ -126,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateImpact(); 
     }
 
-    // --- 7. Waitlist API (With Name) ---
+    // --- Waitlist API Hook ---
     const waitlistForm = document.getElementById('waitlistForm');
     if (waitlistForm) {
         waitlistForm.addEventListener('submit', async (e) => {
@@ -155,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
             } catch (error) {
                 msg.textContent = error.message;
-                msg.className = 'mt-6 text-lg font-medium text-red-500 block';
+                msg.className = 'mt-6 text-sm font-medium text-red-500 block';
                 btn.disabled = false; btn.textContent = 'Request Access';
             }
         });
