@@ -1,25 +1,81 @@
 document.addEventListener('DOMContentLoaded', () => {
+    
     // 1. Lenis Smooth Scrolling
-    const lenis = new Lenis({
-        duration: 1.5,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smooth: true,
-        wheelMultiplier: 1.2,
-    });
-    function raf(time) {
-        lenis.raf(time);
+    try {
+        const lenis = new Lenis({
+            duration: 1.5,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smooth: true,
+            wheelMultiplier: 1.2,
+        });
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
         requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
+    } catch(e) { console.error("Lenis error:", e); }
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // 2. Hero Fade In
-    gsap.to(".gs-hero", {
-        y: 0, opacity: 1, duration: 1.5, stagger: 0.15, ease: "power4.out", delay: 0.2
+    // --- 2. THE GOLDEN DOT ZOOM EFFECT ---
+    const stencilTl = gsap.timeline({
+        scrollTrigger: {
+            trigger: "#zoom-scene",
+            start: "top top",
+            end: "+=350%", // Pin for 3.5 screen heights for a long, luxurious zoom
+            pin: true,
+            scrub: 1
+        }
     });
 
-    // 3. Content Reveals
+    // We scale the SVG up by 150x. 
+    // The exact center of the golden dot in your SVG is at X: 93.67%, Y: 71.61%
+    stencilTl.to("#hero-svg", {
+        scale: 150, 
+        transformOrigin: "93.67% 71.61%", 
+        ease: "power2.inOut"
+    })
+    .to("#svg-container", {
+        opacity: 0,
+        duration: 0.1
+    }, "-=0.2")
+    .to("#post-zoom-content", {
+        opacity: 1,
+        pointerEvents: "auto",
+        duration: 0.5
+    });
+    // Color transition to match the golden dot
+    gsap.to("#zoom-scene", {
+        backgroundColor: "#d0a84f",
+        scrollTrigger: {
+            trigger: "#zoom-scene",
+            start: "top top",
+            end: "+=350%",
+            scrub: 1
+        }
+    });
+
+    // --- 3. Pinned Section: The Habit Cards ---
+    const tlPin = gsap.timeline({
+        scrollTrigger: {
+            trigger: "#habit-pin",
+            start: "top top",
+            end: "+=120%",
+            pin: true,
+            scrub: 1
+        }
+    });
+    
+    // Counter animations for the numbers
+    tlPin.to(".pin-cards .text-6xl", {
+        innerHTML: function(i) { return [365, 2, 730][i]; },
+        roundProps: "innerHTML",
+        duration: 1.5,
+        ease: "power2.out",
+        stagger: 0.2
+    }, 0);
+
+    // --- 4. Content Reveals ---
     gsap.utils.toArray('.gs-fade').forEach(elem => {
         gsap.from(elem, {
             y: 50, opacity: 0, duration: 1.2, ease: "power3.out",
@@ -34,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 4. Interactive 3D Cards
+    // --- 5. Interactive 3D Cards ---
     document.querySelectorAll('.3d-card').forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
@@ -47,15 +103,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 5. Live Architecture Calculator
+    // --- 6. Live Architecture Calculator ---
     const sliderPeople = document.getElementById('slider-people');
     const sliderMonths = document.getElementById('slider-months');
     const outTubes = document.getElementById('out-tubes');
-    const outPlastic = document.getElementById('out-plastic');
     const outWater = document.getElementById('out-water');
 
     function calculateImpact() {
         if (!sliderPeople) return;
+        
         const people = parseInt(sliderPeople.value);
         const months = parseInt(sliderMonths.value);
         
@@ -63,11 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('val-months').innerText = months;
 
         const totalTubes = Math.round(people * (months * 0.5));
-        const totalPlastic = totalTubes * 20;
         const totalWater = (totalTubes * 0.1).toFixed(1);
 
         gsap.to(outTubes, { innerHTML: totalTubes, roundProps: "innerHTML", duration: 0.6, ease: "power2.out" });
-        gsap.to(outPlastic, { innerHTML: totalPlastic, roundProps: "innerHTML", duration: 0.6, ease: "power2.out" });
         
         let dummy = { val: parseFloat(outWater.innerText) || 0 };
         gsap.to(dummy, {
@@ -82,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateImpact(); 
     }
 
-    // 6. Waitlist API with Custom UI Success
+    // --- 7. Waitlist API (With Name) ---
     const waitlistForm = document.getElementById('waitlistForm');
     if (waitlistForm) {
         waitlistForm.addEventListener('submit', async (e) => {
