@@ -19,14 +19,12 @@
         <div class="glass-panel p-10 rounded-[2rem] w-full max-w-md text-center shadow-2xl relative">
             <h2 class="text-white font-bold text-4xl tracking-tighter mb-8">dots<span class="text-[#d0a84f]">.</span></h2>
             
-            <!-- STEP 1 -->
             <form id="pwdForm" class="block" onsubmit="event.preventDefault(); window.handlePwdSubmit(); return false;">
                 <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-6">System Access</h2>
                 <input type="password" id="sysPwd" required placeholder="Admin Password" class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-4 text-white text-center mb-4 focus:outline-none focus:border-[#d0a84f] transition-colors">
                 <button type="submit" id="btnPwd" class="w-full bg-white text-black font-semibold py-4 rounded-xl hover:scale-[1.02] transition-transform">Verify Password</button>
             </form>
 
-            <!-- STEP 2 -->
             <form id="gitForm" class="hidden" onsubmit="event.preventDefault(); window.handleGitSubmit(); return false;">
                 <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-green-400 mb-6">Password Verified</h2>
                 <input type="password" id="gitToken" required placeholder="GitHub PAT (ghp_...)" class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-4 text-white text-center mb-4 focus:outline-none focus:border-[#d0a84f] font-mono text-sm transition-colors">
@@ -107,19 +105,21 @@
         </div>
     </div>
 
-    <!-- Inline JS to guarantee execution without file linking issues -->
+    <!-- Script Block -->
     <script>
         const REQUIRED_PWD = "Saviere@798959885#";
         let activePwd = null;
         let selectedEmails = new Set();
         let waitlistData = [];
 
-        const sPwd = sessionStorage.getItem("dots_admin_pwd");
-        const sGit = sessionStorage.getItem("dots_admin_git");
-        if (sPwd === REQUIRED_PWD && sGit) {
-            activePwd = sPwd;
-            unlockSystem(sGit);
-        }
+        document.addEventListener("DOMContentLoaded", () => {
+            const sPwd = sessionStorage.getItem("dots_admin_pwd");
+            const sGit = sessionStorage.getItem("dots_admin_git");
+            if (sPwd === REQUIRED_PWD && sGit) {
+                activePwd = sPwd;
+                unlockSystem(sGit);
+            }
+        });
 
         function showError(msg) {
             const err = document.getElementById("authError");
@@ -127,7 +127,6 @@
             err.classList.remove("hidden");
         }
 
-        // STEP 1: PASSWORD
         window.handlePwdSubmit = function() {
             const val = document.getElementById("sysPwd").value.trim();
             if (val === REQUIRED_PWD) {
@@ -141,7 +140,6 @@
             }
         };
 
-        // STEP 2: GIT PAT
         window.handleGitSubmit = async function() {
             const gitToken = document.getElementById("gitToken").value.trim();
             const btn = document.getElementById("btnGit");
