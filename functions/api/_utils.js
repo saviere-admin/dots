@@ -1,41 +1,68 @@
-export function json(data, status = 200, headers = {}) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store",
-      ...headers
+export function json(
+  data,
+  status = 200,
+  headers = {}
+) {
+  /*
+   * Support both:
+   *
+   * json(data, 400)
+   *
+   * and:
+   *
+   * json(data, {
+   *   status: 400,
+   *   headers: {}
+   * })
+   */
+  if (
+    typeof status === "object" &&
+    status !== null
+  ) {
+    headers = status.headers || {};
+    status = status.status ?? 200;
+  }
+
+  return new Response(
+    JSON.stringify(data),
+    {
+      status,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        ...headers
+      }
     }
-  });
-}
-
-export function corsHeaders(request) {
-  const origin = request?.headers?.get("Origin") || "";
-  const allowed = [
-    "https://usedots.in",
-    "https://www.usedots.in"
-  ];
-
-  return {
-    "Access-Control-Allow-Origin": allowed.includes(origin)
-      ? origin
-      : "https://usedots.in",
-    "Access-Control-Allow-Credentials": "true",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
-  };
+  );
 }
 
 export function isValidEmail(email) {
-  return typeof email === "string" &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+    String(email || "")
+  );
+}
+
+export function escapeHtml(value = "") {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 export function requireSameOrigin(request) {
   const origin = request.headers.get("Origin");
 
-  if (!origin) return true;
+  if (!origin) {
+    return true;
+  }
 
-  return origin === "https://usedots.in" ||
-    origin === "https://www.usedots.in";
+  try {
+    const requestOrigin =
+      new URL(request.url).origin;
+
+    return origin === requestOrigin;
+  } catch {
+    return false;
+  }
 }

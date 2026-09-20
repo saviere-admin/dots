@@ -1,371 +1,791 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const state = {
-    contacts: [],
-    selected: new Set(),
-    notifications: []
-  };
+(() => {
+  "use strict";
 
   const $ = selector => document.querySelector(selector);
   const $$ = selector => [...document.querySelectorAll(selector)];
 
-  const authView = $("#authView");
-  const dashboardView = $("#dashboardView");
-  const authForm = $("#authForm");
-  const authError = $("#authError");
-  const authButton = $("#authButton");
+  const state = {
+    waitlist: [],
+    history: [],
+    selectedEmails: new Set(),
+    currentView: "overview"
+  };
 
-  function escapeHtml(value = "") {
-    return String(value).replace(/[&<>"']/g, char => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    }[char]));
-  }
+  const LOGO_URL =
+    "https://usedots.in/brand/logos/dh/DotsTBBTWoS.png";
 
-  function showAuthError(message) {
-    if (!authError) return;
-    authError.textContent = message;
-    authError.classList.remove("hidden");
-  }
+  const escapeHtml = value =>
+    String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
 
-  function setBusy(button, busy, label) {
-    if (!button) return;
-    button.disabled = busy;
-    button.dataset.originalLabel ||= button.textContent;
-    button.textContent = busy ? label : button.dataset.originalLabel;
-  }
+  function showToast(message, type = "") {
+    const toast = $("#toast");
 
-  function setDashboard(visible) {
-    authView?.classList.toggle("hidden", visible);
-    dashboardView?.classList.toggle("hidden", !visible);
-    document.body.classList.toggle("dashboard-open", visible);
+    if (!toast) return;
+
+    toast.textContent = message;
+    toast.className = `toast show ${type}`;
+
+    window.clearTimeout(showToast.timer);
+
+    showToast.timer = window.setTimeout(() => {
+      toast.className = "toast";
+    }, 3500);
   }
 
   async function api(url, options = {}) {
     const response = await fetch(url, {
       credentials: "same-origin",
-      cache: "no-store",
       ...options,
       headers: {
-        Accept: "application/json",
-        ...(options.body ? { "Content-Type": "application/json" } : {}),
+        "Content-Type": "application/json",
         ...(options.headers || {})
       }
     });
 
-    const type = response.headers.get("content-type") || "";
-    const payload = type.includes("application/json")
-      ? await response.json()
-      : await response.text();
+    let data = {};
+
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+
+    if (response.status === 401) {
+      showLogin();
+      throw new Error("Unauthorized");
+    }
 
     if (!response.ok) {
-      throw new Error(payload?.error || "Request failed.");
+      throw new Error(
+        data.error ||
+        data.message ||
+        "Request failed."
+      );
     }
 
-    return payload;
+    return data;
   }
 
-  async function authenticate(password, githubToken) {
-    return api("/api/admin/auth", {
-      method: "POST",
-      body: JSON.stringify({ password, githubToken })
-    });
+  function showLogin() {
+    $("#loginView").hidden = false;
+    $("#appView").hidden = true;
   }
 
-  async function loadDashboard() {
-    const [waitlist, notifications] = await Promise.all([
-      api("/api/admin/waitlist"),
-      api("/api/admin/notifications")
-    ]);
-
-    state.contacts = waitlist.data || [];
-    state.notifications = notifications.data || [];
-
-    renderStats();
-    renderContacts();
-    renderNotifications();
+  function showApp() {
+    $("#loginView").hidden = true;
+    $("#appView").hidden = false;
   }
 
-  function renderStats() {
-    const total = state.contacts.length;
-    const selected = state.selected.size;
-
-    $("#totalCount") && ($("#totalCount").textContent = total);
-    $("#selectedCount") && ($("#selectedCount").textContent = selected);
-    $("#recipientCount") && ($("#recipientCount").textContent = selected);
-    $("#notificationCount") && ($("#notificationCount").textContent = state.notifications.length);
-  }
-
-  function renderContacts() {
-    const tbody = $("#waitlistBody");
-    const empty = $("#waitlistEmpty");
-
-    if (!tbody) return;
-
-    if (!state.contacts.length) {
-      tbody.innerHTML = "";
-      empty?.classList.remove("hidden");
-      return;
-    }
-
-    empty?.classList.add("hidden");
-
-    tbody.innerHTML = state.contacts.map(contact => {
-      const email = escapeHtml(contact.email);
-      const name = escapeHtml(contact.full_name || "Guest");
-      const date = contact.created_at
-        ? new Date(contact.created_at).toLocaleString([], {
-            dateStyle: "medium",
-            timeStyle: "short"
-          })
-        : "—";
-      const checked = state.selected.has(contact.email) ? "checked" : "";
-
-      return `
-        <tr class="contact-row ${checked ? "is-selected" : ""}" data-email="${email}">
-          <td class="cell-check">
-            <input class="contact-check" type="checkbox" value="${email}" ${checked} aria-label="Select ${name}">
-          </td>
-          <td class="cell-name">${name}</td>
-          <td class="cell-email">${email}</td>
-          <td class="cell-date">${escapeHtml(date)}</td>
-        </tr>
-      `;
-    }).join("");
-
-    $$(".contact-row").forEach(row => {
-      row.addEventListener("click", event => {
-        if (event.target.closest("input")) return;
-        const checkbox = row.querySelector(".contact-check");
-        checkbox.checked = !checkbox.checked;
-        toggleSelection(checkbox);
+  async function checkSession() {
+    try {
+      const data = await api("/api/admin/session", {
+        method: "GET"
       });
-    });
 
-    $$(".contact-check").forEach(checkbox => {
-      checkbox.addEventListener("change", () => toggleSelection(checkbox));
-    });
-
-    syncSelectAll();
-  }
-
-  function toggleSelection(checkbox) {
-    if (checkbox.checked) state.selected.add(checkbox.value);
-    else state.selected.delete(checkbox.value);
-
-    checkbox.closest(".contact-row")?.classList.toggle("is-selected", checkbox.checked);
-    renderStats();
-    updateComposerBar();
-  }
-
-  function syncSelectAll() {
-    const selectAll = $("#selectAll");
-    if (!selectAll) return;
-
-    const boxes = $$(".contact-check");
-    const checked = boxes.filter(box => box.checked).length;
-
-    selectAll.checked = boxes.length > 0 && checked === boxes.length;
-    selectAll.indeterminate = checked > 0 && checked < boxes.length;
-  }
-
-  function updateComposerBar() {
-    const bar = $("#selectionBar");
-    if (!bar) return;
-
-    const active = state.selected.size > 0;
-    bar.classList.toggle("is-visible", active);
-  }
-
-  function openComposer() {
-    if (!state.selected.size) return;
-    $("#composerModal")?.classList.add("is-open");
-    document.body.classList.add("modal-open");
-    $("#emailSubject")?.focus();
-  }
-
-  function closeComposer() {
-    $("#composerModal")?.classList.remove("is-open");
-    document.body.classList.remove("modal-open");
-  }
-
-  function renderNotifications() {
-    const list = $("#notificationList");
-    const empty = $("#notificationEmpty");
-    if (!list) return;
-
-    if (!state.notifications.length) {
-      list.innerHTML = "";
-      empty?.classList.remove("hidden");
-      return;
+      if (data.authenticated) {
+        showApp();
+        await loadDashboard();
+      } else {
+        showLogin();
+      }
+    } catch {
+      showLogin();
     }
-
-    empty?.classList.add("hidden");
-
-    list.innerHTML = state.notifications.map(item => `
-      <article class="notification-item">
-        <div>
-          <strong>${escapeHtml(item.subject)}</strong>
-          <p>${escapeHtml(new Date(item.created_at).toLocaleString())}</p>
-        </div>
-        <div class="notification-meta">
-          <span>${item.sent_count} sent</span>
-          ${item.failed_count ? `<span class="failed">${item.failed_count} failed</span>` : ""}
-        </div>
-      </article>
-    `).join("");
   }
 
-  $("#selectAll")?.addEventListener("change", event => {
-    const checked = event.target.checked;
+  async function login(password) {
+    const button = $("#loginButton");
+    const error = $("#loginError");
 
-    $$(".contact-check").forEach(box => {
-      box.checked = checked;
-      if (checked) state.selected.add(box.value);
-      else state.selected.delete(box.value);
-      box.closest(".contact-row")?.classList.toggle("is-selected", checked);
-    });
-
-    renderStats();
-    updateComposerBar();
-  });
-
-  $("#composeButton")?.addEventListener("click", openComposer);
-  $("#closeComposer")?.addEventListener("click", closeComposer);
-
-  $("#composerModal")?.addEventListener("click", event => {
-    if (event.target.id === "composerModal") closeComposer();
-  });
-
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape") closeComposer();
-  });
-
-  $("#authForm")?.addEventListener("submit", async event => {
-    event.preventDefault();
-
-    const password = $("#adminPassword")?.value || "";
-    const githubToken = $("#githubToken")?.value.trim() || "";
-
-    authError?.classList.add("hidden");
-    setBusy(authButton, true, "Verifying…");
+    error.hidden = true;
+    button.disabled = true;
+    button.querySelector("span").textContent = "Signing in…";
 
     try {
-      await authenticate(password, githubToken);
-      $("#adminPassword").value = "";
-      $("#githubToken").value = "";
-      setDashboard(true);
-      await loadDashboard();
-    } catch (error) {
-      showAuthError(error.message);
-    } finally {
-      setBusy(authButton, false, "Verifying…");
-    }
-  });
-
-  $("#notifyForm")?.addEventListener("submit", async event => {
-    event.preventDefault();
-
-    const button = $("#sendButton");
-    const status = $("#notifyStatus");
-    const subject = $("#emailSubject")?.value.trim() || "";
-    const html = $("#emailBody")?.value.trim() || "";
-
-    status?.classList.add("hidden");
-    setBusy(button, true, "Sending…");
-
-    try {
-      const result = await api("/api/admin/notifications", {
+      await api("/api/admin/login", {
         method: "POST",
         body: JSON.stringify({
-          subject,
-          html,
-          selectedEmails: [...state.selected]
+          password
         })
       });
 
-      if (status) {
-        status.textContent = result.failed
-          ? `${result.count} sent · ${result.failed} failed.`
-          : `${result.count} emails sent successfully.`;
-        status.className = "status success";
-      }
+      $("#password").value = "";
 
-      state.selected.clear();
-      $("#notifyForm").reset();
-      closeComposer();
+      showApp();
+
       await loadDashboard();
-    } catch (error) {
-      if (status) {
-        status.textContent = error.message;
-        status.className = "status error";
-      }
-      status?.classList.remove("hidden");
+    } catch (err) {
+      error.textContent = err.message;
+      error.hidden = false;
     } finally {
-      setBusy(button, false, "Sending…");
+      button.disabled = false;
+      button.querySelector("span").textContent = "Sign in";
     }
-  });
+  }
 
-  $("#exportButton")?.addEventListener("click", async () => {
-    const button = $("#exportButton");
-    setBusy(button, true, "Preparing…");
-
+  async function logout() {
     try {
-      const response = await fetch("/api/admin/waitlist", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json", Accept: "text/csv" },
-        body: JSON.stringify({ format: "csv" })
+      await api("/api/admin/logout", {
+        method: "POST"
+      });
+    } catch {
+      // The session may already have expired.
+    }
+
+    state.waitlist = [];
+    state.history = [];
+    state.selectedEmails.clear();
+
+    showLogin();
+  }
+
+  async function loadDashboard() {
+    await Promise.all([
+      loadWaitlist(),
+      loadHistory()
+    ]);
+
+    renderEverything();
+  }
+
+  async function loadWaitlist() {
+    const data = await api("/api/admin/waitlist", {
+      method: "GET"
+    });
+
+    state.waitlist = Array.isArray(data.data)
+      ? data.data
+      : [];
+  }
+
+  async function loadHistory() {
+    try {
+      const data = await api("/api/admin/notifications", {
+        method: "GET"
       });
 
-      if (!response.ok) {
-        const payload = await response.json().catch(() => ({}));
-        throw new Error(payload.error || "Export failed.");
-      }
-
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `dots-waitlist-${new Date().toISOString().slice(0, 10)}.csv`;
-      link.click();
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      alert(error.message);
-    } finally {
-      setBusy(button, false, "Preparing…");
-    }
-  });
-
-  $("#refreshButton")?.addEventListener("click", async () => {
-    const button = $("#refreshButton");
-    setBusy(button, true, "Refreshing…");
-
-    try {
-      await loadDashboard();
-    } catch (error) {
-      alert(error.message);
-      if (/Authentication required/i.test(error.message)) setDashboard(false);
-    } finally {
-      setBusy(button, false, "Refreshing…");
-    }
-  });
-
-  $("#logoutButton")?.addEventListener("click", async () => {
-    try {
-      await api("/api/admin/logout", { method: "POST" });
+      state.history = Array.isArray(data.data)
+        ? data.data
+        : [];
     } catch {
-      // Session is cleared client-side regardless.
+      state.history = [];
     }
-    state.selected.clear();
-    setDashboard(false);
-    $("#adminPassword")?.focus();
-  });
+  }
 
-  // Session discovery: protected endpoint tells us whether a session exists.
-  loadDashboard()
-    .then(() => setDashboard(true))
-    .catch(() => setDashboard(false));
-});
+  function renderEverything() {
+    renderStats();
+    renderRecent();
+    renderWaitlist();
+    renderSelectionList();
+    renderHistory();
+    updateRecipientCounts();
+    updatePreview();
+  }
+
+  function renderStats() {
+    const total = state.waitlist.length;
+
+    const now = new Date();
+
+    const startOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+
+    const sevenDaysAgo = new Date(
+      now.getTime() -
+      7 * 24 * 60 * 60 * 1000
+    );
+
+    const today = state.waitlist.filter(row => {
+      const date = new Date(row.created_at);
+      return date >= startOfToday;
+    }).length;
+
+    const week = state.waitlist.filter(row => {
+      const date = new Date(row.created_at);
+      return date >= sevenDaysAgo;
+    }).length;
+
+    $("#statTotal").textContent = total;
+    $("#statToday").textContent = today;
+    $("#statWeek").textContent = week;
+  }
+
+  function formatDate(value) {
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return String(value);
+    }
+
+    return new Intl.DateTimeFormat(
+      undefined,
+      {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+      }
+    ).format(date);
+  }
+
+  function renderRecent() {
+    const container = $("#recentList");
+
+    const recent = state.waitlist.slice(0, 6);
+
+    if (!recent.length) {
+      container.innerHTML = `
+        <div class="empty-state">
+          No subscribers yet.
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = recent.map(row => `
+      <div class="recent-row">
+        <div>
+          <strong>${escapeHtml(row.name || "Subscriber")}</strong>
+          <span>${escapeHtml(row.email)}</span>
+        </div>
+
+        <time>${escapeHtml(formatDate(row.created_at))}</time>
+      </div>
+    `).join("");
+  }
+
+  function getFilteredWaitlist() {
+    const query = (
+      $("#waitlistSearch")?.value ||
+      ""
+    ).trim().toLowerCase();
+
+    if (!query) {
+      return state.waitlist;
+    }
+
+    return state.waitlist.filter(row =>
+      String(row.name || "")
+        .toLowerCase()
+        .includes(query) ||
+      String(row.email || "")
+        .toLowerCase()
+        .includes(query)
+    );
+  }
+
+  function renderWaitlist() {
+    const body = $("#waitlistBody");
+    const empty = $("#waitlistEmpty");
+
+    const rows = getFilteredWaitlist();
+
+    body.innerHTML = "";
+
+    if (!rows.length) {
+      empty.hidden = false;
+      return;
+    }
+
+    empty.hidden = true;
+
+    rows.forEach(row => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>
+          <strong>${escapeHtml(row.name || "—")}</strong>
+        </td>
+
+        <td>
+          ${escapeHtml(row.email)}
+        </td>
+
+        <td>
+          <span class="source-pill">
+            ${escapeHtml(row.source || "website")}
+          </span>
+        </td>
+
+        <td>
+          ${escapeHtml(formatDate(row.created_at))}
+        </td>
+
+        <td class="actions-cell">
+          <button
+            class="danger-text"
+            type="button"
+            data-delete-email="${escapeHtml(row.email)}"
+          >
+            Remove
+          </button>
+        </td>
+      `;
+
+      body.appendChild(tr);
+    });
+  }
+
+  function renderSelectionList() {
+    const container = $("#selectionList");
+
+    container.innerHTML = "";
+
+    if (!state.waitlist.length) {
+      container.innerHTML = `
+        <div class="empty-state">
+          There are no subscribers to select.
+        </div>
+      `;
+      return;
+    }
+
+    state.waitlist.forEach(row => {
+      const email = String(row.email || "")
+        .trim()
+        .toLowerCase();
+
+      const label = document.createElement("label");
+      label.className = "selection-row";
+
+      label.innerHTML = `
+        <input
+          type="checkbox"
+          value="${escapeHtml(email)}"
+          ${state.selectedEmails.has(email) ? "checked" : ""}
+        >
+
+        <span>
+          <strong>${escapeHtml(row.name || "Subscriber")}</strong>
+          <small>${escapeHtml(email)}</small>
+        </span>
+      `;
+
+      const checkbox = label.querySelector("input");
+
+      checkbox.addEventListener("change", event => {
+        if (event.target.checked) {
+          state.selectedEmails.add(email);
+        } else {
+          state.selectedEmails.delete(email);
+        }
+
+        updateRecipientCounts();
+      });
+
+      container.appendChild(label);
+    });
+  }
+
+  function updateRecipientCounts() {
+    $("#allRecipientCount").textContent =
+      `${state.waitlist.length} subscriber${state.waitlist.length === 1 ? "" : "s"}`;
+
+    $("#selectedRecipientCount").textContent =
+      `${state.selectedEmails.size} selected`;
+  }
+
+  function renderHistory() {
+    const body = $("#historyBody");
+    const empty = $("#historyEmpty");
+
+    body.innerHTML = "";
+
+    if (!state.history.length) {
+      empty.hidden = false;
+      return;
+    }
+
+    empty.hidden = true;
+
+    state.history.forEach(row => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>
+          <strong>${escapeHtml(row.subject || "—")}</strong>
+        </td>
+
+        <td class="success-number">
+          ${Number(row.sent_count || 0)}
+        </td>
+
+        <td class="failed-number">
+          ${Number(row.failed_count || 0)}
+        </td>
+
+        <td>
+          ${escapeHtml(formatDate(row.created_at))}
+        </td>
+      `;
+
+      body.appendChild(tr);
+    });
+  }
+
+  function currentRecipientMode() {
+    return document.querySelector(
+      'input[name="recipientMode"]:checked'
+    )?.value || "all";
+  }
+
+  function updatePreview() {
+    const subject =
+      $("#emailSubject")?.value.trim() ||
+      "A note from dots.";
+
+    const message =
+      $("#emailMessage")?.value.trim() ||
+      "Your message will appear here.";
+
+    const ctaText =
+      $("#ctaText")?.value.trim();
+
+    const ctaUrl =
+      $("#ctaUrl")?.value.trim();
+
+    const body = escapeHtml(message)
+      .replace(/\r?\n/g, "<br>");
+
+    const cta =
+      ctaText && ctaUrl
+        ? `
+          <p style="margin:28px 0 0;">
+            <span
+              style="
+                display:inline-block;
+                background:#a80f2d;
+                color:#fff;
+                padding:13px 20px;
+                border-radius:999px;
+                font-weight:700;
+                font-size:14px;
+              "
+            >
+              ${escapeHtml(ctaText)}
+            </span>
+          </p>
+        `
+        : "";
+
+    $("#emailPreview").innerHTML = `
+      <div class="preview-email">
+        <div class="preview-header">
+          <img
+            src="${LOGO_URL}"
+            alt="dots."
+          >
+        </div>
+
+        <div class="preview-content">
+          <h4>${escapeHtml(subject)}</h4>
+
+          <div class="preview-message">
+            ${body}
+          </div>
+
+          ${cta}
+        </div>
+
+        <div class="preview-footer">
+          <div>dots. — oral care, simplified.</div>
+          <div>A brand by Saviere Group Private Limited.</div>
+          <div>Unsubscribe</div>
+          <div>© 2026 Saviere Group Private Limited.</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function setView(view) {
+    state.currentView = view;
+
+    const titles = {
+      overview: "Overview",
+      waitlist: "Waitlist",
+      compose: "Send email",
+      history: "History"
+    };
+
+    $("#pageTitle").textContent =
+      titles[view] || "Overview";
+
+    $$(".nav-item").forEach(button => {
+      button.classList.toggle(
+        "active",
+        button.dataset.view === view
+      );
+    });
+
+    $$(".view").forEach(section => {
+      section.classList.toggle(
+        "active",
+        section.id === `view-${view}`
+      );
+    });
+
+    $(".sidebar")?.classList.remove("open");
+  }
+
+  async function sendEmail() {
+    const button = $("#sendEmailButton");
+    const status = $("#sendStatus");
+
+    const subject =
+      $("#emailSubject").value.trim();
+
+    const message =
+      $("#emailMessage").value.trim();
+
+    const ctaText =
+      $("#ctaText").value.trim();
+
+    const ctaUrl =
+      $("#ctaUrl").value.trim();
+
+    const mode = currentRecipientMode();
+
+    if (!subject) {
+      showToast("Add an email subject.", "error");
+      return;
+    }
+
+    if (!message) {
+      showToast("Write a message first.", "error");
+      return;
+    }
+
+    if (mode === "selected" && !state.selectedEmails.size) {
+      showToast("Select at least one subscriber.", "error");
+      return;
+    }
+
+    if (
+      ctaUrl &&
+      !/^https:\/\//i.test(ctaUrl)
+    ) {
+      showToast("CTA URL must use HTTPS.", "error");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      mode === "all"
+        ? `Send this email to all ${state.waitlist.length} subscribers?`
+        : `Send this email to ${state.selectedEmails.size} selected subscribers?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Sending…";
+    status.textContent = "";
+
+    try {
+      const payload = {
+        subject,
+        message,
+        ctaText,
+        ctaUrl,
+        allRecipients: mode === "all",
+        selectedEmails:
+          mode === "selected"
+            ? [...state.selectedEmails]
+            : []
+      };
+
+      const result = await api(
+        "/api/admin/notifications",
+        {
+          method: "POST",
+          body: JSON.stringify(payload)
+        }
+      );
+
+      status.textContent =
+        `Sent to ${result.sentCount || 0} subscriber` +
+        `${result.sentCount === 1 ? "" : "s"}.`;
+
+      showToast(
+        result.failedCount
+          ? `Sent with ${result.failedCount} failure(s).`
+          : "Email sent successfully.",
+        result.failedCount ? "error" : "success"
+      );
+
+      await loadHistory();
+      renderHistory();
+
+      $("#emailMessage").value = "";
+      updatePreview();
+    } catch (error) {
+      status.textContent = error.message;
+      showToast(error.message, "error");
+    } finally {
+      button.disabled = false;
+      button.textContent = "Send branded email";
+    }
+  }
+
+  async function deleteSubscriber(email) {
+    const confirmed = window.confirm(
+      `Remove ${email} from the waitlist?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await api("/api/admin/waitlist", {
+        method: "DELETE",
+        body: JSON.stringify({
+          email
+        })
+      });
+
+      state.selectedEmails.delete(email);
+
+      await loadWaitlist();
+      renderEverything();
+
+      showToast(
+        "Subscriber removed.",
+        "success"
+      );
+    } catch (error) {
+      showToast(
+        error.message,
+        "error"
+      );
+    }
+  }
+
+  function bindEvents() {
+    $("#loginForm").addEventListener(
+      "submit",
+      event => {
+        event.preventDefault();
+
+        login(
+          $("#password").value
+        );
+      }
+    );
+
+    $("#logoutButton").addEventListener(
+      "click",
+      logout
+    );
+
+    $("#refreshButton").addEventListener(
+      "click",
+      async () => {
+        try {
+          await loadDashboard();
+          showToast("Dashboard refreshed.", "success");
+        } catch (error) {
+          showToast(error.message, "error");
+        }
+      }
+    );
+
+    $$(".nav-item").forEach(button => {
+      button.addEventListener(
+        "click",
+        () => setView(button.dataset.view)
+      );
+    });
+
+    $$("[data-view-target]").forEach(button => {
+      button.addEventListener(
+        "click",
+        () => setView(button.dataset.viewTarget)
+      );
+    });
+
+    $("#waitlistSearch").addEventListener(
+      "input",
+      renderWaitlist
+    );
+
+    $("#waitlistBody").addEventListener(
+      "click",
+      event => {
+        const button =
+          event.target.closest(
+            "[data-delete-email]"
+          );
+
+        if (!button) return;
+
+        deleteSubscriber(
+          button.dataset.deleteEmail
+        );
+      }
+    );
+
+    $("#mobileMenuButton").addEventListener(
+      "click",
+      () => {
+        $(".sidebar")?.classList.toggle("open");
+      }
+    );
+
+    $("#selectAllButton").addEventListener(
+      "click",
+      () => {
+        state.waitlist.forEach(row => {
+          const email = String(row.email || "")
+            .trim()
+            .toLowerCase();
+
+          state.selectedEmails.add(email);
+        });
+
+        renderSelectionList();
+        updateRecipientCounts();
+      }
+    );
+
+    $$('input[name="recipientMode"]').forEach(
+      radio => {
+        radio.addEventListener(
+          "change",
+          () => {
+            $("#selectionPanel").hidden =
+              currentRecipientMode() !== "selected";
+          }
+        );
+      }
+    );
+
+    [
+      "#emailSubject",
+      "#emailMessage",
+      "#ctaText",
+      "#ctaUrl"
+    ].forEach(selector => {
+      $(selector).addEventListener(
+        "input",
+        updatePreview
+      );
+    });
+
+    $("#sendEmailButton").addEventListener(
+      "click",
+      sendEmail
+    );
+  }
+
+  bindEvents();
+  checkSession();
+})();

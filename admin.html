@@ -2,159 +2,392 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#080808">
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  >
   <meta name="robots" content="noindex,nofollow">
-  <title>dots. — Command Center</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <title>dots. — Admin</title>
   <link rel="stylesheet" href="/admin.css">
 </head>
+
 <body>
-  <main id="authView" class="auth-shell">
-    <section class="auth-card" aria-labelledby="authTitle">
-      <div class="brand">dots<span>.</span></div>
-      <p class="eyebrow">Private command center</p>
-      <h1 id="authTitle">Welcome back.</h1>
-      <p class="muted">Authenticate with the admin password and the authorized GitHub account.</p>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-      <form id="authForm" autocomplete="off">
-        <label>
-          <span>Admin password</span>
-          <input id="adminPassword" name="password" type="password" autocomplete="current-password" required>
-        </label>
+  <!-- LOGIN -->
+  <main id="loginView" class="login-shell">
+    <section class="login-card">
+      <div class="brand-mark">
+        <span>dots</span><b>.</b>
+      </div>
 
-        <label>
-          <span>GitHub personal access token</span>
-          <input id="githubToken" name="githubToken" type="password" autocomplete="off" spellcheck="false" required>
-        </label>
+      <p class="eyebrow">ADMIN</p>
 
-        <button id="authButton" class="primary-button" type="submit">Unlock command center</button>
-        <p id="authError" class="status error hidden" role="alert"></p>
+      <h1>Welcome back.</h1>
+
+      <p class="login-copy">
+        Sign in to manage the dots. waitlist and send branded updates.
+      </p>
+
+      <form id="loginForm">
+        <label for="password">Admin password</label>
+
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+          placeholder="Enter admin password"
+        >
+
+        <button type="submit" id="loginButton" class="primary-button">
+          <span>Sign in</span>
+        </button>
+
+        <p id="loginError" class="form-error" hidden></p>
       </form>
 
-      <p class="security-note">Your GitHub token is verified server-side and is never stored in the browser.</p>
+      <p class="login-footer">
+        dots. · Saviere Group Private Limited
+      </p>
     </section>
   </main>
 
-  <main id="dashboardView" class="dashboard hidden">
-    <header class="topbar">
-      <div>
-        <div class="brand">dots<span>.</span></div>
-        <p>Command center</p>
-      </div>
-      <div class="top-actions">
-        <button id="refreshButton" class="ghost-button">Refresh</button>
-        <button id="exportButton" class="ghost-button">Export CSV</button>
-        <button id="logoutButton" class="danger-button">Lock</button>
-      </div>
-    </header>
+  <!-- APP -->
+  <div id="appView" class="app-shell" hidden>
 
-    <section class="dashboard-content">
-      <div class="hero-row">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-mark">
+          <span>dots</span><b>.</b>
+        </div>
+        <span class="admin-label">admin</span>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-view="overview">
+          <span>Overview</span>
+        </button>
+
+        <button class="nav-item" data-view="waitlist">
+          <span>Waitlist</span>
+        </button>
+
+        <button class="nav-item" data-view="compose">
+          <span>Send email</span>
+        </button>
+
+        <button class="nav-item" data-view="history">
+          <span>History</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <a href="/" target="_blank" rel="noopener">
+          View website
+        </a>
+
+        <button id="logoutButton" class="logout-button">
+          Sign out
+        </button>
+      </div>
+    </aside>
+
+    <div class="main-shell">
+
+      <header class="topbar">
+        <button id="mobileMenuButton" class="mobile-menu" type="button">
+          Menu
+        </button>
+
         <div>
-          <p class="eyebrow">Audience</p>
-          <h1>Waitlist directory.</h1>
-          <p class="muted">A live view of everyone who has raised their hand.</p>
+          <p class="eyebrow">DOTS. ADMIN</p>
+          <h2 id="pageTitle">Overview</h2>
         </div>
-        <div class="stats">
-          <div class="stat">
-            <span id="totalCount">0</span>
-            <small>Contacts</small>
+
+        <button id="refreshButton" class="secondary-button">
+          Refresh
+        </button>
+      </header>
+
+      <main class="content">
+
+        <!-- OVERVIEW -->
+        <section id="view-overview" class="view active">
+          <div class="section-intro">
+            <div>
+              <p class="eyebrow">OVERVIEW</p>
+              <h3>Your dots. audience.</h3>
+              <p>
+                Monitor the early-access list and communicate with subscribers
+                using the shared dots. email system.
+              </p>
+            </div>
           </div>
-          <div class="stat">
-            <span id="notificationCount">0</span>
-            <small>Campaigns</small>
+
+          <div class="stats-grid">
+            <article class="stat-card">
+              <span>Total waitlist</span>
+              <strong id="statTotal">—</strong>
+            </article>
+
+            <article class="stat-card">
+              <span>Joined today</span>
+              <strong id="statToday">—</strong>
+            </article>
+
+            <article class="stat-card">
+              <span>Last 7 days</span>
+              <strong id="statWeek">—</strong>
+            </article>
           </div>
-        </div>
-      </div>
 
-      <section class="panel directory-panel">
-        <div class="panel-header">
-          <div>
-            <h2>Waitlist</h2>
-            <p>Select contacts to compose a broadcast.</p>
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">RECENT</p>
+                <h3>Latest signups</h3>
+              </div>
+
+              <button
+                class="text-button"
+                data-view-target="waitlist"
+              >
+                View all
+              </button>
+            </div>
+
+            <div id="recentList" class="recent-list"></div>
           </div>
-          <label class="select-all">
-            <input id="selectAll" type="checkbox">
-            <span>Select all</span>
-          </label>
-        </div>
+        </section>
 
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Joined</th>
-              </tr>
-            </thead>
-            <tbody id="waitlistBody"></tbody>
-          </table>
-        </div>
+        <!-- WAITLIST -->
+        <section id="view-waitlist" class="view">
+          <div class="section-intro">
+            <div>
+              <p class="eyebrow">AUDIENCE</p>
+              <h3>Waitlist</h3>
+              <p>
+                Every subscriber currently stored in the dots. waitlist.
+              </p>
+            </div>
 
-        <div id="waitlistEmpty" class="empty-state hidden">
-          <strong>No waitlist contacts yet.</strong>
-          <span>New signups will appear here automatically.</span>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-header">
-          <div>
-            <h2>Notification history</h2>
-            <p>The latest 50 broadcasts sent from the command center.</p>
+            <a
+              href="/api/admin/export"
+              class="secondary-button"
+              id="exportButton"
+            >
+              Export CSV
+            </a>
           </div>
-        </div>
-        <div id="notificationList" class="notification-list"></div>
-        <div id="notificationEmpty" class="empty-state hidden">
-          <strong>No broadcasts yet.</strong>
-          <span>Your sent campaigns will appear here.</span>
-        </div>
-      </section>
-    </section>
 
-    <div id="selectionBar" class="selection-bar">
-      <span><strong id="selectedCount">0</strong> selected</span>
-      <button id="composeButton" class="dark-button">Compose email</button>
-    </div>
-  </main>
+          <div class="panel">
+            <div class="toolbar">
+              <input
+                id="waitlistSearch"
+                type="search"
+                placeholder="Search name or email"
+                autocomplete="off"
+              >
+            </div>
 
-  <div id="composerModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="composerTitle">
-    <div class="composer-card">
-      <div class="modal-header">
-        <div>
-          <p class="eyebrow">Resend</p>
-          <h2 id="composerTitle">Compose broadcast.</h2>
-        </div>
-        <button id="closeComposer" class="close-button" type="button" aria-label="Close">&times;</button>
-      </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Source</th>
+                    <th>Joined</th>
+                    <th></th>
+                  </tr>
+                </thead>
 
-      <div class="recipient-pill">
-        <span>Recipients</span>
-        <strong id="recipientCount">0</strong>
-      </div>
+                <tbody id="waitlistBody"></tbody>
+              </table>
+            </div>
 
-      <form id="notifyForm">
-        <label>
-          <span>Subject</span>
-          <input id="emailSubject" type="text" maxlength="200" required placeholder="A clear, concise subject">
-        </label>
+            <div id="waitlistEmpty" class="empty-state" hidden>
+              No waitlist entries found.
+            </div>
+          </div>
+        </section>
 
-        <label>
-          <span>HTML body</span>
-          <textarea id="emailBody" required placeholder="<h1>Hello</h1>"></textarea>
-        </label>
+        <!-- COMPOSE -->
+        <section id="view-compose" class="view">
+          <div class="section-intro">
+            <div>
+              <p class="eyebrow">COMMUNICATION</p>
+              <h3>Send an email</h3>
+              <p>
+                Write the message. dots. branding, footer and unsubscribe
+                treatment are applied automatically.
+              </p>
+            </div>
+          </div>
 
-        <p id="notifyStatus" class="status hidden"></p>
+          <div class="compose-grid">
 
-        <button id="sendButton" class="primary-button" type="submit">Send via Resend</button>
-      </form>
+            <div class="panel composer">
+              <div class="field">
+                <label for="emailSubject">Subject</label>
+                <input
+                  id="emailSubject"
+                  type="text"
+                  maxlength="200"
+                  value="A note from dots."
+                  placeholder="Email subject"
+                >
+              </div>
 
-      <p class="security-note">Each recipient receives an individual email. Addresses are never exposed to other recipients.</p>
+              <div class="field">
+                <label for="emailMessage">Message</label>
+                <textarea
+                  id="emailMessage"
+                  rows="12"
+                  maxlength="200000"
+                  placeholder="Write your message here..."
+                ></textarea>
+
+                <small>
+                  Plain text only. Your dots. email template is applied automatically.
+                </small>
+              </div>
+
+              <div class="two-fields">
+                <div class="field">
+                  <label for="ctaText">Button text <span>optional</span></label>
+                  <input
+                    id="ctaText"
+                    type="text"
+                    maxlength="100"
+                    placeholder="Explore dots."
+                  >
+                </div>
+
+                <div class="field">
+                  <label for="ctaUrl">Button URL <span>optional</span></label>
+                  <input
+                    id="ctaUrl"
+                    type="url"
+                    placeholder="https://usedots.in/..."
+                  >
+                </div>
+              </div>
+
+              <div class="recipient-box">
+                <p class="field-label">Recipients</p>
+
+                <label class="radio-row">
+                  <input
+                    type="radio"
+                    name="recipientMode"
+                    value="all"
+                    checked
+                  >
+                  <span>
+                    <strong>Everyone</strong>
+                    <small id="allRecipientCount">0 subscribers</small>
+                  </span>
+                </label>
+
+                <label class="radio-row">
+                  <input
+                    type="radio"
+                    name="recipientMode"
+                    value="selected"
+                  >
+                  <span>
+                    <strong>Selected subscribers</strong>
+                    <small id="selectedRecipientCount">0 selected</small>
+                  </span>
+                </label>
+              </div>
+
+              <div
+                id="selectionPanel"
+                class="selection-panel"
+                hidden
+              >
+                <div class="selection-header">
+                  <strong>Select subscribers</strong>
+
+                  <button
+                    type="button"
+                    id="selectAllButton"
+                    class="text-button"
+                  >
+                    Select all
+                  </button>
+                </div>
+
+                <div id="selectionList"></div>
+              </div>
+
+              <div class="send-actions">
+                <button
+                  id="sendEmailButton"
+                  class="primary-button"
+                  type="button"
+                >
+                  Send branded email
+                </button>
+
+                <p id="sendStatus" class="send-status"></p>
+              </div>
+            </div>
+
+            <!-- PREVIEW -->
+            <div class="panel preview-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">PREVIEW</p>
+                  <h3>Recipient view</h3>
+                </div>
+              </div>
+
+              <div id="emailPreview" class="email-preview"></div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- HISTORY -->
+        <section id="view-history" class="view">
+          <div class="section-intro">
+            <div>
+              <p class="eyebrow">DELIVERY</p>
+              <h3>Email history</h3>
+              <p>
+                Recent broadcast activity from the dots. admin.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Sent</th>
+                    <th>Failed</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+
+                <tbody id="historyBody"></tbody>
+              </table>
+            </div>
+
+            <div id="historyEmpty" class="empty-state" hidden>
+              No broadcasts yet.
+            </div>
+          </div>
+        </section>
+
+      </main>
     </div>
   </div>
 

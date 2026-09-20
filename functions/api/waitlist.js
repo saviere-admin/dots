@@ -1,172 +1,260 @@
 import { json, isValidEmail } from "./_utils.js";
-
-function escapeHtml(value = "") {
-  return String(value).replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  }[char]));
-}
+import {
+  dotsEmail,
+  dotsEmailText
+} from "./_email.js";
 
 async function sendResendEmail(env, payload, idempotencyKey) {
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-      ...(idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {})
-    },
-    body: JSON.stringify(payload)
-  });
+  const response = await fetch(
+    "https://api.resend.com/emails",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+        "Idempotency-Key": idempotencyKey
+      },
+      body: JSON.stringify(payload)
+    }
+  );
 
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(data?.message || data?.error || "Resend rejected the email.");
+    throw new Error(
+      data?.message ||
+      data?.error ||
+      "Resend rejected the email."
+    );
   }
 
   return data;
 }
 
-export async function onRequestPost(context) {
-  const { request, env } = context;
-
+export async function onRequestPost({ request, env }) {
   try {
     const body = await request.json();
 
-    const name = String(body.name || "").trim().replace(/\s+/g, " ");
-    const email = String(body.email || "").trim().toLowerCase();
-    const honeypot = String(body.website || "").trim();
-
-    // Quiet bot trap. A real browser never fills this field.
-    if (honeypot) {
-      return json({ success: true, message: "You're on the list." });
+    /*
+     * Honeypot.
+     */
+    if (body.website) {
+      return json({
+        success: true
+      });
     }
 
+    const name = String(body.name || "")
+      .trim()
+      .replace(/\s+/g, " ");
+
+    const email = String(body.email || "")
+      .trim()
+      .toLowerCase();
+
     if (name.length < 2 || name.length > 100) {
-      return json({ error: "Please enter your name." }, { status: 400 });
+      return json(
+        {
+          error: "Please enter your name."
+        },
+        400
+      );
     }
 
     if (!isValidEmail(email) || email.length > 254) {
-      return json({ error: "Please enter a valid email address." }, { status: 400 });
+      return json(
+        {
+          error: "Please enter a valid email address."
+        },
+        400
+      );
     }
 
-    if (!env.DB) {
-      return json({ error: "Waitlist database is not configured." }, { status: 500 });
+    /*
+     * Explicit duplicate check because the current production
+     * waitlist schema does not rely on a UNIQUE email constraint.
+     */
+    const existing = await env.DB.prepare(`
+      SELECT id
+      FROM waitlist
+      WHERE lower(email) = lower(?)
+      LIMIT 1
+    `)
+      .bind(email)
+      .first();
+
+    if (existing) {
+      return json(
+        {
+          error: "You're already on the dots. list."
+        },
+        409
+      );
     }
 
     const createdAt = new Date().toISOString();
 
     await env.DB.prepare(`
-      INSERT INTO waitlist (name, email, created_at)
+      INSERT INTO waitlist
+        (name, email, created_at)
       VALUES (?, ?, ?)
-    `).bind(name, email, createdAt).run();
+    `)
+      .bind(
+        name,
+        email,
+        createdAt
+      )
+      .run();
 
-    const safeName = escapeHtml(name);
-    const safeEmail = escapeHtml(email);
+    /*
+     * Email delivery is deliberately non-blocking from the user's
+     * signup perspective. The signup is already safely stored in D1.
+     */
+    if (
+      env.RESEND_API_KEY &&
+      env.RESEND_FROM_EMAIL
+    ) {
+      const unsubscribeUrl =
+        `https://usedots.in/api/unsubscribe?email=${encodeURIComponent(email)}`;
 
-    let confirmationSent = false;
-    let adminNotificationSent = false;
+      const confirmationHtml = dotsEmail({
+        subject: "You're on the dots. list.",
+        preheader:
+          "Your place in dots. early access is confirmed.",
+        greeting: `Hi ${name},`,
+        bodyHtml: `
+          <p style="margin:0 0 18px;">
+            Your place in the <strong>dots.</strong> early access
+            list is confirmed.
+          </p>
 
-    if (env.RESEND_API_KEY && env.RESEND_FROM_EMAIL) {
-      const baseTags = [{ name: "product", value: "dots" }];
+          <p style="margin:0 0 18px;">
+            We're building a simpler way to take care of your
+            everyday oral care, and we'll let you know when the
+            next chapter is ready.
+          </p>
 
-      const [confirmationResult, adminResult] = await Promise.allSettled([
-        sendResendEmail(
+          <p style="margin:0;">
+            You're in.
+          </p>
+        `,
+        unsubscribeUrl
+      });
+
+      const confirmationText = dotsEmailText({
+        subject: "You're on the dots. list.",
+        greeting: `Hi ${name},`,
+        body:
+          "Your place in the dots. early access list is confirmed.\n\n" +
+          "We're building a simpler way to take care of your everyday oral care, and we'll let you know when the next chapter is ready.\n\n" +
+          "You're in.",
+        unsubscribeUrl
+      });
+
+      try {
+        await sendResendEmail(
           env,
           {
             from: `dots. <${env.RESEND_FROM_EMAIL}>`,
             to: [email],
-            subject: "You're on the dots. early access list",
-            tags: [...baseTags, { name: "category", value: "waitlist-confirmation" }],
-            html: `
-              <!doctype html>
-              <html>
-                <body style="margin:0;background:#f7f7f5;font-family:Arial,sans-serif;color:#111">
-                  <div style="max-width:600px;margin:0 auto;padding:48px 24px">
-                    <div style="background:#fff;border:1px solid #e8e8e5;border-radius:28px;padding:40px">
-                      <div style="font-size:28px;font-weight:800;letter-spacing:-1px">
-                        dots<span style="color:#d0a84f">.</span>
-                      </div>
-                      <p style="margin:36px 0 8px;color:#777;font-size:13px;letter-spacing:.12em;text-transform:uppercase">
-                        Early access
-                      </p>
-                      <h1 style="font-size:38px;line-height:1.05;letter-spacing:-1.5px;margin:0 0 20px">
-                        You're on the list.
-                      </h1>
-                      <p style="font-size:17px;line-height:1.7;color:#555">
-                        Hi ${safeName}, your place in the dots. early access list is confirmed.
-                      </p>
-                      <p style="font-size:17px;line-height:1.7;color:#555">
-                        We'll email you when the next chapter is ready.
-                      </p>
-                      <div style="margin-top:32px;padding:18px 20px;background:#faf8f0;border-radius:16px;color:#6d5a2c;font-size:14px">
-                        Your email: ${safeEmail}
-                      </div>
-                      <p style="margin:32px 0 0;color:#999;font-size:13px">
-                        — dots.
-                      </p>
-                    </div>
-                  </div>
-                </body>
-              </html>
-            `
+            subject: "You're on the dots. list.",
+            html: confirmationHtml,
+            text: confirmationText,
+            tags: [
+              {
+                name: "product",
+                value: "dots"
+              },
+              {
+                name: "category",
+                value: "waitlist-confirmation"
+              }
+            ]
           },
           `waitlist-confirmation-${email}`
-        ),
-        env.EMAIL_TO
-          ? sendResendEmail(
-              env,
-              {
-                from: `dots. <${env.RESEND_FROM_EMAIL}>`,
-                to: [env.EMAIL_TO],
-                subject: `New dots. waitlist signup — ${name}`,
-                tags: [...baseTags, { name: "category", value: "waitlist-admin-alert" }],
-                html: `
-                  <h2>New dots. waitlist signup</h2>
-                  <p><strong>Name:</strong> ${safeName}</p>
-                  <p><strong>Email:</strong> ${safeEmail}</p>
-                  <p><strong>Joined:</strong> ${createdAt}</p>
-                `
-              },
-              `waitlist-admin-alert-${createdAt}-${email}`
-            )
-          : Promise.resolve(null)
-      ]);
-
-      confirmationSent = confirmationResult.status === "fulfilled";
-      adminNotificationSent = adminResult.status === "fulfilled" && Boolean(env.EMAIL_TO);
-
-      if (confirmationResult.status === "rejected") {
-        console.error("Waitlist confirmation email failed:", confirmationResult.reason);
+        );
+      } catch (error) {
+        console.error(
+          "Waitlist confirmation email failed:",
+          error
+        );
       }
 
-      if (adminResult.status === "rejected") {
-        console.error("Waitlist admin notification failed:", adminResult.reason);
+      /*
+       * Internal notification.
+       */
+      if (env.EMAIL_TO) {
+        try {
+          const adminHtml = dotsEmail({
+            subject: "New dots. waitlist signup",
+            preheader: `${name} joined the dots. waitlist.`,
+            greeting: "New signup",
+            bodyHtml: `
+              <p style="margin:0 0 10px;">
+                <strong>Name:</strong> ${name}
+              </p>
+
+              <p style="margin:0 0 10px;">
+                <strong>Email:</strong> ${email}
+              </p>
+
+              <p style="margin:0;">
+                <strong>Joined:</strong> ${createdAt}
+              </p>
+            `
+          });
+
+          const adminText = dotsEmailText({
+            subject: "New dots. waitlist signup",
+            greeting: "New signup",
+            body:
+              `Name: ${name}\n` +
+              `Email: ${email}\n` +
+              `Joined: ${createdAt}`
+          });
+
+          await sendResendEmail(
+            env,
+            {
+              from: `dots. <${env.RESEND_FROM_EMAIL}>`,
+              to: [env.EMAIL_TO],
+              subject: "New dots. waitlist signup",
+              html: adminHtml,
+              text: adminText,
+              tags: [
+                {
+                  name: "product",
+                  value: "dots"
+                },
+                {
+                  name: "category",
+                  value: "waitlist-admin"
+                }
+              ]
+            },
+            `waitlist-admin-${email}`
+          );
+        } catch (error) {
+          console.error(
+            "Waitlist admin notification failed:",
+            error
+          );
+        }
       }
     }
 
     return json({
       success: true,
-      message: "You're officially on the dots. waitlist.",
-      confirmationSent,
-      adminNotificationSent
+      message: "You're on the dots. list."
     });
   } catch (error) {
-    console.error("Waitlist submission error:", error);
-
-    if (/UNIQUE constraint failed/i.test(error.message || "")) {
-      return json(
-        { error: "This email is already on the waitlist." },
-        { status: 409 }
-      );
-    }
+    console.error("Waitlist error:", error);
 
     return json(
-      { error: "We couldn't join you to the waitlist right now. Please try again." },
-      { status: 500 }
+      {
+        error: "Something went wrong. Please try again."
+      },
+      500
     );
   }
 }
