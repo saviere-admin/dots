@@ -5,12 +5,22 @@
 
 html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
 
-/* Custom Impact Sliders (Matching Screenshot) */
+/* 3D & Animation Utilities */
+.clip-wrap {
+    overflow: hidden;
+    padding-bottom: 0.2rem; /* Prevents descenders from getting cut off */
+}
+.tilt-card { 
+    transition: transform 0.1s ease-out; 
+    will-change: transform;
+}
+
+/* Custom Impact Sliders (Matches the screenshot exactly) */
 .impact-slider {
     -webkit-appearance: none;
     appearance: none;
-    height: 8px;
-    background: #E5E7EB; /* Tailwind gray-200 */
+    height: 10px;
+    background: #E5E7EB;
     border-radius: 9999px;
     outline: none;
 }
@@ -18,34 +28,31 @@ html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
 .impact-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border: 1px solid #d1d5db;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     cursor: pointer;
     transition: transform 0.15s ease;
 }
 
 .impact-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
+    transform: scale(1.1);
 }
 
 .impact-slider::-moz-range-thumb {
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border: 1px solid #d1d5db;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     cursor: pointer;
     transition: transform 0.15s ease;
 }
 
 .impact-slider::-moz-range-thumb:hover {
-    transform: scale(1.15);
+    transform: scale(1.1);
 }
-
-/* 3D Tilt Utility */
-.tilt-card { transition: transform 0.1s ease-out; }
