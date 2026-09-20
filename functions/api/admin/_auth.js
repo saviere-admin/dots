@@ -2,17 +2,9 @@ const SESSION_COOKIE = "dots_admin";
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 
 function base64UrlEncode(value) {
-  const bytes =
-    typeof value === "string"
-      ? new TextEncoder().encode(value)
-      : value;
-
+  const bytes = new TextEncoder().encode(value);
   let binary = "";
-
-  for (const byte of bytes) {
-    binary += String.fromCharCode(byte);
-  }
-
+  for (const byte of bytes) binary += String.fromCharCode(byte);
   return btoa(binary)
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
@@ -20,374 +12,242 @@ function base64UrlEncode(value) {
 }
 
 function base64UrlDecode(value) {
-  const normalized = value
-    .replace(/-/g, "+")
-    .replace(/_/g, "/");
-
-  const padded =
-    normalized +
-    "=".repeat(
-      (4 - normalized.length % 4) % 4
-    );
-
+  const padded = value.replace(/-/g, "+").replace(/_/g, "/")
+    + "=".repeat((4 - value.length % 4) % 4);
   const binary = atob(padded);
-
-  const bytes = new Uint8Array(binary.length);
-
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-
-  return new TextDecoder().decode(bytes);
+  return new TextDecoder().decode(
+    Uint8Array.from(binary, char => char.charCodeAt(0))
+  );
 }
 
-async function hmacSign(secret, value) {
+function bytesToBase64Url(bytes) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
+
+function base64UrlToBytes(value) {
+  const padded = value.replace(/-/g, "+").replace(/_/g, "/")
+    + "=".repeat((4 - value.length % 4) % 4);
+  const binary = atob(padded);
+  return Uint8Array.from(binary, char => char.charCodeAt(0));
+}
+
+async function sha256(value) {
+  return crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(value)
+  );
+}
+
+async function hmacSign(value, secret) {
   const key = await crypto.subtle.importKey(
     "raw",
     new TextEncoder().encode(secret),
-    {
-      name: "HMAC",
-      hash: "SHA-256"
-    },
+    { name: "HMAC", hash: "SHA-256" },
     false,
-    ["sign"]
+    ["sign", "verify"]
   );
 
-  const signature =
-    await crypto.subtle.sign(
-      "HMAC",
-      key,
-      new TextEncoder().encode(value)
-    );
-
-  return base64UrlEncode(
-    new Uint8Array(signature)
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(value)
   );
+
+  return bytesToBase64Url(new Uint8Array(signature));
 }
 
-async function hmacVerify(
-  secret,
-  value,
-  signature
-) {
-  const expected =
-    await hmacSign(secret, value);
+async function hmacVerify(value, signature, secret) {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["verify"]
+  );
 
-  if (expected.length !== signature.length) {
-    return false;
-  }
-
-  let result = 0;
-
-  for (let i = 0; i < expected.length; i++) {
-    result |=
-      expected.charCodeAt(i) ^
-      signature.charCodeAt(i);
-  }
-
-  return result === 0;
+  return crypto.subtle.verify(
+    "HMAC",
+    key,
+    base64UrlToBytes(signature),
+    new TextEncoder().encode(value)
+  );
 }
 
 function parseCookies(request) {
-  const header =
-    request.headers.get("Cookie") || "";
-
+  const header = request.headers.get("Cookie") || "";
   const cookies = {};
 
   for (const part of header.split(";")) {
-    const [name, ...rest] =
-      part.trim().split("=");
+    const index = part.indexOf("=");
+    if (index === -1) continue;
 
-    if (!name) continue;
+    const name = part.slice(0, index).trim();
+    const value = part.slice(index + 1).trim();
 
-    cookies[name] =
-      rest.join("=");
+    cookies[name] = value;
   }
 
   return cookies;
 }
 
-function getSessionSecret(env) {
-  /*
-   * No separate session secret.
-   * Changing ADMIN_PASSWORD automatically invalidates
-   * existing admin sessions.
-   */
-  return env.ADMIN_PASSWORD || "";
+function timingSafeEqual(a, b) {
+  if (a.byteLength !== b.byteLength) return false;
+
+  const left = new Uint8Array(a);
+  const right = new Uint8Array(b);
+
+  let difference = 0;
+
+  for (let i = 0; i < left.length; i++) {
+    difference |= left[i] ^ right[i];
+  }
+
+  return difference === 0;
 }
 
-export async function verifyAdminPassword(
-  password,
-  env
-) {
-  const expected =
-    String(env.ADMIN_PASSWORD || "");
+export async function verifyAdminPassword(password, env) {
+  if (!env.ADMIN_PASSWORD) return false;
+  if (!password) return false;
 
-  const supplied =
-    String(password || "");
+  const expected = new Uint8Array(await sha256(env.ADMIN_PASSWORD));
+  const supplied = new Uint8Array(await sha256(password));
 
-  if (!expected || !supplied) {
-    return false;
-  }
-
-  /*
-   * Hash both values before comparison.
-   */
-  const encoder = new TextEncoder();
-
-  const [expectedHash, suppliedHash] =
-    await Promise.all([
-      crypto.subtle.digest(
-        "SHA-256",
-        encoder.encode(expected)
-      ),
-      crypto.subtle.digest(
-        "SHA-256",
-        encoder.encode(supplied)
-      )
-    ]);
-
-  const a = new Uint8Array(expectedHash);
-  const b = new Uint8Array(suppliedHash);
-
-  if (a.length !== b.length) {
-    return false;
-  }
-
-  let result = 0;
-
-  for (let i = 0; i < a.length; i++) {
-    result |= a[i] ^ b[i];
-  }
-
-  return result === 0;
+  return timingSafeEqual(expected, supplied);
 }
 
-export async function verifyGithubPat(
-  githubToken,
-  env
-) {
-  const token =
-    String(githubToken || "").trim();
-
-  const allowedUsername =
-    String(
-      env.ADMIN_GITHUB_USERNAME || ""
-    )
-      .trim()
-      .toLowerCase();
-
-  if (!token || !allowedUsername) {
-    return {
-      valid: false,
-      reason: "github-not-configured"
-    };
+export async function verifyGithubPat(githubToken, env) {
+  if (!githubToken || !env.ADMIN_GITHUB_USERNAME) {
+    return false;
   }
 
   try {
     const response = await fetch(
-      "https://api.github.com/user",
+      "https://" + "api.github.com/user",
       {
         method: "GET",
         headers: {
-          Accept:
-            "application/vnd.github+json",
-          Authorization:
-            `Bearer ${token}`,
-          "X-GitHub-Api-Version":
-            "2026-03-10",
-          "User-Agent":
-            "dots-admin"
+          Accept: "application/vnd.github+json",
+          Authorization: `Bearer ${githubToken}`,
+          "X-GitHub-Api-Version": "2026-03-10",
+          "User-Agent": "dots-admin"
         }
       }
     );
 
-    if (!response.ok) {
-      return {
-        valid: false,
-        reason: "github-token-invalid"
-      };
-    }
+    if (!response.ok) return false;
 
-    const user =
-      await response.json();
+    const user = await response.json();
+    const actualLogin = String(user.login || "").trim().toLowerCase();
+    const allowedLogin = String(env.ADMIN_GITHUB_USERNAME || "")
+      .trim()
+      .toLowerCase();
 
-    const login =
-      String(user.login || "")
-        .trim()
-        .toLowerCase();
-
-    if (login !== allowedUsername) {
-      return {
-        valid: false,
-        reason: "github-user-not-authorized"
-      };
-    }
-
-    return {
-      valid: true,
-      login: user.login
-    };
-  } catch (error) {
-    console.error(
-      "GitHub authentication error:",
-      error
-    );
-
-    return {
-      valid: false,
-      reason: "github-unavailable"
-    };
+    return Boolean(actualLogin && allowedLogin && actualLogin === allowedLogin);
+  } catch {
+    return false;
   }
 }
 
-export async function createAdminSession(
-  env,
-  githubLogin
-) {
-  const secret =
-    getSessionSecret(env);
-
-  if (!secret) {
-    throw new Error(
-      "ADMIN_PASSWORD is not configured."
-    );
+export async function createAdminSession(env, githubLogin) {
+  if (!env.ADMIN_PASSWORD) {
+    throw new Error("ADMIN_PASSWORD is not configured.");
   }
 
-  const expiresAt =
-    Math.floor(Date.now() / 1000) +
-    SESSION_TTL_SECONDS;
+  const expiresAt = Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS;
 
-  const payload =
-    `${githubLogin}.${expiresAt}`;
+  const payload = base64UrlEncode(
+    JSON.stringify({
+      login: githubLogin,
+      exp: expiresAt
+    })
+  );
 
-  const encoded =
-    base64UrlEncode(payload);
+  const signature = await hmacSign(payload, env.ADMIN_PASSWORD);
 
-  const signature =
-    await hmacSign(
-      secret,
-      encoded
-    );
-
-  return `${encoded}.${signature}`;
+  return `${payload}.${signature}`;
 }
 
-export function sessionCookie(
-  token,
-  maxAge = SESSION_TTL_SECONDS
-) {
+export function sessionCookie(token, maxAge = SESSION_TTL_SECONDS) {
   return [
     `${SESSION_COOKIE}=${token}`,
     "Path=/",
     "HttpOnly",
     "Secure",
     "SameSite=Strict",
-    `Max-Age=${maxAge}`
+    `Max-Age=${Math.max(0, Math.floor(maxAge))}`
   ].join("; ");
 }
 
-export async function verifyAdminSession(
-  request,
-  env
-) {
-  const secret =
-    getSessionSecret(env);
+export async function verifyAdminSession(request, env) {
+  if (!env.ADMIN_PASSWORD) return false;
 
-  if (!secret) {
-    return false;
-  }
+  const cookies = parseCookies(request);
+  const token = cookies[SESSION_COOKIE];
 
-  const cookies =
-    parseCookies(request);
+  if (!token) return false;
 
-  const token =
-    cookies[SESSION_COOKIE];
+  const separator = token.lastIndexOf(".");
+  if (separator === -1) return false;
 
-  if (!token) {
-    return false;
-  }
+  const payload = token.slice(0, separator);
+  const signature = token.slice(separator + 1);
 
-  const parts =
-    token.split(".");
-
-  if (parts.length !== 2) {
-    return false;
-  }
-
-  const [encoded, signature] =
-    parts;
-
-  const validSignature =
-    await hmacVerify(
-      secret,
-      encoded,
-      signature
-    );
-
-  if (!validSignature) {
-    return false;
-  }
+  if (!payload || !signature) return false;
 
   try {
-    const payload =
-      base64UrlDecode(encoded);
+    const validSignature = await hmacVerify(
+      payload,
+      signature,
+      env.ADMIN_PASSWORD
+    );
 
-    const [githubLogin, expiresAt] =
-      payload.split(".");
+    if (!validSignature) return false;
 
-    if (!githubLogin || !expiresAt) {
+    const data = JSON.parse(base64UrlDecode(payload));
+
+    if (!data?.exp || Number(data.exp) <= Math.floor(Date.now() / 1000)) {
       return false;
     }
 
-    const expiry =
-      Number(expiresAt);
-
     if (
-      !Number.isFinite(expiry) ||
-      expiry <=
-        Math.floor(Date.now() / 1000)
+      !data.login ||
+      String(data.login).toLowerCase() !==
+        String(env.ADMIN_GITHUB_USERNAME || "").toLowerCase()
     ) {
       return false;
     }
 
-    return {
-      authenticated: true,
-      githubLogin
-    };
+    return true;
   } catch {
     return false;
   }
 }
 
-export async function requireAdmin(
-  request,
-  env
-) {
-  const authenticated =
-    await verifyAdminSession(
-      request,
-      env
-    );
+export async function requireAdmin(request, env) {
+  const authenticated = await verifyAdminSession(request, env);
 
   if (!authenticated) {
     return new Response(
       JSON.stringify({
+        authenticated: false,
         error: "Unauthorized"
       }),
       {
         status: 401,
         headers: {
-          "Content-Type":
-            "application/json; charset=utf-8",
-          "Cache-Control":
-            "no-store"
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store"
         }
       }
     );
   }
 
-  return null;
+  return { authenticated: true };
 }
 
 export function clearSessionCookie() {

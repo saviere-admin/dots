@@ -1,46 +1,326 @@
 import { json, isValidEmail } from "./_utils.js";
-import {
-  dotsEmail,
-  dotsEmailText
-} from "./_email.js";
 
-async function sendResendEmail(env, payload, idempotencyKey) {
-  const response = await fetch(
-    "https://api.resend.com/emails",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-        "Idempotency-Key": idempotencyKey
-      },
-      body: JSON.stringify(payload)
-    }
-  );
+const LOGO_URL =
+  "https://usedots.in/public/brand/logos/dh/DotsTBBTWoS.png";
 
-  const data = await response.json().catch(() => ({}));
+function escapeHtml(value = "") {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  }[char]));
+}
+
+function normalizeEmail(value = "") {
+  return String(value).trim().toLowerCase();
+}
+
+async function sendResendEmail(env, payload, idempotencyKey = "") {
+  if (!env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not configured.");
+  }
+
+  if (!env.RESEND_FROM_EMAIL) {
+    throw new Error("RESEND_FROM_EMAIL is not configured.");
+  }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+      ...(idempotencyKey
+        ? { "Idempotency-Key": idempotencyKey }
+        : {})
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const raw = await response.text();
+
+  let data = {};
+
+  try {
+    data = raw ? JSON.parse(raw) : {};
+  } catch {
+    data = {
+      message: raw
+    };
+  }
 
   if (!response.ok) {
     throw new Error(
       data?.message ||
       data?.error ||
-      "Resend rejected the email."
+      `Resend returned HTTP ${response.status}.`
     );
   }
 
   return data;
 }
 
-export async function onRequestPost({ request, env }) {
+/*
+ * Shared dots. email shell.
+ *
+ * The logo is embedded using CID rather than relying on a remote image
+ * being loaded by the recipient's email client.
+ */
+function emailShell({
+  eyebrow = "",
+  title = "",
+  body = "",
+  footerExtra = ""
+}) {
+  return `
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <meta name="x-apple-disable-message-reformatting">
+  <title>${escapeHtml(title)}</title>
+</head>
+
+<body
+  style="
+    margin:0;
+    padding:0;
+    background:#f4f1ee;
+    color:#111111;
+    font-family:Arial,Helvetica,sans-serif;
+  "
+>
+  <table
+    role="presentation"
+    width="100%"
+    cellspacing="0"
+    cellpadding="0"
+    border="0"
+    style="width:100%;border-collapse:collapse;background:#f4f1ee;"
+  >
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+
+        <table
+          role="presentation"
+          width="100%"
+          cellspacing="0"
+          cellpadding="0"
+          border="0"
+          style="
+            width:100%;
+            max-width:620px;
+            border-collapse:separate;
+          "
+        >
+
+          <!-- Crimson brand header -->
+          <tr>
+            <td
+              style="
+                background:#8f1230;
+                border-radius:28px 28px 0 0;
+                padding:34px 36px;
+              "
+            >
+              <img
+                src="cid:dots-logo"
+                alt="dots."
+                width="132"
+                style="
+                  display:block;
+                  width:132px;
+                  max-width:132px;
+                  height:auto;
+                  border:0;
+                  outline:none;
+                  text-decoration:none;
+                "
+              >
+            </td>
+          </tr>
+
+          <!-- Main content -->
+          <tr>
+            <td
+              style="
+                background:#ffffff;
+                border-left:1px solid #e8e4e1;
+                border-right:1px solid #e8e4e1;
+                padding:44px 36px 40px;
+              "
+            >
+
+              ${
+                eyebrow
+                  ? `
+                    <p
+                      style="
+                        margin:0 0 10px;
+                        color:#a16b78;
+                        font-size:12px;
+                        line-height:18px;
+                        letter-spacing:2px;
+                        text-transform:uppercase;
+                        font-weight:700;
+                      "
+                    >
+                      ${escapeHtml(eyebrow)}
+                    </p>
+                  `
+                  : ""
+              }
+
+              <h1
+                style="
+                  margin:0 0 22px;
+                  color:#111111;
+                  font-size:38px;
+                  line-height:1.08;
+                  letter-spacing:-1.5px;
+                  font-weight:800;
+                "
+              >
+                ${escapeHtml(title)}
+              </h1>
+
+              ${body}
+
+              ${
+                footerExtra
+                  ? `
+                    <div
+                      style="
+                        margin-top:36px;
+                        padding-top:24px;
+                        border-top:1px solid #eeeeeb;
+                      "
+                    >
+                      ${footerExtra}
+                    </div>
+                  `
+                  : ""
+              }
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td
+              style="
+                background:#ffffff;
+                border:1px solid #e8e4e1;
+                border-top:0;
+                border-radius:0 0 28px 28px;
+                padding:0 36px 34px;
+              "
+            >
+
+              <div
+                style="
+                  border-top:1px solid #eeeeeb;
+                  padding-top:24px;
+                "
+              >
+                <p
+                  style="
+                    margin:0 0 8px;
+                    color:#777777;
+                    font-size:12px;
+                    line-height:18px;
+                  "
+                >
+                  dots. · Saviere Group Private Limited
+                </p>
+
+                <p
+                  style="
+                    margin:0 0 8px;
+                    color:#999999;
+                    font-size:12px;
+                    line-height:18px;
+                  "
+                >
+                  © 2026 Saviere Group Private Limited. All rights reserved.
+                </p>
+
+                <p
+                  style="
+                    margin:0;
+                    color:#999999;
+                    font-size:12px;
+                    line-height:18px;
+                  "
+                >
+                  You are receiving this email because you joined the dots.
+                  early access list.
+                  <a
+                    href="mailto:${escapeHtml(env.EMAIL_TO || env.RESEND_FROM_EMAIL)}?subject=Unsubscribe%20from%20dots."
+                    style="
+                      color:#8f1230;
+                      text-decoration:underline;
+                    "
+                  >
+                    Unsubscribe
+                  </a>
+                </p>
+              </div>
+
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
+}
+
+function logoAttachment() {
+  return {
+    path: LOGO_URL,
+    filename: "dots-logo.png",
+    content_id: "dots-logo",
+    content_type: "image/png"
+  };
+}
+
+export async function onRequestPost(context) {
+  const { request, env } = context;
+
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
+
+    if (!body || typeof body !== "object") {
+      return json(
+        {
+          error: "Invalid request body."
+        },
+        {
+          status: 400
+        }
+      );
+    }
 
     /*
      * Honeypot.
+     *
+     * Bots that populate this field receive a successful response but
+     * never touch D1 or Resend.
      */
-    if (body.website) {
+    const honeypot = String(body.website || "").trim();
+
+    if (honeypot) {
       return json({
-        success: true
+        success: true,
+        confirmationSent: false,
+        adminNotificationSent: false
       });
     }
 
@@ -48,16 +328,16 @@ export async function onRequestPost({ request, env }) {
       .trim()
       .replace(/\s+/g, " ");
 
-    const email = String(body.email || "")
-      .trim()
-      .toLowerCase();
+    const email = normalizeEmail(body.email);
 
-    if (name.length < 2 || name.length > 100) {
+    if (name.length < 2 || name.length > 120) {
       return json(
         {
           error: "Please enter your name."
         },
-        400
+        {
+          status: 400
+        }
       );
     }
 
@@ -66,37 +346,35 @@ export async function onRequestPost({ request, env }) {
         {
           error: "Please enter a valid email address."
         },
-        400
+        {
+          status: 400
+        }
       );
     }
 
-    /*
-     * Explicit duplicate check because the current production
-     * waitlist schema does not rely on a UNIQUE email constraint.
-     */
-    const existing = await env.DB.prepare(`
-      SELECT id
-      FROM waitlist
-      WHERE lower(email) = lower(?)
-      LIMIT 1
-    `)
-      .bind(email)
-      .first();
-
-    if (existing) {
+    if (!env.DB) {
       return json(
         {
-          error: "You're already on the dots. list."
+          error: "Waitlist database is not configured."
         },
-        409
+        {
+          status: 500
+        }
       );
     }
 
     const createdAt = new Date().toISOString();
 
+    /*
+     * IMPORTANT:
+     * Production D1 uses `name`, not `full_name`.
+     */
     await env.DB.prepare(`
-      INSERT INTO waitlist
-        (name, email, created_at)
+      INSERT INTO waitlist (
+        name,
+        email,
+        created_at
+      )
       VALUES (?, ?, ?)
     `)
       .bind(
@@ -106,60 +384,85 @@ export async function onRequestPost({ request, env }) {
       )
       .run();
 
+    const safeName = escapeHtml(name);
+    const safeEmail = escapeHtml(email);
+    const safeCreatedAt = escapeHtml(createdAt);
+
+    let confirmationSent = false;
+    let adminNotificationSent = false;
+    let emailWarning = null;
+
     /*
-     * Email delivery is deliberately non-blocking from the user's
-     * signup perspective. The signup is already safely stored in D1.
+     * Email delivery is deliberately separated from the D1 write.
+     *
+     * The signup remains saved even if Resend fails.
      */
-    if (
-      env.RESEND_API_KEY &&
-      env.RESEND_FROM_EMAIL
-    ) {
-      const unsubscribeUrl =
-        `https://usedots.in/api/unsubscribe?email=${encodeURIComponent(email)}`;
-
-      const confirmationHtml = dotsEmail({
-        subject: "You're on the dots. list.",
-        preheader:
-          "Your place in dots. early access is confirmed.",
-        greeting: `Hi ${name},`,
-        bodyHtml: `
-          <p style="margin:0 0 18px;">
-            Your place in the <strong>dots.</strong> early access
-            list is confirmed.
-          </p>
-
-          <p style="margin:0 0 18px;">
-            We're building a simpler way to take care of your
-            everyday oral care, and we'll let you know when the
-            next chapter is ready.
-          </p>
-
-          <p style="margin:0;">
-            You're in.
-          </p>
-        `,
-        unsubscribeUrl
-      });
-
-      const confirmationText = dotsEmailText({
-        subject: "You're on the dots. list.",
-        greeting: `Hi ${name},`,
-        body:
-          "Your place in the dots. early access list is confirmed.\n\n" +
-          "We're building a simpler way to take care of your everyday oral care, and we'll let you know when the next chapter is ready.\n\n" +
-          "You're in.",
-        unsubscribeUrl
-      });
+    if (env.RESEND_API_KEY && env.RESEND_FROM_EMAIL) {
+      /*
+       * ---------------------------------------------------------------
+       * CUSTOMER CONFIRMATION
+       * ---------------------------------------------------------------
+       */
 
       try {
+        const confirmationHtml = emailShell({
+          eyebrow: "Early access",
+          title: "You're on the list.",
+          body: `
+            <p
+              style="
+                margin:0 0 18px;
+                color:#555555;
+                font-size:17px;
+                line-height:1.7;
+              "
+            >
+              Hi ${safeName}, your place in the dots. early access list
+              is confirmed.
+            </p>
+
+            <p
+              style="
+                margin:0;
+                color:#555555;
+                font-size:17px;
+                line-height:1.7;
+              "
+            >
+              We'll email you when the next chapter is ready.
+            </p>
+          `,
+          footerExtra: `
+            <p
+              style="
+                margin:0;
+                color:#999999;
+                font-size:13px;
+                line-height:20px;
+              "
+            >
+              dots. — precise oral care, rethought.
+            </p>
+          `
+        });
+
         await sendResendEmail(
           env,
           {
             from: `dots. <${env.RESEND_FROM_EMAIL}>`,
             to: [email],
-            subject: "You're on the dots. list.",
+            reply_to: env.EMAIL_TO || undefined,
+            subject: "You're on the dots. early access list",
             html: confirmationHtml,
-            text: confirmationText,
+            text:
+              `Hi ${name},\n\n` +
+              `You're on the dots. early access list.\n\n` +
+              `Your place is confirmed. We'll email you when the next chapter is ready.\n\n` +
+              `dots. — precise oral care, rethought.\n\n` +
+              `© 2026 Saviere Group Private Limited.`,
+            attachments: [
+              logoAttachment()
+            ],
             tags: [
               {
                 name: "product",
@@ -173,44 +476,115 @@ export async function onRequestPost({ request, env }) {
           },
           `waitlist-confirmation-${email}`
         );
+
+        confirmationSent = true;
       } catch (error) {
         console.error(
           "Waitlist confirmation email failed:",
           error
         );
+
+        emailWarning =
+          "Your signup was saved, but the confirmation email could not be sent.";
       }
 
       /*
-       * Internal notification.
+       * ---------------------------------------------------------------
+       * ADMIN NOTIFICATION
+       * ---------------------------------------------------------------
        */
+
       if (env.EMAIL_TO) {
         try {
-          const adminHtml = dotsEmail({
-            subject: "New dots. waitlist signup",
-            preheader: `${name} joined the dots. waitlist.`,
-            greeting: "New signup",
-            bodyHtml: `
-              <p style="margin:0 0 10px;">
-                <strong>Name:</strong> ${name}
-              </p>
+          const adminHtml = emailShell({
+            eyebrow: "New waitlist signup",
+            title: "Someone joined dots.",
+            body: `
+              <table
+                role="presentation"
+                width="100%"
+                cellspacing="0"
+                cellpadding="0"
+                border="0"
+                style="
+                  width:100%;
+                  border-collapse:collapse;
+                  margin-top:8px;
+                "
+              >
+                <tr>
+                  <td
+                    style="
+                      padding:14px 0;
+                      border-bottom:1px solid #eeeeeb;
+                      color:#888888;
+                      font-size:13px;
+                      width:100px;
+                    "
+                  >
+                    Name
+                  </td>
 
-              <p style="margin:0 0 10px;">
-                <strong>Email:</strong> ${email}
-              </p>
+                  <td
+                    style="
+                      padding:14px 0;
+                      border-bottom:1px solid #eeeeeb;
+                      color:#111111;
+                      font-size:15px;
+                      font-weight:700;
+                    "
+                  >
+                    ${safeName}
+                  </td>
+                </tr>
 
-              <p style="margin:0;">
-                <strong>Joined:</strong> ${createdAt}
-              </p>
+                <tr>
+                  <td
+                    style="
+                      padding:14px 0;
+                      border-bottom:1px solid #eeeeeb;
+                      color:#888888;
+                      font-size:13px;
+                    "
+                  >
+                    Email
+                  </td>
+
+                  <td
+                    style="
+                      padding:14px 0;
+                      border-bottom:1px solid #eeeeeb;
+                      color:#111111;
+                      font-size:15px;
+                    "
+                  >
+                    ${safeEmail}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td
+                    style="
+                      padding:14px 0;
+                      color:#888888;
+                      font-size:13px;
+                    "
+                  >
+                    Joined
+                  </td>
+
+                  <td
+                    style="
+                      padding:14px 0;
+                      color:#111111;
+                      font-size:15px;
+                    "
+                  >
+                    ${safeCreatedAt}
+                  </td>
+                </tr>
+              </table>
             `
-          });
-
-          const adminText = dotsEmailText({
-            subject: "New dots. waitlist signup",
-            greeting: "New signup",
-            body:
-              `Name: ${name}\n` +
-              `Email: ${email}\n` +
-              `Joined: ${createdAt}`
           });
 
           await sendResendEmail(
@@ -218,9 +592,16 @@ export async function onRequestPost({ request, env }) {
             {
               from: `dots. <${env.RESEND_FROM_EMAIL}>`,
               to: [env.EMAIL_TO],
-              subject: "New dots. waitlist signup",
+              subject: `New dots. waitlist signup — ${name}`,
               html: adminHtml,
-              text: adminText,
+              text:
+                `New dots. waitlist signup\n\n` +
+                `Name: ${name}\n` +
+                `Email: ${email}\n` +
+                `Joined: ${createdAt}`,
+              attachments: [
+                logoAttachment()
+              ],
               tags: [
                 {
                   name: "product",
@@ -228,15 +609,17 @@ export async function onRequestPost({ request, env }) {
                 },
                 {
                   name: "category",
-                  value: "waitlist-admin"
+                  value: "waitlist-admin-alert"
                 }
               ]
             },
-            `waitlist-admin-${email}`
+            `waitlist-admin-alert-${createdAt}-${email}`
           );
+
+          adminNotificationSent = true;
         } catch (error) {
           console.error(
-            "Waitlist admin notification failed:",
+            "Admin waitlist notification failed:",
             error
           );
         }
@@ -245,16 +628,44 @@ export async function onRequestPost({ request, env }) {
 
     return json({
       success: true,
-      message: "You're on the dots. list."
+      message: "You're on the dots. waitlist.",
+      confirmationSent,
+      adminNotificationSent,
+      warning: emailWarning
     });
   } catch (error) {
-    console.error("Waitlist error:", error);
+    console.error(
+      "Waitlist API error:",
+      error
+    );
+
+    const message = String(
+      error?.message || ""
+    ).toLowerCase();
+
+    if (
+      message.includes("unique constraint") ||
+      message.includes("unique constraint failed") ||
+      message.includes("already exists")
+    ) {
+      return json(
+        {
+          error: "This email is already on the waitlist."
+        },
+        {
+          status: 409
+        }
+      );
+    }
 
     return json(
       {
-        error: "Something went wrong. Please try again."
+        error:
+          "We couldn't complete your signup. Please try again."
       },
-      500
+      {
+        status: 500
+      }
     );
   }
 }

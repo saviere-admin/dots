@@ -1,37 +1,28 @@
 import { json } from "../_utils.js";
 import { verifyAdminSession } from "./_auth.js";
 
-export async function onRequest(
-  context
-) {
-  const {
-    request,
-    next,
-    env
-  } = context;
+export async function onRequest(context) {
+  const { request, env, next } = context;
+  const pathname = new URL(request.url).pathname;
 
-  const pathname =
-    new URL(request.url).pathname;
-
-  if (
-    pathname ===
-    "/api/admin/login"
-  ) {
+  if (pathname === "/api/admin/login") {
     return next();
   }
 
-  const session =
-    await verifyAdminSession(
-      request,
-      env
-    );
+  const authenticated = await verifyAdminSession(request, env);
 
-  if (!session) {
+  if (!authenticated) {
     return json(
       {
+        authenticated: false,
         error: "Unauthorized"
       },
-      401
+      {
+        status: 401,
+        headers: {
+          "Cache-Control": "no-store"
+        }
+      }
     );
   }
 
