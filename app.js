@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     
     // 1. Lenis Smooth Scrolling
+    let lenis;
     try {
-        const lenis = new Lenis({
+        lenis = new Lenis({
             duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             smooth: true,
@@ -38,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- THE GOLDEN DOT ZOOM & SCATTER EXPERIENCE ---
     const textElement = document.getElementById("scatter-text");
-    if (textElement) {
+    if(textElement) {
         const text = textElement.innerText;
         textElement.innerHTML = "";
         text.split(" ").forEach(word => {
@@ -60,31 +61,31 @@ document.addEventListener('DOMContentLoaded', () => {
             scrollTrigger: {
                 trigger: "#hero-scene",
                 start: "top top",
-                end: "+=350%", 
+                end: "+=400%", // Very long pin for full experience
                 pin: true,
                 scrub: 1
             }
         });
 
-        // A. Zoom into the Golden Dot (Exact Center: 93.6% 71.6%)
+        // A. Zoom into the Golden Dot (Calculated exact center: 93.6% 71.6%)
         heroTl.to("#hero-svg", {
-            scale: 250, 
+            scale: 180, 
             transformOrigin: "93.6% 71.6%", 
             ease: "power1.inOut",
             duration: 2
         })
         // B. Fade out black letters, turn background gold
-        .to("#black-letters", { opacity: 0, duration: 0.1 }, "-=0.6")
-        .to("#hero-scene", { backgroundColor: "#d0a84f", duration: 0.4 }, "-=0.6")
+        .to("#black-letters", { opacity: 0, duration: 0.1 }, "-=0.5")
+        .to("#hero-scene", { backgroundColor: "#d0a84f", duration: 0.3 }, "-=0.5")
         
-        // C. Reveal text container
+        // C. Reveal the container
         .to("#post-zoom-content", {
             opacity: 1,
             pointerEvents: "auto",
             duration: 0.1
         }, "-=0.2")
 
-        // D. Fade up individual letters
+        // D. Typewriter / Fade up the individual letters
         .to(".scatter-char", {
             opacity: 1,
             y: 0,
@@ -94,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .to("#hero-cta", { opacity: 1, y: 0, duration: 0.5 }, "-=0.2")
 
-        // E. SCATTER EXPLOSION! 
+        // E. SCATTER EXPLOSION!
         .to(".scatter-char", {
             x: () => (Math.random() - 0.5) * 1200,
             y: () => (Math.random() - 0.5) * 1200,
@@ -129,10 +130,21 @@ document.addEventListener('DOMContentLoaded', () => {
             duration: 1,
             ease: "power3.out"
         });
+    } else {
+        // Simple fade up for mobile
+        gsap.from(".pin-cards > div", {
+            y: 50,
+            opacity: 0,
+            stagger: 0.2,
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: { trigger: ".pin-cards", start: "top 80%" }
+        });
     }
 
-    // --- General Reveals ---
-    gsap.utils.toArray('.gs-fade').forEach(elem => {
+    // --- General Reveals & Fixed Headers ---
+    // Fix: We use 'from' so it guarantees to end at opacity 1, never disappearing.
+    gsap.utils.toArray('.gs-fade, .gs-header-lock').forEach(elem => {
         gsap.from(elem, {
             y: 40, opacity: 0, duration: 1, ease: "power3.out",
             scrollTrigger: { trigger: elem, start: "top 85%" }
@@ -179,8 +191,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalPlastic = totalTubes * 20;
         const totalWater = (totalTubes * 0.1).toFixed(1);
 
-        const outPlastic = document.getElementById('out-plastic');
-        const outFreight = document.getElementById('out-freight');
+        const outPlastic = document.getElementById('out-tubes');
+        const outFreight = document.getElementById('out-water');
 
         if(outPlastic) gsap.to(outPlastic, { innerHTML: totalPlastic, roundProps: "innerHTML", duration: 0.6, ease: "power2.out" });
         if(outFreight) {
@@ -195,10 +207,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sliderPeople) {
         sliderPeople.addEventListener('input', calculateImpact);
         sliderMonths.addEventListener('input', calculateImpact);
-        calculateImpact(); 
+        calculateImpact(); // Init on load
     }
 
-    // --- Waitlist API ---
+    // --- Waitlist API Hook ---
     const waitlistForm = document.getElementById('waitlistForm');
     if (waitlistForm) {
         waitlistForm.addEventListener('submit', async (e) => {

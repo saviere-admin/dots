@@ -20,15 +20,15 @@
             <h2 class="text-white font-bold text-4xl tracking-tighter mb-8">dots<span class="text-[#d0a84f]">.</span></h2>
             
             <!-- STEP 1 -->
-            <form id="pwdForm" class="block" onsubmit="event.preventDefault(); return false;">
+            <form id="pwdForm" class="block" onsubmit="event.preventDefault(); window.handlePwdSubmit(); return false;">
                 <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-6">System Access</h2>
                 <input type="password" id="sysPwd" required placeholder="Admin Password" class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-4 text-white text-center mb-4 focus:outline-none focus:border-[#d0a84f] transition-colors">
                 <button type="submit" id="btnPwd" class="w-full bg-white text-black font-semibold py-4 rounded-xl hover:scale-[1.02] transition-transform">Verify Password</button>
             </form>
 
             <!-- STEP 2 -->
-            <form id="gitForm" class="hidden" onsubmit="event.preventDefault(); return false;">
-                <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-[#d0a84f] mb-6">Password Verified</h2>
+            <form id="gitForm" class="hidden" onsubmit="event.preventDefault(); window.handleGitSubmit(); return false;">
+                <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-green-400 mb-6">Password Verified</h2>
                 <input type="password" id="gitToken" required placeholder="GitHub PAT (ghp_...)" class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-4 text-white text-center mb-4 focus:outline-none focus:border-[#d0a84f] font-mono text-sm transition-colors">
                 <button type="submit" id="btnGit" class="w-full bg-[#d0a84f] text-black font-bold py-4 rounded-xl hover:scale-[1.02] transition-transform">Connect Database</button>
             </form>
@@ -41,7 +41,7 @@
     <div id="dashboardView" class="hidden h-full w-full flex flex-col relative">
         <nav class="glass-panel px-8 py-4 flex justify-between items-center sticky top-0 z-40">
             <h2 class="text-white font-bold text-2xl tracking-tighter">dots<span class="text-[#d0a84f]">.</span></h2>
-            <button id="logoutBtn" class="text-xs font-bold uppercase tracking-[0.1em] text-red-400 hover:text-red-300 transition-colors">Lock Terminal</button>
+            <button id="logoutBtn" onclick="sessionStorage.clear(); location.reload();" class="text-xs font-bold uppercase tracking-[0.1em] text-red-400 hover:text-red-300 transition-colors">Lock Terminal</button>
         </nav>
 
         <div class="flex-1 overflow-hidden flex flex-col max-w-screen-xl mx-auto w-full p-4 md:p-6">
@@ -60,7 +60,7 @@
                     <table class="w-full text-sm text-left">
                         <thead class="text-xs text-gray-500 uppercase tracking-wider sticky top-0 bg-[#0a0a0a] z-10 border-b border-white/5">
                             <tr>
-                                <th class="px-6 py-4 w-12"><input type="checkbox" id="selectAll" class="custom-checkbox"></th>
+                                <th class="px-6 py-4 w-12"><input type="checkbox" id="selectAll" class="custom-checkbox" onchange="window.toggleAll(this)"></th>
                                 <th class="px-6 py-4 font-medium hidden md:table-cell">Name</th>
                                 <th class="px-6 py-4 font-medium">Target Address</th>
                                 <th class="px-6 py-4 font-medium text-right">Acquisition Date</th>
@@ -72,7 +72,7 @@
 
                 <div id="selectionActionBar" class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-[#d0a84f] text-black px-6 py-3 rounded-full flex items-center gap-6 shadow-2xl transition-all duration-300 translate-y-24 opacity-0 pointer-events-none">
                     <span class="text-sm font-bold"><span id="selectedCount">0</span> Selected</span>
-                    <button id="composeBtn" class="bg-black text-white text-xs font-bold uppercase tracking-wider px-5 py-2 rounded-full hover:bg-gray-800 transition-colors">Compose Broadcast</button>
+                    <button onclick="document.getElementById('composerModal').classList.remove('hidden')" class="bg-black text-white text-xs font-bold uppercase tracking-wider px-5 py-2 rounded-full hover:bg-gray-800 transition-colors">Compose Broadcast</button>
                 </div>
             </div>
         </div>
@@ -82,12 +82,12 @@
             <div class="w-full max-w-2xl glass-panel rounded-3xl p-6 md:p-8 flex flex-col">
                 <div class="flex justify-between items-center mb-8">
                     <h2 class="text-xl font-semibold tracking-tight">Payload Composer</h2>
-                    <button id="closeComposerBtn" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+                    <button onclick="document.getElementById('composerModal').classList.add('hidden')" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
                 </div>
                 
                 <div id="notifyStatus" class="hidden text-xs p-4 rounded-xl mb-6"></div>
 
-                <form id="notifyForm" class="flex flex-col gap-5" onsubmit="event.preventDefault(); return false;">
+                <form id="notifyForm" class="flex flex-col gap-5" onsubmit="event.preventDefault(); window.handleNotifySubmit(); return false;">
                     <div class="bg-black/40 p-4 rounded-xl border border-white/5">
                         <label class="text-xs text-gray-500 uppercase tracking-wider block mb-1">Recipients</label>
                         <div class="text-sm font-medium text-[#d0a84f]"><span id="recipientCountLabel">0</span> addresses targeted</div>
@@ -107,20 +107,14 @@
         </div>
     </div>
 
-    <!-- Inline JS for absolute execution -->
+    <!-- Explicit Global JS to guarantee execution without file linking issues -->
     <script>
-    document.addEventListener("DOMContentLoaded", () => {
         const REQUIRED_PWD = "Saviere@798959885#";
         let activePwd = null;
         let selectedEmails = new Set();
         let waitlistData = [];
 
-        const authModal = document.getElementById("authModal");
-        const pwdForm = document.getElementById("pwdForm");
-        const gitForm = document.getElementById("gitForm");
-        const authError = document.getElementById("authError");
-        const dashboardView = document.getElementById("dashboardView");
-
+        // Check Session
         const sPwd = sessionStorage.getItem("dots_admin_pwd");
         const sGit = sessionStorage.getItem("dots_admin_git");
         if (sPwd === REQUIRED_PWD && sGit) {
@@ -129,59 +123,56 @@
         }
 
         function showError(msg) {
-            if(!authError) return;
-            authError.innerHTML = msg;
-            authError.classList.remove("hidden");
+            const err = document.getElementById("authError");
+            err.innerHTML = msg;
+            err.classList.remove("hidden");
         }
 
-        if(pwdForm) {
-            pwdForm.addEventListener("submit", () => {
-                const val = document.getElementById("sysPwd")?.value.trim();
-                if (val === REQUIRED_PWD) {
-                    activePwd = val;
-                    authError.classList.add("hidden");
-                    pwdForm.classList.replace("block", "hidden");
-                    gitForm.classList.replace("hidden", "block");
-                } else {
-                    showError("Invalid System Password.");
-                    document.getElementById("sysPwd").value = "";
-                }
-            });
-        }
+        // STEP 1: PASSWORD
+        window.handlePwdSubmit = function() {
+            const val = document.getElementById("sysPwd").value.trim();
+            if (val === REQUIRED_PWD) {
+                activePwd = val;
+                document.getElementById("authError").classList.add("hidden");
+                document.getElementById("pwdForm").classList.replace("block", "hidden");
+                document.getElementById("gitForm").classList.replace("hidden", "block");
+            } else {
+                showError("Invalid System Password.");
+                document.getElementById("sysPwd").value = "";
+            }
+        };
 
-        if(gitForm) {
-            gitForm.addEventListener("submit", async () => {
-                const gitToken = document.getElementById("gitToken")?.value.trim();
-                const btn = document.getElementById("btnGit");
+        // STEP 2: GIT PAT
+        window.handleGitSubmit = async function() {
+            const gitToken = document.getElementById("gitToken").value.trim();
+            const btn = document.getElementById("btnGit");
+            
+            btn.textContent = "Verifying...";
+            btn.disabled = true;
+            document.getElementById("authError").classList.add("hidden");
+
+            try {
+                const res = await fetch("/api/admin/waitlist", {
+                    headers: { "X-Admin-Password": activePwd, "X-GitHub-Token": gitToken }
+                });
+                const data = await res.json();
                 
-                btn.textContent = "Verifying...";
-                btn.disabled = true;
-                authError.classList.add("hidden");
+                if (!res.ok) throw new Error(data.error || "GitHub verification failed.");
 
-                try {
-                    const res = await fetch("/api/admin/waitlist", {
-                        headers: { "X-Admin-Password": activePwd, "X-GitHub-Token": gitToken }
-                    });
-                    const data = await res.json();
-                    
-                    if (!res.ok) throw new Error(data.error || "GitHub verification failed.");
-
-                    sessionStorage.setItem("dots_admin_pwd", activePwd);
-                    sessionStorage.setItem("dots_admin_git", gitToken);
-                    unlockSystem(gitToken);
-
-                } catch (err) {
-                    showError(`<strong>Auth Failed:</strong> ${err.message}`);
-                    btn.textContent = "Connect Database";
-                    btn.disabled = false;
-                }
-            });
-        }
+                sessionStorage.setItem("dots_admin_pwd", activePwd);
+                sessionStorage.setItem("dots_admin_git", gitToken);
+                unlockSystem(gitToken);
+            } catch (err) {
+                showError(`<strong>Auth Failed:</strong> ${err.message}`);
+                btn.textContent = "Connect Database";
+                btn.disabled = false;
+            }
+        };
 
         function unlockSystem(gitToken) {
             document.body.classList.remove("items-center", "justify-center");
-            if(authModal) authModal.classList.add("hidden");
-            if(dashboardView) dashboardView.classList.remove("hidden");
+            document.getElementById("authModal").classList.add("hidden");
+            document.getElementById("dashboardView").classList.remove("hidden");
             fetchWaitlist(gitToken);
         }
 
@@ -193,122 +184,90 @@
                 const { data } = await res.json();
                 waitlistData = data || [];
                 
-                const countEl = document.getElementById("totalCount");
-                if(countEl) countEl.textContent = waitlistData.length;
+                document.getElementById("totalCount").textContent = waitlistData.length;
                 
                 const tbody = document.getElementById("waitlistBody");
-                if(tbody) {
-                    tbody.innerHTML = waitlistData.map(u => `
-                        <tr class="hover:bg-white/5 transition-colors cursor-pointer row-select" data-email="${u.email}">
-                            <td class="px-6 py-4"><input type="checkbox" class="custom-checkbox row-check" value="${u.email}"></td>
-                            <td class="px-6 py-4 text-white hidden md:table-cell">${u.name || 'Guest'}</td>
-                            <td class="px-6 py-4 font-medium text-gray-300">${u.email}</td>
-                            <td class="px-6 py-4 text-gray-500 text-xs text-right">${new Date(u.created_at).toLocaleString()}</td>
-                        </tr>
-                    `).join('');
-
-                    document.querySelectorAll('.row-select').forEach(row => {
-                        row.addEventListener('click', (e) => {
-                            if(e.target.type !== 'checkbox') {
-                                const cb = row.querySelector('.row-check');
-                                cb.checked = !cb.checked;
-                                handleSelection(cb);
-                            }
-                        });
-                    });
-
-                    document.querySelectorAll('.row-check').forEach(cb => {
-                        cb.addEventListener('change', (e) => handleSelection(e.target));
-                    });
-                }
+                tbody.innerHTML = waitlistData.map(u => `
+                    <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="window.rowClick('${u.email}', event)">
+                        <td class="px-6 py-4"><input type="checkbox" class="custom-checkbox row-check" value="${u.email}" onclick="event.stopPropagation(); window.checkClick(this)"></td>
+                        <td class="px-6 py-4 text-white hidden md:table-cell">${u.name || 'Guest'}</td>
+                        <td class="px-6 py-4 font-medium text-gray-300">${u.email}</td>
+                        <td class="px-6 py-4 text-gray-500 text-xs text-right">${new Date(u.created_at).toLocaleString()}</td>
+                    </tr>
+                `).join('');
             } catch (e) { console.error("Database sync failed", e); }
         }
 
-        const selectionActionBar = document.getElementById("selectionActionBar");
-        const composerModal = document.getElementById("composerModal");
-
-        const selectAllBtn = document.getElementById("selectAll");
-        if(selectAllBtn) {
-            selectAllBtn.addEventListener("change", (e) => {
-                const isChecked = e.target.checked;
-                document.querySelectorAll('.row-check').forEach(cb => {
-                    cb.checked = isChecked;
-                    if (isChecked) selectedEmails.add(cb.value);
-                    else selectedEmails.delete(cb.value);
-                });
-                updateActionBar();
+        window.toggleAll = function(el) {
+            const isChecked = el.checked;
+            document.querySelectorAll('.row-check').forEach(cb => {
+                cb.checked = isChecked;
+                if (isChecked) selectedEmails.add(cb.value);
+                else selectedEmails.delete(cb.value);
             });
-        }
-
-        function handleSelection(checkbox) {
-            if (checkbox.checked) selectedEmails.add(checkbox.value);
-            else selectedEmails.delete(checkbox.value);
             updateActionBar();
-        }
+        };
+
+        window.rowClick = function(email, e) {
+            if(e.target.type !== 'checkbox') {
+                const cb = document.querySelector(`input[value="${email}"]`);
+                cb.checked = !cb.checked;
+                window.checkClick(cb);
+            }
+        };
+
+        window.checkClick = function(cb) {
+            if (cb.checked) selectedEmails.add(cb.value);
+            else selectedEmails.delete(cb.value);
+            updateActionBar();
+        };
 
         function updateActionBar() {
-            const selCount = document.getElementById("selectedCount");
-            const recCount = document.getElementById("recipientCountLabel");
-            if(selCount) selCount.textContent = selectedEmails.size;
-            if(recCount) recCount.textContent = selectedEmails.size;
+            document.getElementById("selectedCount").textContent = selectedEmails.size;
+            document.getElementById("recipientCountLabel").textContent = selectedEmails.size;
             
+            const bar = document.getElementById("selectionActionBar");
             if (selectedEmails.size > 0) {
-                selectionActionBar.classList.remove("translate-y-24", "opacity-0", "pointer-events-none");
+                bar.classList.remove("translate-y-24", "opacity-0", "pointer-events-none");
             } else {
-                selectionActionBar.classList.add("translate-y-24", "opacity-0", "pointer-events-none");
-                composerModal.classList.add("hidden");
+                bar.classList.add("translate-y-24", "opacity-0", "pointer-events-none");
+                document.getElementById('composerModal').classList.add("hidden");
             }
         }
 
-        document.getElementById("composeBtn")?.addEventListener("click", () => {
-            composerModal.classList.remove("hidden");
-        });
-        
-        document.getElementById("closeComposerBtn")?.addEventListener("click", () => {
-            composerModal.classList.add("hidden");
-        });
+        window.handleNotifySubmit = async function() {
+            const subject = document.getElementById("emailSubject").value;
+            const html = document.getElementById("emailBody").value;
+            const btn = document.getElementById("sendBtn");
+            const statusBox = document.getElementById("notifyStatus");
 
-        const notifyForm = document.getElementById("notifyForm");
-        if (notifyForm) {
-            notifyForm.addEventListener("submit", async () => {
-                const subject = document.getElementById("emailSubject").value;
-                const html = document.getElementById("emailBody").value;
-                const btn = document.getElementById("sendBtn");
-                const statusBox = document.getElementById("notifyStatus");
+            btn.disabled = true; 
+            btn.textContent = "Dispatching Payload...";
+            statusBox.classList.add("hidden");
 
-                btn.disabled = true; 
-                btn.textContent = "Dispatching Payload...";
-                statusBox.classList.add("hidden");
+            try {
+                const res = await fetch("/api/admin/notifications", {
+                    method: "POST",
+                    headers: {
+                        "X-Admin-Password": activePwd,
+                        "X-GitHub-Token": sessionStorage.getItem("dots_admin_git"),
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ subject, html, selectedEmails: Array.from(selectedEmails) })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
 
-                try {
-                    const res = await fetch("/api/admin/notifications", {
-                        method: "POST",
-                        headers: {
-                            "X-Admin-Password": activePwd,
-                            "X-GitHub-Token": sessionStorage.getItem("dots_admin_git"),
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ subject, html, selectedEmails: Array.from(selectedEmails) })
-                    });
-                    const data = await res.json();
-                    if (!res.ok) throw new Error(data.error);
-
-                    statusBox.innerHTML = `Payload delivered to <b>${data.count}</b> targets.`;
-                    statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-green-900/30 text-green-400 block";
-                    notifyForm.reset();
-                } catch (err) {
-                    statusBox.textContent = err.message;
-                    statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-red-900/30 text-red-400 block";
-                } finally {
-                    btn.disabled = false; btn.textContent = "Dispatch via Resend";
-                }
-            });
-        }
-
-        document.getElementById("logoutBtn")?.addEventListener("click", () => {
-            sessionStorage.clear(); location.reload();
-        });
-    });
+                statusBox.innerHTML = `Payload delivered to <b>${data.count}</b> targets.`;
+                statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-green-900/30 text-green-400 block";
+                document.getElementById("notifyForm").reset();
+            } catch (err) {
+                statusBox.textContent = err.message;
+                statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-red-900/30 text-red-400 block";
+            } finally {
+                btn.disabled = false; btn.textContent = "Dispatch via Resend";
+            }
+        };
     </script>
 </body>
 </html>
