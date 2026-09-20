@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- 1. Lenis Smooth Scrolling ---
+    // 1. Lenis Smooth Scrolling
     const lenis = new Lenis({
         duration: 1.5,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -13,38 +13,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     requestAnimationFrame(raf);
 
+    // 2. GSAP Animations
     gsap.registerPlugin(ScrollTrigger);
 
-    // --- 2. THE STENCIL ZOOM EFFECT ---
+    // --- THE STENCIL ZOOM ---
     const stencilTl = gsap.timeline({
         scrollTrigger: {
-            trigger: "#stencil-wrapper",
+            trigger: "#stencil-scene",
             start: "top top",
-            end: "+=300%", // Pin for 3 screen heights to give a long, smooth zoom
+            end: "+=300%", // Pin for 3 screen heights
             pin: true,
             scrub: 1
         }
     });
 
-    // Scale the text up infinitely so the background reveals
     stencilTl.to("#stencil-text", {
-        scale: 120, // Huge scale to pass through the 'o' or 'd'
+        scale: 150, // Massively scale the text so the transparent cutout fills the screen
         transformOrigin: "center center",
         ease: "power2.inOut"
     })
-    // Fade out the white mask completely
     .to("#stencil-mask", {
         opacity: 0,
         duration: 0.1
     }, "-=0.2")
-    // Fade in the hero text
-    .to("#hero-post-zoom", {
+    .to("#post-zoom-content", {
         opacity: 1,
         pointerEvents: "auto",
         duration: 0.4
     });
 
-    // --- 3. Pinned Section: The Habit ---
+    // --- Pinned Habit Section ---
     const tlPin = gsap.timeline({
         scrollTrigger: {
             trigger: "#habit-pin",
@@ -62,10 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ease: "power3.out"
     });
 
-    // --- 4. General Reveals ---
+    // --- General Reveals ---
     gsap.utils.toArray('.gs-fade').forEach(elem => {
         gsap.from(elem, {
-            y: 40, opacity: 0, duration: 1.5, ease: "power3.out",
+            y: 50, opacity: 0, duration: 1.2, ease: "power3.out",
             scrollTrigger: { trigger: elem, start: "top 85%" }
         });
     });
@@ -77,7 +75,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 5. Live Architecture Calculator ---
+    // --- 3D Card Interactivity ---
+    document.querySelectorAll('.3d-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            card.style.transform = `perspective(1000px) rotateX(${-y / 20}deg) rotateY(${x / 20}deg) scale(1.02)`;
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)`;
+        });
+    });
+
+    // --- Live Calculator ---
     const sliderPeople = document.getElementById('slider-people');
     const sliderMonths = document.getElementById('slider-months');
     const valPeople = document.getElementById('val-people');
@@ -115,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateImpact(); 
     }
 
-    // --- 6. Waitlist API Hook ---
+    // --- Waitlist Form ---
     const waitlistForm = document.getElementById('waitlistForm');
     if (waitlistForm) {
         waitlistForm.addEventListener('submit', async (e) => {

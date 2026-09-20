@@ -1,155 +1,185 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const passwordModal = document.getElementById("passwordModal");
-    const sysPasswordInput = document.getElementById("sysPasswordInput");
-    const sysPasswordBtn = document.getElementById("sysPasswordBtn");
-    const pwdError = document.getElementById("pwdError");
-
-    const githubView = document.getElementById("githubView");
-    const patForm = document.getElementById("patForm");
-    const patBtn = document.getElementById("patBtn");
-    const patError = document.getElementById("patError");
-
-    const dashboardView = document.getElementById("dashboardView");
-    
-    // Explicit password check
     const REQUIRED_PWD = "Saviere@798959885#";
-    let activePassword = null;
+    let activePwd = null;
+    let selectedEmails = new Set();
+    let waitlistData = [];
 
-    // Ensure session skips auth if already logged in
-    const storedPwd = sessionStorage.getItem("dots_admin_pwd");
-    const storedGit = sessionStorage.getItem("dots_admin_git");
-    
-    if (storedPwd === REQUIRED_PWD && storedGit) {
-        activePassword = storedPwd;
-        unlockDashboard(storedGit);
-    } else {
-        // Force modal to be visible initially
-        passwordModal.classList.remove("hidden");
+    // Elements
+    const authModal = document.getElementById("authModal");
+    const stepPwd = document.getElementById("stepPwd");
+    const stepGit = document.getElementById("stepGit");
+    const authError = document.getElementById("authError");
+    const dashboardView = document.getElementById("dashboardView");
+    const waitlistBody = document.getElementById("waitlistTableBody");
+    const selectionActionBar = document.getElementById("selectionActionBar");
+    const composerPanel = document.getElementById("composerPanel");
+
+    // Check Session
+    const sPwd = sessionStorage.getItem("dots_admin_pwd");
+    const sGit = sessionStorage.getItem("dots_admin_git");
+    if (sPwd === REQUIRED_PWD && sGit) {
+        activePwd = sPwd;
+        unlockSystem(sGit);
     }
 
-    // --- 1. System Password Layer ---
-    sysPasswordBtn.addEventListener("click", () => {
-        const inputVal = sysPasswordInput.value.trim();
-        // Exact match required
-        if (inputVal === REQUIRED_PWD) {
-            activePassword = inputVal;
-            // Force hide modal, force show Github View
-            passwordModal.style.display = "none";
-            githubView.classList.remove("hidden");
+    // Step 1: Password
+    document.getElementById("btnPwd").addEventListener("click", () => {
+        const val = document.getElementById("sysPwd").value.trim();
+        if (val === REQUIRED_PWD) {
+            activePwd = val;
+            stepPwd.classList.add("hidden");
+            stepGit.classList.remove("hidden");
+            authError.classList.add("hidden");
         } else {
-            pwdError.classList.remove("hidden");
-            sysPasswordInput.value = "";
+            showError("Invalid Authorization Code.");
         }
     });
 
-    // --- 2. GitHub PAT Layer ---
-    patForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const gitToken = document.getElementById("githubToken").value.trim();
-        patBtn.textContent = "Verifying...";
-        patError.classList.add("hidden");
+    // Step 2: GitHub PAT
+    document.getElementById("btnGit").addEventListener("click", async () => {
+        const git = document.getElementById("gitToken").value.trim();
+        const btn = document.getElementById("btnGit");
+        btn.textContent = "Verifying...";
+        authError.classList.add("hidden");
 
-        // Inside patForm.addEventListener("submit", async (e) => { ...
         try {
             const res = await fetch("/api/admin/waitlist", {
-                headers: {
-                    "X-Admin-Password": activePassword,
-                    "X-GitHub-Token": gitToken
-                }
+                headers: { "X-Admin-Password": activePwd, "X-GitHub-Token": git }
             });
-
             const data = await res.json();
-            
-            if (!res.ok) {
-                // This will now print the exact middleware error (e.g. Scope missing)
-                throw new Error(data.error || "GitHub Authorization failed.");
-            }
+            if (!res.ok) throw new Error(data.error);
 
-            // Store success
-            sessionStorage.setItem("dots_admin_pwd", activePassword);
-            sessionStorage.setItem("dots_admin_git", gitToken);
-            
-            unlockDashboard(gitToken);
-
-        } catch (error) {
-            patError.textContent = error.message; // Will display the exact GitHub reject reason
-            patError.classList.remove("hidden");
-            patBtn.textContent = "Connect Backend";
+            sessionStorage.setItem("dots_admin_pwd", activePwd);
+            sessionStorage.setItem("dots_admin_git", git);
+            unlockSystem(git);
+        } catch (e) {
+            showError(e.message);
+            btn.textContent = "Connect Database";
         }
     });
 
-    // --- 3. Reveal Dashboard ---
-    function unlockDashboard(gitToken) {
-        document.body.classList.remove('overflow-hidden');
-        document.body.style.backgroundColor = '#FAFAFA';
-        document.body.style.color = '#111';
-        
-        if (passwordModal) passwordModal.style.display = "none";
-        if (githubView) githubView.classList.add("hidden");
-        
-        dashboardView.classList.remove("hidden");
-        fetchWaitlist(activePassword, gitToken);
+    function showError(msg) {
+        authError.textContent = msg;
+        authError.classList.remove("hidden");
     }
 
-    // --- 4. Lock Console ---
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-        sessionStorage.clear();
-        location.reload(); 
-    });
+    function unlockSystem(gitToken) {
+        authModal.classList.add("hidden");
+        dashboardView.classList.remove("hidden");
+        fetchWaitlist(gitToken);
+    }
 
-    // --- 5. Data Fetching ---
-    async function fetchWaitlist(pwd, git) {
+    // Load Data
+    async function fetchWaitlist(git) {
         try {
             const res = await fetch("/api/admin/waitlist", {
-                headers: { "X-Admin-Password": pwd, "X-GitHub-Token": git }
+                headers: { "X-Admin-Password": activePwd, "X-GitHub-Token": git }
             });
             const { data } = await res.json();
-            document.getElementById("waitlistCount").textContent = data.length;
-            document.getElementById("waitlistTableBody").innerHTML = data.map(u => `
-                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="py-4 text-gray-900 font-medium">${u.email}</td>
-                    <td class="py-4 text-gray-400 text-xs text-right">${new Date(u.created_at).toLocaleString()}</td>
-                </tr>
-            `).join('');
-        } catch (e) { console.error("Database sync failed", e); }
+            waitlistData = data;
+            document.getElementById("totalCount").textContent = data.length;
+            renderTable();
+        } catch (e) { console.error(e); }
     }
 
-    // --- 6. Broadcast Engine ---
-    const notifyForm = document.getElementById("notifyForm");
-    if (notifyForm) {
-        notifyForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const subject = document.getElementById("emailSubject").value;
-            const html = document.getElementById("emailBody").value;
-            const btn = document.getElementById("sendBtn");
-            const statusBox = document.getElementById("notifyStatus");
+    function renderTable() {
+        const tbody = document.getElementById("waitlistBody");
+        tbody.innerHTML = waitlistData.map(u => `
+            <tr class="hover:bg-white/5 transition-colors cursor-pointer row-select" data-email="${u.email}">
+                <td class="px-6 py-4"><input type="checkbox" class="custom-checkbox row-check" value="${u.email}"></td>
+                <td class="px-6 py-4 font-medium">${u.email}</td>
+                <td class="px-6 py-4 text-gray-400 text-xs text-right">${new Date(u.created_at).toLocaleString()}</td>
+            </tr>
+        `).join('');
 
-            if (!confirm("Dispatch broadcast to entire waitlist?")) return;
-            btn.disabled = true; btn.textContent = "Dispatching...";
-            statusBox.classList.add("hidden");
+        // Row click logic
+        document.querySelectorAll('.row-select').forEach(row => {
+            row.addEventListener('click', (e) => {
+                if(e.target.type !== 'checkbox') {
+                    const cb = row.querySelector('.row-check');
+                    cb.checked = !cb.checked;
+                    handleSelection(cb);
+                }
+            });
+        });
 
-            try {
-                const res = await fetch("/api/admin/notifications", {
-                    method: "POST",
-                    headers: {
-                        "X-Admin-Password": activePassword,
-                        "X-GitHub-Token": sessionStorage.getItem("dots_admin_git"),
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ subject, html })
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error);
-
-                statusBox.textContent = `Success: Delivered to ${data.count} users via Resend.`;
-                statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-green-100 text-green-700 border border-green-200 block";
-                notifyForm.reset();
-            } catch (error) {
-                statusBox.textContent = `Broadcast Failed: ${error.message}`;
-                statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-red-100 text-red-700 border border-red-200 block";
-            } finally {
-                btn.disabled = false; btn.textContent = "Dispatch Payload";
-            }
+        document.querySelectorAll('.row-check').forEach(cb => {
+            cb.addEventListener('change', (e) => handleSelection(e.target));
         });
     }
+
+    // Selection Logic
+    document.getElementById("selectAll").addEventListener("change", (e) => {
+        const isChecked = e.target.checked;
+        document.querySelectorAll('.row-check').forEach(cb => {
+            cb.checked = isChecked;
+            if (isChecked) selectedEmails.add(cb.value);
+            else selectedEmails.delete(cb.value);
+        });
+        updateActionBar();
+    });
+
+    function handleSelection(checkbox) {
+        if (checkbox.checked) selectedEmails.add(checkbox.value);
+        else selectedEmails.delete(checkbox.value);
+        updateActionBar();
+    }
+
+    function updateActionBar() {
+        document.getElementById("selectedCount").textContent = selectedEmails.size;
+        document.getElementById("recipientCountLabel").textContent = selectedEmails.size;
+        if (selectedEmails.size > 0) {
+            selectionActionBar.classList.remove("translate-y-24");
+        } else {
+            selectionActionBar.classList.add("translate-y-24");
+            composerPanel.classList.add("hidden");
+        }
+    }
+
+    // Composer UI
+    document.getElementById("composeBtn").addEventListener("click", () => {
+        composerPanel.classList.remove("hidden");
+    });
+    document.getElementById("closeComposerBtn").addEventListener("click", () => {
+        composerPanel.classList.add("hidden");
+    });
+
+    // Send Broadcast
+    document.getElementById("notifyForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const subject = document.getElementById("emailSubject").value;
+        const html = document.getElementById("emailBody").value;
+        const btn = document.getElementById("sendBtn");
+        const statusBox = document.getElementById("notifyStatus");
+
+        btn.disabled = true; btn.textContent = "Dispatching...";
+        statusBox.classList.add("hidden");
+
+        try {
+            const res = await fetch("/api/admin/notifications", {
+                method: "POST",
+                headers: {
+                    "X-Admin-Password": activePwd,
+                    "X-GitHub-Token": sessionStorage.getItem("dots_admin_git"),
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ subject, html, selectedEmails: Array.from(selectedEmails) })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error);
+
+            statusBox.textContent = `Payload delivered to ${data.count} targets.`;
+            statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-green-900/30 text-green-400 border border-green-500/20 block";
+            document.getElementById("notifyForm").reset();
+        } catch (err) {
+            statusBox.textContent = err.message;
+            statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-red-900/30 text-red-400 border border-red-500/20 block";
+        } finally {
+            btn.disabled = false; btn.textContent = "Dispatch to Targets";
+        }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        sessionStorage.clear(); location.reload();
+    });
 });
