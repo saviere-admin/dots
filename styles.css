@@ -11,6 +11,7 @@ html { scroll-behavior: auto; -webkit-font-smoothing: antialiased; }
     will-change: transform;
 }
 
+/* Custom Impact Sliders (Matches the screenshot exactly) */
 .slider-container { width: 100%; position: relative; }
 
 .impact-slider {
@@ -37,18 +38,6 @@ html { scroll-behavior: auto; -webkit-font-smoothing: antialiased; }
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .impact-slider::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.1); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-
-.impact-slider::-moz-range-thumb {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #ffffff;
-    border: 1px solid #d1d5db;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    cursor: grab;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-.impact-slider::-moz-range-thumb:active { cursor: grabbing; transform: scale(1.1); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
 
 @keyframes fadeInUp {
     from { opacity: 0; transform: translate3d(0, 40px, 0); }

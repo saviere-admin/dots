@@ -15,45 +15,44 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(raf);
     } catch(e) { console.error("Lenis error:", e); }
 
-    gsap.registerPlugin(ScrollTrigger);
+    gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
-    // --- 2. THE GOLDEN DOT ZOOM EFFECT ---
-    const stencilTl = gsap.timeline({
+    // --- 2. THE GOLDEN DOT ZOOM & SCATTER ---
+    const heroTl = gsap.timeline({
         scrollTrigger: {
-            trigger: "#zoom-scene",
+            trigger: "#hero-scene",
             start: "top top",
-            end: "+=350%", // Pin for 3.5 screen heights for a long, luxurious zoom
+            end: "+=400%", // Pin for 4 screen heights for an epic sequence
             pin: true,
             scrub: 1
         }
     });
 
-    // We scale the SVG up by 150x. 
-    // The exact center of the golden dot in your SVG is at X: 93.67%, Y: 71.61%
-    stencilTl.to("#hero-svg", {
-        scale: 150, 
-        transformOrigin: "93.67% 71.61%", 
+    // A. Zoom into the Golden Dot (Calculated exact center: 95.3% 71.5%)
+    heroTl.to("#hero-svg", {
+        scale: 250, 
+        transformOrigin: "95.3% 71.5%", 
         ease: "power2.inOut"
     })
-    .to("#svg-container", {
+    // B. Fade out black letters, turn background gold
+    .to("#black-letters", { opacity: 0, duration: 0.1 }, "-=0.3")
+    .to("#hero-scene", { backgroundColor: "#d0a84f", duration: 0.2 }, "-=0.3")
+    // C. Typewriter Effect
+    .to("#typewriter-container", { opacity: 1, duration: 0.1 })
+    .to("#typed-text", {
+        text: "Thoughtful products for everyday life.",
+        duration: 0.8,
+        ease: "none"
+    })
+    // D. Scatter the letters (Explosion)
+    .to("#typed-text", {
+        scale: 4,
         opacity: 0,
-        duration: 0.1
-    }, "-=0.2")
-    .to("#post-zoom-content", {
-        opacity: 1,
-        pointerEvents: "auto",
-        duration: 0.5
-    });
-    // Color transition to match the golden dot
-    gsap.to("#zoom-scene", {
-        backgroundColor: "#d0a84f",
-        scrollTrigger: {
-            trigger: "#zoom-scene",
-            start: "top top",
-            end: "+=350%",
-            scrub: 1
-        }
-    });
+        filter: "blur(20px)",
+        duration: 0.6,
+        ease: "power2.in"
+    })
+    .to("#scatter-text-wrapper", { display: "block", opacity: 1, duration: 0.2 });
 
     // --- 3. Pinned Section: The Habit Cards ---
     const tlPin = gsap.timeline({
@@ -66,14 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Counter animations for the numbers
-    tlPin.to(".pin-cards .text-6xl", {
-        innerHTML: function(i) { return [365, 2, 730][i]; },
-        roundProps: "innerHTML",
-        duration: 1.5,
-        ease: "power2.out",
-        stagger: 0.2
-    }, 0);
+    tlPin.from(".pin-cards > div", {
+        y: window.innerHeight,
+        opacity: 0,
+        stagger: 0.2,
+        duration: 1,
+        ease: "power3.out"
+    });
 
     // --- 4. Content Reveals ---
     gsap.utils.toArray('.gs-fade').forEach(elem => {
@@ -106,12 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 6. Live Architecture Calculator ---
     const sliderPeople = document.getElementById('slider-people');
     const sliderMonths = document.getElementById('slider-months');
-    const outTubes = document.getElementById('out-tubes');
-    const outWater = document.getElementById('out-water');
-
+    
     function calculateImpact() {
         if (!sliderPeople) return;
-        
         const people = parseInt(sliderPeople.value);
         const months = parseInt(sliderMonths.value);
         
@@ -121,13 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalTubes = Math.round(people * (months * 0.5));
         const totalWater = (totalTubes * 0.1).toFixed(1);
 
-        gsap.to(outTubes, { innerHTML: totalTubes, roundProps: "innerHTML", duration: 0.6, ease: "power2.out" });
-        
-        let dummy = { val: parseFloat(outWater.innerText) || 0 };
-        gsap.to(dummy, {
-            val: totalWater, duration: 0.6, ease: "power2.out",
-            onUpdate: function() { outWater.innerText = this.targets()[0].val.toFixed(1); }
-        });
+        document.getElementById('out-tubes').innerHTML = totalTubes;
+        document.getElementById('out-water').innerHTML = totalWater;
     }
 
     if (sliderPeople) {

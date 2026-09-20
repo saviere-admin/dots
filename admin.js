@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const authError = document.getElementById("authError");
     const dashboardView = document.getElementById("dashboardView");
 
-    // Session Check
+    // Check existing session
     const sPwd = sessionStorage.getItem("dots_admin_pwd");
     const sGit = sessionStorage.getItem("dots_admin_git");
     if (sPwd === REQUIRED_PWD && sGit) {
@@ -24,8 +24,10 @@ document.addEventListener("DOMContentLoaded", () => {
         authError.classList.remove("hidden");
     }
 
+    // Step 1: System Password
     if(pwdForm) {
         pwdForm.addEventListener("submit", (e) => {
+            e.preventDefault(); 
             const val = document.getElementById("sysPwd")?.value.trim();
             if (val === REQUIRED_PWD) {
                 activePwd = val;
@@ -39,16 +41,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Step 2: GitHub PAT (Allow ANY input so backend can verify it)
     if(gitForm) {
         gitForm.addEventListener("submit", async (e) => {
+            e.preventDefault(); 
             const gitToken = document.getElementById("gitToken")?.value.trim();
             const btn = document.getElementById("btnGit");
             
-            btn.textContent = "Verifying...";
+            btn.textContent = "Verifying Authority...";
             btn.disabled = true;
             authError.classList.add("hidden");
 
             try {
+                // Let the Cloudflare Backend verify the token. 
                 const res = await fetch("/api/admin/waitlist", {
                     headers: { "X-Admin-Password": activePwd, "X-GitHub-Token": gitToken }
                 });
@@ -81,18 +86,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: { "X-Admin-Password": activePwd, "X-GitHub-Token": gitToken }
             });
             const { data } = await res.json();
-            waitlistData = data;
+            waitlistData = data || [];
             
             const countEl = document.getElementById("totalCount");
-            if(countEl) countEl.textContent = data.length;
+            if(countEl) countEl.textContent = waitlistData.length;
             
             const tbody = document.getElementById("waitlistBody");
             if(tbody) {
                 tbody.innerHTML = waitlistData.map(u => `
                     <tr class="hover:bg-white/5 transition-colors cursor-pointer row-select" data-email="${u.email}">
                         <td class="px-6 py-4"><input type="checkbox" class="custom-checkbox row-check" value="${u.email}"></td>
-                        <td class="px-6 py-4 text-white">${u.name || 'Guest'}</td>
-                        <td class="px-6 py-4 font-medium text-gray-300">${u.email}</td>
+                        <td class="px-6 py-4 font-medium text-white">${u.name || 'Guest'}</td>
+                        <td class="px-6 py-4 text-gray-300">${u.email}</td>
                         <td class="px-6 py-4 text-gray-500 text-xs text-right">${new Date(u.created_at).toLocaleString()}</td>
                     </tr>
                 `).join('');
@@ -114,7 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (e) { console.error("Database sync failed", e); }
     }
 
-    // --- SELECTION & COMPOSER LOGIC ---
     const selectionActionBar = document.getElementById("selectionActionBar");
     const composerModal = document.getElementById("composerModal");
 
@@ -147,20 +151,22 @@ document.addEventListener("DOMContentLoaded", () => {
             selectionActionBar.classList.remove("translate-y-24", "opacity-0", "pointer-events-none");
         } else {
             selectionActionBar.classList.add("translate-y-24", "opacity-0", "pointer-events-none");
+            composerModal.classList.add("hidden");
         }
     }
 
-    document.getElementById("composeBtn").addEventListener("click", () => {
+    document.getElementById("composeBtn")?.addEventListener("click", () => {
         composerModal.classList.remove("hidden");
     });
     
-    document.getElementById("closeComposerBtn").addEventListener("click", () => {
+    document.getElementById("closeComposerBtn")?.addEventListener("click", () => {
         composerModal.classList.add("hidden");
     });
 
     const notifyForm = document.getElementById("notifyForm");
     if (notifyForm) {
         notifyForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
             const subject = document.getElementById("emailSubject").value;
             const html = document.getElementById("emailBody").value;
             const btn = document.getElementById("sendBtn");
@@ -183,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error);
 
-                statusBox.textContent = `Payload delivered to ${data.count} targets.`;
+                statusBox.innerHTML = `Payload delivered to <b>${data.count}</b> targets.`;
                 statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-green-900/30 text-green-400 block";
                 notifyForm.reset();
             } catch (err) {
@@ -195,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    document.getElementById("logoutBtn").addEventListener("click", () => {
+    document.getElementById("logoutBtn")?.addEventListener("click", () => {
         sessionStorage.clear(); location.reload();
     });
 });
