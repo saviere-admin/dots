@@ -1,13 +1,16 @@
+/* Apply Poppins Globally */
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
 /* Core Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #050505; }
 ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
 
-html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+html { scroll-behavior: auto; /* Disabled smooth to let Lenis take over */ -webkit-font-smoothing: antialiased; }
 
-/* -------------------------------------
-   Custom Impact Sliders (Match screenshot exactly)
--------------------------------------- */
+/* Custom Impact Sliders (Matches the screenshot exactly) */
 .slider-container { width: 100%; position: relative; }
 
 .impact-slider {

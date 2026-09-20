@@ -3,88 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dots. | Solid State Toothpaste Tablets in India</title>
+    <title>Solid State Toothpaste Tablets in India | Savière Group</title>
     
-    <!-- Ultra-Premium SEO Meta -->
-    <meta name="description" content="Discover dots., the clinical standard for solid-state toothpaste tablets in India. Zero water weight, zero plastic, powered by Nano-Hydroxyapatite. A Savière Group brand.">
-    <meta name="keywords" content="toothpaste tablets, toothpaste tablets in India, solid state toothpaste, Savière Group, eco-friendly oral care, Nano-Hydroxyapatite, zero waste toothpaste, fluoride toothpaste tablets alternative">
-    <meta name="author" content="Savière Group">
+    <!-- Deep SEO & Indian Market Targeting -->
+    <meta name="description" content="The clinical standard for solid-state toothpaste tablets in India. Zero water weight, zero plastic, powered by Nano-Hydroxyapatite. A Savière Group brand.">
+    <meta name="keywords" content="toothpaste tablets, toothpaste tablets in India, solid state toothpaste, Savière Group, eco-friendly oral care, Nano-Hydroxyapatite, zero waste toothpaste, travel toothpaste India">
     
-    <!-- OpenGraph / Social -->
-    <meta property="og:title" content="dots. | Clinical Precision, Zero Waste">
-    <meta property="og:description" content="Fundamentally re-engineered solid-state oral care. Experience the future of toothpaste tablets in India.">
-    <meta property="og:image" content="https://usedots.in/public/brand/og/dots-og.svg">
-    <meta property="og:url" content="https://usedots.in">
-    
-    <!-- Rich JSON-LD Schema -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      "name": "dots. Solid State Toothpaste",
-      "description": "Premium toothpaste tablets engineered for clinical precision and zero waste. Featuring Nano-Hydroxyapatite.",
-      "brand": {
-        "@type": "Brand",
-        "name": "dots.",
-        "parentOrganization": {
-          "@type": "Organization",
-          "name": "Savière Group Private Limited",
-          "location": "India"
-        }
-      },
-      "category": "Health & Beauty > Personal Care > Oral Care > Toothpaste"
-    }
-    </script>
-
-    <!-- Tailwind, GSAP, Lenis -->
+    <!-- GSAP, Lenis, Tailwind, & Poppins -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body class="antialiased selection:bg-black selection:text-white bg-[#050505] text-[#111111] overflow-x-hidden">
+<body class="antialiased selection:bg-black selection:text-white bg-[#FAFAFA] text-[#111111] overflow-x-hidden">
 
-    <!-- Navbar -->
+    <!-- Navigation -->
     <nav class="fixed w-full top-0 z-50 transition-all duration-500 mix-blend-difference" id="navbar">
         <div class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
-            <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots. logo" class="h-10 md:h-14 w-auto object-contain" id="nav-logo">
-            <a href="#waitlist" class="text-xs md:text-sm font-bold tracking-[0.15em] text-white hover:opacity-60 transition-opacity duration-300 uppercase">Join Waitlist</a>
+            <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="logo" class="h-10 md:h-14 w-auto object-contain" id="nav-logo">
+            <a href="#waitlist" class="text-xs md:text-sm font-semibold tracking-[0.15em] text-white hover:opacity-60 transition-opacity duration-300 uppercase">Join Waitlist</a>
         </div>
     </nav>
 
-    <!-- THE STENCIL REVEAL HERO -->
-    <section id="stencil-wrapper" class="relative h-screen w-full overflow-hidden bg-black">
-        <!-- The background image we will reveal -->
-        <div class="absolute inset-0 bg-cover bg-center opacity-80" style="background-image: url('https://images.unsplash.com/photo-1550005759-86641662fb8b?q=80&w=2500&auto=format&fit=crop');"></div>
+    <!-- 1. THE STENCIL ZOOM HERO -->
+    <section id="stencil-wrapper" class="relative h-screen w-full bg-black overflow-hidden">
+        <!-- The immersive background revealed through the text -->
+        <div class="absolute inset-0 bg-cover bg-center opacity-70" style="background-image: url('https://images.unsplash.com/photo-1606240212354-9cb68d1ea857?q=80&w=2500');"></div>
         
-        <!-- The Stencil Mask (White background, black text. Screen blend mode makes black transparent) -->
-        <div class="stencil-overlay absolute inset-0 bg-[#FAFAFA] flex flex-col items-center justify-center mix-blend-screen pointer-events-none">
-            <h1 id="stencil-text" class="text-[25vw] font-bold text-black leading-none tracking-tighter origin-center">
+        <!-- The Screen Blend Mask -->
+        <div id="stencil-mask" class="absolute inset-0 bg-[#FAFAFA] mix-blend-screen flex items-center justify-center will-change-transform">
+            <h1 id="stencil-text" class="text-[22vw] font-bold text-black tracking-tighter leading-none origin-center whitespace-nowrap">
                 dots.
             </h1>
         </div>
 
-        <!-- Fade in text that appears AFTER zooming through -->
+        <!-- Post-Zoom Content (Fades in after zooming through the text) -->
         <div id="hero-post-zoom" class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 opacity-0 text-white z-10 pointer-events-none">
-            <h2 class="text-4xl md:text-7xl font-bold tracking-tighter mb-6">Solid-state oral care.</h2>
-            <p class="text-xl md:text-2xl text-gray-200 font-light max-w-3xl mx-auto">
-                Fundamentally re-engineered for India. Zero plastic debt, zero water weight.
+            <span class="block text-xs md:text-sm font-bold tracking-[0.4em] uppercase text-gray-300 mb-6">Savière Group Presents</span>
+            <h2 class="text-5xl md:text-8xl font-bold tracking-tighter mb-8 leading-[1.1]">Solid-state oral care<br/>designed for India.</h2>
+            <p class="text-xl md:text-2xl text-gray-300 font-light max-w-3xl mx-auto">
+                Fundamentally re-engineered. Zero plastic debt, zero water weight.
             </p>
         </div>
     </section>
 
-    <!-- The Problem (Horizontal Scroll / Pinned) -->
-    <section id="habit-pin" class="bg-white relative z-20 h-screen flex items-center overflow-hidden">
+    <!-- 2. The Problem (Pinned Horizontal Scroll) -->
+    <section id="habit-pin" class="bg-white relative z-20 h-screen flex items-center overflow-hidden border-t border-gray-100">
         <div class="max-w-7xl mx-auto px-6 w-full flex flex-col lg:flex-row items-center justify-between gap-16">
             <div class="lg:w-1/2">
-                <h2 class="text-xs font-bold tracking-[0.3em] uppercase text-gray-400 mb-6">The Daily Ritual</h2>
-                <h3 class="text-5xl md:text-7xl font-semibold tracking-tight leading-[1.05] text-gray-900">
+                <h2 class="text-xs font-bold tracking-[0.3em] uppercase text-gray-400 mb-6">The Environmental Debt</h2>
+                <h3 class="text-4xl md:text-6xl font-semibold tracking-tight leading-[1.1] text-gray-900 mb-8">
                     Over 1.5 billion plastic tubes enter landfills annually.
                 </h3>
-                <p class="text-xl text-gray-500 mt-8 font-light">It is time for a better alternative to traditional toothpaste packaging.</p>
+                <p class="text-xl text-gray-500 font-light leading-relaxed">
+                    Toothpaste tubes are made from mixed materials—aluminum and plastic layered together—making them nearly impossible to recycle. We rely on them twice a day, every day. It's time to break the cycle.
+                </p>
             </div>
             
             <div class="lg:w-1/2 grid grid-cols-2 gap-6 w-full pin-cards">
@@ -104,18 +79,18 @@
         </div>
     </section>
 
-    <!-- Dark Science Section (SEO Optimized content) -->
+    <!-- 3. Dark Science Section (Clinical Facts & SEO) -->
     <section id="science" class="py-40 bg-[#050505] text-white relative z-20">
         <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
             <div>
                 <h2 class="text-xs font-bold tracking-[0.4em] uppercase text-gray-500 mb-8 gs-fade">Biological Purity</h2>
-                <h3 class="text-6xl md:text-8xl font-bold tracking-tighter mb-10 leading-none gs-fade">Zero water<br/>weight.</h3>
+                <h3 class="text-5xl md:text-7xl font-bold tracking-tighter mb-10 leading-none gs-fade">Eliminating<br/>water weight.</h3>
                 
-                <p class="text-2xl text-gray-400 leading-relaxed font-light mb-8 gs-fade">
-                    Standard toothpaste is up to <strong class="text-white">50% water</strong>. This creates a breeding ground for bacteria, requiring artificial preservatives and unrecyclable plastic tubes to stabilize.
+                <p class="text-xl md:text-2xl text-gray-400 leading-relaxed font-light mb-8 gs-fade">
+                    Standard toothpaste is up to <strong class="text-white">50% water</strong>. This creates a breeding ground for bacteria, requiring artificial preservatives, parabens, and multi-laminate plastic tubes to stabilize.
                 </p>
-                <p class="text-2xl text-gray-400 leading-relaxed font-light gs-fade">
-                    <strong class="text-white font-medium">dots.</strong> removes the water to deliver pure, solid-state <span class="text-white font-medium">Nano-Hydroxyapatite (Nano-HAp)</span>. Making up 97% of your tooth enamel, this active biomimetic naturally remineralizes micro-cavities. The ultimate toothpaste tablet ingredient.
+                <p class="text-xl md:text-2xl text-gray-400 leading-relaxed font-light gs-fade">
+                    <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots." class="inline h-[1em] translate-y-[-0.1em] object-contain"> removes the water to deliver pure, solid-state <span class="text-white font-medium">Nano-Hydroxyapatite (Nano-HAp)</span>. Making up 97% of your tooth enamel, this active biomimetic naturally remineralizes micro-cavities without the toxicity of traditional fluoride formulas.
                 </p>
             </div>
             
@@ -123,15 +98,25 @@
             <div class="relative h-[400px] md:h-[500px] w-full flex items-center justify-center gs-scale">
                 <div class="absolute inset-0 border border-gray-800 rounded-full animate-[spin_20s_linear_infinite]"></div>
                 <div class="absolute inset-16 border border-gray-800 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
-                <div class="text-center z-10">
+                <div class="text-center z-10 bg-[#050505] p-10 rounded-full shadow-[0_0_80px_rgba(255,255,255,0.05)]">
                     <div class="text-5xl md:text-7xl font-bold tracking-tighter text-white mb-2">Nano-HAp</div>
-                    <div class="text-gray-500 tracking-widest uppercase text-xs font-bold">Clinical Precision</div>
+                    <div class="text-gray-500 tracking-widest uppercase text-xs font-bold">100% Biocompatible</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Interactive Impact Calculator -->
+    <!-- 4. The Travel Experience -->
+    <section class="py-32 bg-[#111111] text-white border-t border-gray-900 relative z-20">
+        <div class="max-w-7xl mx-auto px-6 text-center gs-fade">
+            <h3 class="text-4xl md:text-6xl font-bold tracking-tighter mb-8">TSA-Approved by Default.</h3>
+            <p class="text-xl md:text-2xl text-gray-400 leading-relaxed font-light max-w-3xl mx-auto">
+                No liquids. No leaks. No plastic bags at airport security. <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots." class="inline h-[1em] translate-y-[-0.1em] object-contain"> is the ultimate travel toothpaste alternative, engineered for frequent flyers and modern professionals across India and the globe.
+            </p>
+        </div>
+    </section>
+
+    <!-- 5. Interactive Impact Calculator -->
     <section class="py-40 bg-[#FAFAFA] relative z-20" id="impact">
         <div class="max-w-6xl mx-auto px-6">
             <div class="text-center mb-20 gs-fade">
@@ -142,7 +127,7 @@
             
             <div class="grid grid-cols-1 md:grid-cols-12 gap-12 bg-white p-8 md:p-16 rounded-[3rem] shadow-[0_30px_80px_rgba(0,0,0,0.04)] border border-gray-100 gs-scale">
                 
-                <!-- Explicit Sliders -->
+                <!-- Sliders -->
                 <div class="md:col-span-5 space-y-16 flex flex-col justify-center">
                     <div class="slider-container">
                         <div class="flex justify-between items-center mb-6">
@@ -154,7 +139,7 @@
                     
                     <div class="slider-container">
                         <div class="flex justify-between items-center mb-6">
-                            <label class="text-sm font-bold tracking-[0.15em] uppercase text-gray-400">Months Using dots.</label>
+                            <label class="text-sm font-bold tracking-[0.15em] uppercase text-gray-400">Months Using <img src="https://usedots.in/public/brand/logos/dh/DotsTBBTWoS.png" alt="dots." class="inline h-[1em] translate-y-[-0.1em] object-contain"></label>
                             <span class="text-3xl font-bold text-gray-900" id="val-months">12</span>
                         </div>
                         <input type="range" min="1" max="24" value="12" class="impact-slider w-full" id="slider-months">
@@ -178,15 +163,15 @@
         </div>
     </section>
 
-    <!-- Waitlist Section -->
+    <!-- 6. Waitlist Section -->
     <section id="waitlist" class="py-40 bg-white border-t border-gray-100 relative z-20">
         <div class="max-w-4xl mx-auto px-6 text-center gs-fade">
             <h3 class="text-6xl md:text-8xl font-bold tracking-tighter mb-8">There is another way.</h3>
-            <p class="text-gray-500 text-2xl mb-16 font-light">Join the waitlist to be notified when dots. launches in India.</p>
+            <p class="text-gray-500 text-2xl mb-16 font-light">Join the waitlist to be notified when <img src="https://usedots.in/public/brand/logos/dh/DotsTBBTWoS.png" alt="dots." class="inline h-[1em] translate-y-[-0.1em] object-contain"> launches in India.</p>
             
             <form id="waitlistForm" class="flex flex-col sm:flex-row gap-4 max-w-3xl mx-auto relative z-20">
-                <input type="email" id="waitlistEmail" required placeholder="Enter your email address" class="flex-1 px-10 py-6 rounded-full border border-gray-200 bg-[#FAFAFA] text-xl focus:outline-none focus:border-black transition-all shadow-inner">
-                <button type="submit" id="waitlistBtn" class="px-12 py-6 bg-black text-white rounded-full font-medium text-xl hover:bg-gray-800 hover:scale-105 transition-all shadow-xl">
+                <input type="email" id="waitlistEmail" required placeholder="Enter your email address" class="flex-1 px-10 py-6 rounded-full border border-gray-200 bg-[#FAFAFA] text-xl focus:outline-none focus:border-black transition-all shadow-inner font-poppins">
+                <button type="submit" id="waitlistBtn" class="px-12 py-6 bg-black text-white rounded-full font-medium text-xl hover:bg-gray-800 hover:scale-105 transition-all shadow-xl font-poppins">
                     Request Access
                 </button>
             </form>
@@ -197,14 +182,15 @@
     <!-- Footer -->
     <footer class="py-24 bg-[#050505] text-white relative z-20">
         <div class="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
-            <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots. logo" class="h-12 md:h-16 w-auto object-contain mb-16 opacity-80">
+            <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots." class="h-12 md:h-16 w-auto object-contain mb-16 opacity-80">
             
-            <div class="flex gap-6 mb-16">
+            <div class="flex flex-wrap justify-center gap-6 mb-16">
                 <span class="px-6 py-3 bg-[#111] border border-gray-800 rounded-full text-xs font-bold tracking-[0.2em] uppercase text-gray-400">Cruelty-Free</span>
                 <span class="px-6 py-3 bg-[#111] border border-gray-800 rounded-full text-xs font-bold tracking-[0.2em] uppercase text-gray-400">100% Waterless</span>
+                <span class="px-6 py-3 bg-[#111] border border-gray-800 rounded-full text-xs font-bold tracking-[0.2em] uppercase text-gray-400">Nano-HAp</span>
             </div>
             <div class="text-xs font-medium tracking-[0.2em] uppercase text-gray-500">
-                dots. © 2026. A brand of Savière Group Private Limited. Designed for India.
+                <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots." class="inline h-[1em] translate-y-[-0.1em] object-contain opacity-50"> © 2026. A brand of Savière Group Private Limited. Designed for India.
             </div>
         </div>
     </footer>

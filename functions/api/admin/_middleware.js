@@ -14,7 +14,7 @@ export async function onRequest(context) {
     const githubToken = request.headers.get("X-GitHub-Token");
 
     if (!adminPassword || !githubToken) {
-        return new Response(JSON.stringify({ error: "Missing authentication credentials." }), { status: 401 });
+        return new Response(JSON.stringify({ error: "Missing credentials." }), { status: 401 });
     }
 
     if (adminPassword !== env.ADMIN_PASSWORD) {
@@ -22,28 +22,34 @@ export async function onRequest(context) {
     }
 
     try {
+        // Ping GitHub to verify the PAT
         const ghResponse = await fetch("https://api.github.com/user", {
             headers: {
-                "Authorization": `token ${githubToken}`,
+                "Authorization": `Bearer ${githubToken}`,
                 "User-Agent": "dots-admin-console",
                 "Accept": "application/vnd.github.v3+json"
             }
         });
 
         if (!ghResponse.ok) {
-            const ghError = await ghResponse.text();
-            return new Response(JSON.stringify({ error: `GitHub API Error: ${ghError}` }), { status: 401 });
+            const ghError = await ghResponse.json();
+            // This will tell you if it's a scope issue or a bad token
+            return new Response(JSON.stringify({ 
+                error: `GitHub rejected token: ${ghError.message}. Ensure PAT has 'read:user' scope.` 
+            }), { status: 401 });
         }
 
         const ghUser = await ghResponse.json();
         const expectedUser = (env.GITHUB_ADMIN_USERNAME || "saviere-admin").toLowerCase();
         
         if (ghUser.login.toLowerCase() !== expectedUser) {
-            return new Response(JSON.stringify({ error: `Unauthorized. Expected ${expectedUser}, got ${ghUser.login}` }), { status: 403 });
+            return new Response(JSON.stringify({ 
+                error: `Token belongs to ${ghUser.login}, expected ${expectedUser}.` 
+            }), { status: 403 });
         }
     } catch (err) {
-        return new Response(JSON.stringify({ error: `Network error verifying GitHub token: ${err.message}` }), { status: 500 });
+        return new Response(JSON.stringify({ error: `Network error: ${err.message}` }), { status: 500 });
     }
 
-    return next();
+    return next(); // Auth passed, route to the requested API
 }

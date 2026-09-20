@@ -49,8 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
         patBtn.textContent = "Verifying...";
         patError.classList.add("hidden");
 
+        // Inside patForm.addEventListener("submit", async (e) => { ...
         try {
-            // Ping waitlist API to verify both credentials
             const res = await fetch("/api/admin/waitlist", {
                 headers: {
                     "X-Admin-Password": activePassword,
@@ -58,7 +58,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-            if (!res.ok) throw new Error("GitHub Authorization failed or token invalid.");
+            const data = await res.json();
+            
+            if (!res.ok) {
+                // This will now print the exact middleware error (e.g. Scope missing)
+                throw new Error(data.error || "GitHub Authorization failed.");
+            }
 
             // Store success
             sessionStorage.setItem("dots_admin_pwd", activePassword);
@@ -67,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
             unlockDashboard(gitToken);
 
         } catch (error) {
-            patError.textContent = error.message;
+            patError.textContent = error.message; // Will display the exact GitHub reject reason
             patError.classList.remove("hidden");
             patBtn.textContent = "Connect Backend";
         }

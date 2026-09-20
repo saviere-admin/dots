@@ -13,39 +13,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     requestAnimationFrame(raf);
 
-    // --- 2. GSAP Animations & Stencil Zoom ---
     gsap.registerPlugin(ScrollTrigger);
 
-    // The Stencil Zoom Effect
+    // --- 2. THE STENCIL ZOOM EFFECT ---
     const stencilTl = gsap.timeline({
         scrollTrigger: {
             trigger: "#stencil-wrapper",
             start: "top top",
-            end: "+=250%", // Scroll distance for the zoom
-            pin: true,     // Lock screen in place
-            scrub: 1       // Smooth scrubbing
+            end: "+=300%", // Pin for 3 screen heights to give a long, smooth zoom
+            pin: true,
+            scrub: 1
         }
     });
 
-    // Scale the text massively so the transparent hole fills the screen
+    // Scale the text up infinitely so the background reveals
     stencilTl.to("#stencil-text", {
-        scale: 150,
+        scale: 120, // Huge scale to pass through the 'o' or 'd'
         transformOrigin: "center center",
         ease: "power2.inOut"
     })
-    // Fade out the overlay to leave just the background image
-    .to(".stencil-overlay", {
+    // Fade out the white mask completely
+    .to("#stencil-mask", {
         opacity: 0,
         duration: 0.1
     }, "-=0.2")
-    // Fade in the hero text over the background image
+    // Fade in the hero text
     .to("#hero-post-zoom", {
         opacity: 1,
         pointerEvents: "auto",
-        duration: 0.5
+        duration: 0.4
     });
 
-    // Pinned Section: The Habit Cards
+    // --- 3. Pinned Section: The Habit ---
     const tlPin = gsap.timeline({
         scrollTrigger: {
             trigger: "#habit-pin",
@@ -63,23 +62,22 @@ document.addEventListener('DOMContentLoaded', () => {
         ease: "power3.out"
     });
 
-    // Standard Fade Ups
+    // --- 4. General Reveals ---
     gsap.utils.toArray('.gs-fade').forEach(elem => {
         gsap.from(elem, {
-            y: 40, opacity: 0, duration: 1.2, ease: "power3.out",
+            y: 40, opacity: 0, duration: 1.5, ease: "power3.out",
             scrollTrigger: { trigger: elem, start: "top 85%" }
         });
     });
 
-    // Scale effects
     gsap.utils.toArray('.gs-scale').forEach(elem => {
         gsap.from(elem, {
-            scale: 0.9, opacity: 0, duration: 1.5, ease: "power3.out",
+            scale: 0.95, opacity: 0, duration: 1.5, ease: "power3.out",
             scrollTrigger: { trigger: elem, start: "top 85%" }
         });
     });
 
-    // --- 3. Live Architecture Calculator ---
+    // --- 5. Live Architecture Calculator ---
     const sliderPeople = document.getElementById('slider-people');
     const sliderMonths = document.getElementById('slider-months');
     const valPeople = document.getElementById('val-people');
@@ -117,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateImpact(); 
     }
 
-    // --- 4. Waitlist Hook ---
+    // --- 6. Waitlist API Hook ---
     const waitlistForm = document.getElementById('waitlistForm');
     if (waitlistForm) {
         waitlistForm.addEventListener('submit', async (e) => {
