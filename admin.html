@@ -107,14 +107,13 @@
         </div>
     </div>
 
-    <!-- Explicit Global JS to guarantee execution without file linking issues -->
+    <!-- Inline JS to guarantee execution without file linking issues -->
     <script>
         const REQUIRED_PWD = "Saviere@798959885#";
         let activePwd = null;
         let selectedEmails = new Set();
         let waitlistData = [];
 
-        // Check Session
         const sPwd = sessionStorage.getItem("dots_admin_pwd");
         const sGit = sessionStorage.getItem("dots_admin_git");
         if (sPwd === REQUIRED_PWD && sGit) {

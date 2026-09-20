@@ -17,7 +17,6 @@
 </head>
 <body class="antialiased selection:bg-[#d0a84f] selection:text-white bg-[#FAFAFA] text-[#111111] overflow-x-hidden font-poppins">
 
-    <!-- Navbar -->
     <nav class="fixed w-full top-0 z-50 transition-transform duration-500 bg-white/80 backdrop-blur-md border-b border-gray-100/50" id="navbar">
         <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
             <h2 class="text-black font-bold text-2xl tracking-tighter" id="nav-logo">dots<span class="text-[#d0a84f]">.</span></h2>
@@ -41,7 +40,7 @@
             <span class="block text-xs md:text-sm font-bold tracking-[0.4em] uppercase text-white/70 mb-6" id="hero-tagline">In Daily Life</span>
             
             <!-- Typewriter and Scatter Target -->
-            <div id="scatter-text" class="text-4xl md:text-6xl lg:text-[6rem] font-bold tracking-tighter mb-8 leading-[1.05] text-white max-w-4xl mx-auto flex flex-wrap justify-center">
+            <div id="scatter-text" class="text-4xl md:text-6xl lg:text-[7rem] font-bold tracking-tighter mb-8 leading-[1.05] text-white max-w-5xl mx-auto flex flex-wrap justify-center">
                 Thoughtful products for everyday life.
             </div>
             
@@ -52,12 +51,11 @@
     </section>
 
     <!-- The Problem (Pinned Scroll) -->
-    <!-- Matches Screenshot: "What if the product you rely on twice a day was fundamentally engineered differently?" -->
     <section id="habit-pin" class="bg-white relative z-30 flex items-center overflow-hidden border-t border-gray-100 py-32 md:py-0 md:h-screen">
         <div class="max-w-7xl mx-auto px-6 w-full flex flex-col lg:flex-row items-center justify-between gap-16">
             <div class="lg:w-1/2">
                 <h2 class="text-xs font-bold tracking-[0.3em] uppercase text-[#d0a84f] mb-6">You use it every day.</h2>
-                <h3 class="text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.05] text-gray-900 mb-8">
+                <h3 class="text-4xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.05] text-gray-900 mb-8">
                     What if the product you rely on twice a day was fundamentally engineered differently?
                 </h3>
                 <p class="text-lg md:text-xl text-gray-500 font-light leading-relaxed mb-4">
@@ -70,15 +68,15 @@
             
             <div class="lg:w-1/2 grid grid-cols-2 gap-4 md:gap-6 w-full pin-cards">
                 <div class="3d-card p-8 md:p-12 bg-[#FAFAFA] rounded-[2rem] md:rounded-[3rem] border border-gray-100 flex flex-col justify-center items-center text-center shadow-sm">
-                    <div class="text-6xl md:text-8xl lg:text-[7rem] font-bold tracking-tighter mb-2 text-[#111]">365</div>
+                    <div class="text-6xl md:text-8xl lg:text-[7rem] font-bold tracking-tighter mb-2 text-[#111]" id="count-days">0</div>
                     <div class="text-[10px] md:text-xs font-bold tracking-widest text-gray-400 uppercase">Days a year</div>
                 </div>
                 <div class="3d-card p-8 md:p-12 bg-[#FAFAFA] rounded-[2rem] md:rounded-[3rem] border border-gray-100 flex flex-col justify-center items-center text-center shadow-sm">
-                    <div class="text-6xl md:text-8xl lg:text-[7rem] font-bold tracking-tighter mb-2 text-[#111]">2</div>
+                    <div class="text-6xl md:text-8xl lg:text-[7rem] font-bold tracking-tighter mb-2 text-[#111]" id="count-times">0</div>
                     <div class="text-[10px] md:text-xs font-bold tracking-widest text-gray-400 uppercase">Times a day</div>
                 </div>
                 <div class="3d-card p-10 md:p-14 bg-[#0a0a0a] text-white rounded-[2rem] md:rounded-[3rem] flex flex-col justify-center items-center text-center col-span-2 shadow-2xl border border-gray-900">
-                    <div class="text-7xl md:text-[8rem] lg:text-[9rem] font-bold tracking-tighter mb-2 text-[#d0a84f] leading-none">730</div>
+                    <div class="text-7xl md:text-[8rem] lg:text-[9rem] font-bold tracking-tighter mb-2 text-[#d0a84f] leading-none" id="count-moments">0</div>
                     <div class="text-[10px] md:text-xs font-bold tracking-widest text-gray-400 uppercase">Brushing moments 💧</div>
                 </div>
             </div>
@@ -108,64 +106,63 @@
         </div>
     </section>
 
-    <!-- Interactive Impact Calculator (Matches Screenshot Exactly) -->
+    <!-- Interactive Impact Calculator -->
     <section class="py-32 md:py-40 bg-[#FAFAFA] relative z-20" id="impact">
         <div class="max-w-6xl mx-auto px-6">
-            <div class="text-center mb-16 md:mb-20 gs-header-lock">
+            <div class="text-center mb-16 md:mb-20 gs-fade">
                 <h2 class="text-xs font-bold tracking-[0.3em] uppercase text-[#d0a84f] mb-6">Live Architecture</h2>
                 <h3 class="text-4xl md:text-7xl lg:text-[6rem] font-bold tracking-tighter mb-6 text-gray-900">The format changes the equation.</h3>
             </div>
             
-            <!-- Calculator Card -->
-            <div class="bg-white p-8 md:p-16 rounded-[3rem] shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-gray-100 flex flex-col lg:flex-row gap-12 gs-scale">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 bg-white p-8 md:p-16 rounded-[2rem] md:rounded-[3rem] shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-gray-100 gs-scale">
                 
                 <!-- Sliders -->
-                <div class="flex-1 flex flex-col justify-center gap-12 lg:border-r border-gray-100 lg:pr-12">
+                <div class="md:col-span-6 space-y-12 flex flex-col justify-center lg:border-r border-gray-100 lg:pr-12">
                     <div class="slider-container">
                         <div class="flex justify-between items-center mb-4">
-                            <label class="text-xs font-bold tracking-[0.15em] uppercase text-gray-400">Household Variables</label>
-                            <span class="text-3xl font-bold text-[#d0a84f]" id="val-people">2</span>
+                            <label class="text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase text-gray-400">Household Variables</label>
+                            <span class="text-2xl md:text-3xl font-bold text-[#d0a84f]" id="val-people">2</span>
                         </div>
                         <input type="range" min="1" max="6" value="2" class="impact-slider w-full" id="slider-people">
                     </div>
                     
                     <div class="slider-container">
                         <div class="flex justify-between items-center mb-4">
-                            <label class="text-xs font-bold tracking-[0.15em] uppercase text-gray-400">Months Using dots.</label>
-                            <span class="text-3xl font-bold text-[#d0a84f]" id="val-months">12</span>
+                            <label class="text-[10px] md:text-xs font-bold tracking-[0.15em] uppercase text-gray-400">Months Using dots.</label>
+                            <span class="text-2xl md:text-3xl font-bold text-[#d0a84f]" id="val-months">12</span>
                         </div>
                         <input type="range" min="1" max="24" value="12" class="impact-slider w-full" id="slider-months">
                     </div>
                 </div>
 
                 <!-- Outputs -->
-                <div class="flex-1 grid grid-cols-2 gap-8 items-center border-t lg:border-t-0 border-gray-100 pt-8 lg:pt-0">
-                    <div class="flex flex-col">
-                        <div class="text-gray-400 text-[10px] md:text-xs font-bold mb-4 uppercase tracking-[0.15em]">Plastic Packaging Avoided</div>
-                        <div class="text-6xl md:text-7xl lg:text-[6rem] font-bold tracking-tighter text-[#111] mb-2 leading-none" id="out-tubes">0</div>
-                        <div class="text-xs md:text-sm font-medium text-gray-400">grams</div>
+                <div class="md:col-span-6 grid grid-cols-2 gap-6 md:gap-8 items-center pt-8 md:pt-0">
+                    <div class="flex flex-col justify-center">
+                        <div class="text-gray-400 text-[10px] font-bold mb-4 uppercase tracking-[0.15em]">Plastic Packaging Avoided</div>
+                        <div class="text-6xl md:text-7xl lg:text-[6rem] font-bold tracking-tighter text-[#111] mb-2 leading-none" id="out-plastic">0</div>
+                        <div class="text-xs font-medium text-gray-400">grams</div>
                     </div>
-                    <div class="flex flex-col">
-                        <div class="text-gray-400 text-[10px] md:text-xs font-bold mb-4 uppercase tracking-[0.15em]">Freight Mass Reduction</div>
-                        <div class="text-6xl md:text-7xl lg:text-[6rem] font-bold tracking-tighter text-[#111] mb-2 leading-none" id="out-water">0</div>
-                        <div class="text-xs md:text-sm font-medium text-gray-400">kg</div>
+                    <div class="flex flex-col justify-center">
+                        <div class="text-gray-400 text-[10px] font-bold mb-4 uppercase tracking-[0.15em]">Freight Mass Reduction</div>
+                        <div class="text-6xl md:text-7xl lg:text-[6rem] font-bold tracking-tighter text-[#111] mb-2 leading-none" id="out-freight">0</div>
+                        <div class="text-xs font-medium text-gray-400">kg</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Waitlist Section (Matches Form Screenshot) -->
+    <!-- Waitlist Section -->
     <section id="waitlist" class="py-32 md:py-40 bg-white border-t border-gray-100 relative z-20">
         <div class="max-w-4xl mx-auto px-6 text-center gs-fade">
             <h3 class="text-5xl md:text-7xl lg:text-[7rem] font-bold tracking-tighter mb-6 md:mb-8 text-[#111]">There is another way.</h3>
-            <p class="text-gray-500 text-lg md:text-xl mb-12 md:mb-16 font-light max-w-2xl mx-auto">
+            <p class="text-gray-500 text-lg md:text-2xl mb-12 md:mb-16 font-light max-w-3xl mx-auto">
                 Rethinking everyday oral care through precise, solid-state formulations. Designed to minimize environmental debt without compromising the ritual.
             </p>
             
-            <form id="waitlistForm" class="flex flex-col gap-4 max-w-md mx-auto relative z-20" onsubmit="event.preventDefault(); return false;">
-                <input type="text" id="waitlistName" required placeholder="Name" class="w-full px-8 py-5 rounded-[2rem] border border-gray-200 bg-[#FAFAFA] text-lg focus:outline-none focus:border-[#d0a84f] transition-all font-poppins text-center">
-                <input type="email" id="waitlistEmail" required placeholder="Email Address" class="w-full px-8 py-5 rounded-[2rem] border border-gray-200 bg-[#FAFAFA] focus:bg-[#fefce8] text-lg focus:outline-none focus:border-[#d0a84f] transition-all font-poppins text-center">
+            <form id="waitlistForm" class="flex flex-col gap-4 max-w-md mx-auto relative z-20" onsubmit="event.preventDefault(); window.submitWaitlist(); return false;">
+                <input type="text" id="waitlistName" required placeholder="Name" class="w-full px-8 py-5 rounded-[2rem] border border-gray-200 bg-[#FAFAFA] text-lg focus:outline-none focus:border-[#d0a84f] transition-all font-poppins">
+                <input type="email" id="waitlistEmail" required placeholder="Email Address" class="w-full px-8 py-5 rounded-[2rem] border border-gray-200 bg-[#FAFAFA] focus:bg-[#fefce8] text-lg focus:outline-none focus:border-[#d0a84f] transition-all font-poppins">
                 <button type="submit" id="waitlistBtn" class="w-full py-5 bg-[#111] text-white rounded-[2rem] font-semibold text-lg hover:bg-black hover:-translate-y-1 transition-all shadow-lg font-poppins mt-2">
                     Join Waitlist
                 </button>
@@ -177,18 +174,262 @@
     <!-- Footer -->
     <footer class="py-20 md:py-24 bg-[#050505] text-white relative z-20">
         <div class="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
-            <h2 class="text-white font-bold text-3xl md:text-4xl tracking-tighter mb-10 opacity-80">dots<span class="text-[#d0a84f]">.</span></h2>
             
-            <div class="flex flex-wrap justify-center gap-4 md:gap-6 mb-12">
-                <span class="px-5 py-2.5 bg-[#111] border border-[#d0a84f]/20 rounded-full text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-[#d0a84f]">Cruelty-Free</span>
-                <span class="px-5 py-2.5 bg-[#111] border border-[#d0a84f]/20 rounded-full text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-[#d0a84f]">Waterless</span>
+            <!-- Social Links -->
+            <div class="flex gap-6 mb-12">
+                <a href="https://www.instagram.com/usedots.in/" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                </a>
+                <a href="https://x.com/UseDots_In" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+                <a href="https://www.linkedin.com/showcase/" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                </a>
+                <a href="https://www.facebook.com/usedots.in" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                <a href="https://www.threads.com/@usedots.in" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M16.143 15.65c-.8.814-1.968 1.341-3.325 1.341-2.457 0-4.462-1.944-4.462-4.453 0-2.508 2.005-4.453 4.462-4.453 2.108 0 3.914 1.455 4.356 3.42h2.247c-.496-3.14-3.186-5.566-6.603-5.566-3.714 0-6.709 2.946-6.709 6.599 0 3.652 2.995 6.598 6.709 6.598 1.952 0 3.712-.835 4.945-2.167.925 1.464 2.506 2.428 4.264 2.428 2.802 0 5.074-2.235 5.074-4.992V9.897H14.85v2.146h5.05v2.362c0 1.574-1.298 2.846-2.927 2.846-1.579 0-2.883-1.22-2.927-2.784v-.004l-2.25-.015c.063 2.85 2.441 5.145 5.324 5.145 1.932 0 3.626-1.042 4.542-2.613-1.082 1.636-2.941 2.716-5.042 2.716-3.305 0-5.986-2.637-5.986-5.888 0-3.25 2.681-5.887 5.986-5.887 3.018 0 5.516 2.193 5.918 5.056h-2.181z"/></svg>
+                </a>
             </div>
+
+            <div class="flex gap-4 md:gap-6 mb-12">
+                <span class="px-5 py-2.5 bg-black border border-[#d0a84f]/20 rounded-full text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-[#d0a84f]">Cruelty-Free</span>
+                <span class="px-5 py-2.5 bg-black border border-[#d0a84f]/20 rounded-full text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-[#d0a84f]">Waterless</span>
+            </div>
+            
+            <!-- Precise Footer Copy -->
             <div class="text-[10px] md:text-xs font-medium tracking-[0.2em] uppercase text-gray-500 leading-loose">
-                A Subsidiary Brand Of dots. © 2026 All rights reserved.<br class="md:hidden"/> A brand of Savière Group Private Limited.
+                A Subsidiary Brand Of<br/>
+                dots. © 2026 All rights reserved. A BRAND OF SAVIÈRE GROUP PRIVATE LIMITED.
             </div>
         </div>
     </footer>
 
-    <script src="/app.js"></script>
+    <!-- INLINED SCRIPT FOR ABSOLUTE RELIABILITY -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Lenis Smooth Scrolling
+            let lenis;
+            try {
+                lenis = new Lenis({
+                    duration: 1.2,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    smooth: true,
+                    wheelMultiplier: 1,
+                });
+                function raf(time) {
+                    lenis.raf(time);
+                    requestAnimationFrame(raf);
+                }
+                requestAnimationFrame(raf);
+            } catch(e) { console.error("Lenis init failed:", e); }
+
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+            gsap.registerPlugin(ScrollTrigger);
+
+            // --- NAVBAR HIDE/SHOW LOGIC ---
+            const navbar = document.getElementById("navbar");
+            let lastScrollY = window.scrollY;
+            if(navbar) {
+                window.addEventListener("scroll", () => {
+                    if (window.scrollY > 50) {
+                        if (window.scrollY > lastScrollY) {
+                            navbar.style.transform = "translateY(-100%)";
+                        } else {
+                            navbar.style.transform = "translateY(0)";
+                        }
+                    } else {
+                        navbar.style.transform = "translateY(0)";
+                    }
+                    lastScrollY = window.scrollY;
+                });
+            }
+
+            // --- THE GOLDEN DOT ZOOM & SCATTER ---
+            const textElement = document.getElementById("scatter-text");
+            if(textElement) {
+                const text = textElement.innerText;
+                textElement.innerHTML = "";
+                text.split(" ").forEach(word => {
+                    const wordSpan = document.createElement("span");
+                    wordSpan.className = "inline-block mr-[0.3em] whitespace-nowrap";
+                    word.split("").forEach(char => {
+                        const charSpan = document.createElement("span");
+                        charSpan.innerText = char;
+                        charSpan.className = "scatter-char inline-block opacity-0 translate-y-4";
+                        wordSpan.appendChild(charSpan);
+                    });
+                    textElement.appendChild(wordSpan);
+                });
+            }
+
+            const heroScene = document.getElementById("hero-scene");
+            if (heroScene) {
+                const heroTl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: "#hero-scene",
+                        start: "top top",
+                        end: "+=400%", // Very long pin for full experience
+                        pin: true,
+                        scrub: 1
+                    }
+                });
+
+                heroTl.to("#hero-svg", {
+                    scale: 180, 
+                    transformOrigin: "93.6% 71.6%", 
+                    ease: "power1.inOut",
+                    duration: 2
+                })
+                .to("#black-letters", { opacity: 0, duration: 0.1 }, "-=0.5")
+                .to("#hero-scene", { backgroundColor: "#d0a84f", duration: 0.3 }, "-=0.5")
+                .to("#post-zoom-content", {
+                    opacity: 1,
+                    pointerEvents: "auto",
+                    duration: 0.1
+                }, "-=0.2")
+                .to(".scatter-char", {
+                    opacity: 1,
+                    y: 0,
+                    stagger: 0.02,
+                    duration: 0.5,
+                    ease: "back.out(1.7)"
+                })
+                .to("#hero-cta", { opacity: 1, y: 0, duration: 0.5 }, "-=0.2")
+                .to(".scatter-char", {
+                    x: () => (Math.random() - 0.5) * 1200,
+                    y: () => (Math.random() - 0.5) * 1200,
+                    z: () => Math.random() * 800,
+                    rotationX: () => Math.random() * 720,
+                    rotationY: () => Math.random() * 720,
+                    opacity: 0,
+                    filter: "blur(15px)",
+                    stagger: 0.01,
+                    duration: 1.5,
+                    ease: "power3.inOut"
+                })
+                .to("#hero-cta, #hero-tagline", { opacity: 0, duration: 0.5 }, "-=1.5");
+            }
+
+            // --- Pinned Section: The Habit Cards ---
+            if (window.innerWidth > 768 && document.getElementById("habit-pin")) {
+                const tlPin = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: "#habit-pin",
+                        start: "top top",
+                        end: "+=100%",
+                        pin: true,
+                        scrub: 1
+                    }
+                });
+                
+                tlPin.from(".pin-cards > div", {
+                    y: window.innerHeight,
+                    opacity: 0,
+                    stagger: 0.2,
+                    duration: 1,
+                    ease: "power3.out"
+                });
+
+                tlPin.to("#count-days", { innerHTML: 365, roundProps: "innerHTML", duration: 1, ease: "power2.out" }, "-=0.5");
+                tlPin.to("#count-times", { innerHTML: 2, roundProps: "innerHTML", duration: 1, ease: "power2.out" }, "-=0.5");
+                tlPin.to("#count-moments", { innerHTML: 730, roundProps: "innerHTML", duration: 1, ease: "power2.out" }, "-=0.5");
+            }
+
+            // --- General Reveals ---
+            gsap.utils.toArray('.gs-fade').forEach(elem => {
+                gsap.from(elem, {
+                    y: 40, opacity: 0, duration: 1, ease: "power3.out",
+                    scrollTrigger: { trigger: elem, start: "top 85%" }
+                });
+            });
+
+            gsap.utils.toArray('.gs-scale').forEach(elem => {
+                gsap.from(elem, {
+                    scale: 0.95, opacity: 0, duration: 1.2, ease: "power3.out",
+                    scrollTrigger: { trigger: elem, start: "top 85%" }
+                });
+            });
+
+            // --- Interactive 3D Cards ---
+            document.querySelectorAll('.3d-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    card.style.transform = `perspective(1000px) rotateX(${-y / 25}deg) rotateY(${x / 25}deg) scale(1.02)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)`;
+                });
+            });
+
+            // --- Live Architecture Calculator ---
+            const sliderPeople = document.getElementById('slider-people');
+            const sliderMonths = document.getElementById('slider-months');
+            
+            window.calculateImpact = function() {
+                if (!sliderPeople || !sliderMonths) return;
+                
+                const people = parseInt(sliderPeople.value);
+                const months = parseInt(sliderMonths.value);
+                
+                document.getElementById('val-people').innerText = people;
+                document.getElementById('val-months').innerText = months;
+
+                const totalTubes = Math.round(people * (months * 0.5));
+                const totalPlastic = totalTubes * 20;
+                const totalWater = (totalTubes * 0.1).toFixed(1);
+
+                gsap.to("#out-plastic", { innerHTML: totalPlastic, roundProps: "innerHTML", duration: 0.6, ease: "power2.out" });
+                
+                let dummy = { val: parseFloat(document.getElementById('out-freight').innerText) || 0 };
+                gsap.to(dummy, {
+                    val: totalWater, duration: 0.6, ease: "power2.out",
+                    onUpdate: function() { document.getElementById('out-freight').innerText = this.targets()[0].val.toFixed(1); }
+                });
+            }
+
+            if (sliderPeople) {
+                sliderPeople.addEventListener('input', calculateImpact);
+                sliderMonths.addEventListener('input', calculateImpact);
+                calculateImpact(); 
+            }
+
+            // --- Waitlist API Hook ---
+            window.submitWaitlist = async function() {
+                const name = document.getElementById('waitlistName').value.trim();
+                const email = document.getElementById('waitlistEmail').value.trim();
+                const btn = document.getElementById('waitlistBtn');
+                const msg = document.getElementById('waitlistMsg');
+                
+                btn.disabled = true; btn.textContent = 'Processing...';
+                msg.classList.add('hidden');
+
+                try {
+                    const response = await fetch('/api/waitlist', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email })
+                    });
+                    const data = await response.json();
+                    
+                    if (!response.ok) throw new Error(data.error || 'Failed to join waitlist.');
+
+                    document.getElementById('waitlistForm').classList.add('hidden');
+                    msg.innerHTML = `<span class="text-4xl block mb-4">✨</span> Welcome to the dots. family, <b>${name}</b>.<br/>You're officially on the list.`;
+                    msg.className = 'mt-8 text-xl text-gray-600 block animate-[fadeInUp_0.5s_ease-out]';
+                    
+                } catch (error) {
+                    msg.textContent = error.message;
+                    msg.className = 'mt-6 text-sm font-medium text-red-500 block';
+                    btn.disabled = false; btn.textContent = 'Join Waitlist';
+                }
+            };
+        });
+    </script>
 </body>
 </html>

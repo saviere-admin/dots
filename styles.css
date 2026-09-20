@@ -1,7 +1,7 @@
 body { font-family: 'Poppins', sans-serif; }
 
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #050505; }
+::-webkit-scrollbar-track { background: #FAFAFA; }
 ::-webkit-scrollbar-thumb { background: #d0a84f; border-radius: 4px; }
 
 html { scroll-behavior: auto; -webkit-font-smoothing: antialiased; }
@@ -11,7 +11,7 @@ html { scroll-behavior: auto; -webkit-font-smoothing: antialiased; }
     will-change: transform;
 }
 
-/* Custom Impact Sliders (Matches the screenshot exactly) */
+/* Custom Impact Sliders (Matches the screenshot perfectly) */
 .slider-container { width: 100%; position: relative; }
 
 .impact-slider {
