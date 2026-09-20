@@ -82,51 +82,91 @@
   }
 
   async function checkSession() {
-    try {
-      const data = await api("/api/admin/session", {
-        method: "GET"
-      });
+  try {
+    const response =
+      await fetch(
+        "/api/admin/session",
+        {
+          credentials: "same-origin"
+        }
+      );
+
+    if (response.ok) {
+      const data =
+        await response.json();
 
       if (data.authenticated) {
         showApp();
         await loadDashboard();
-      } else {
-        showLogin();
+        return;
       }
-    } catch {
-      showLogin();
     }
-  }
 
-  async function login(password) {
-    const button = $("#loginButton");
-    const error = $("#loginError");
+    showLogin();
+
+    const error =
+      $("#loginError");
 
     error.hidden = true;
-    button.disabled = true;
-    button.querySelector("span").textContent = "Signing in…";
+    error.textContent = "";
+  } catch {
+    showLogin();
+  }
+}
 
-    try {
-      await api("/api/admin/login", {
+  async function login(
+  password,
+  githubToken
+) {
+  const button =
+    $("#loginButton");
+
+  const error =
+    $("#loginError");
+
+  error.hidden = true;
+  error.textContent = "";
+
+  button.disabled = true;
+  button.querySelector("span").textContent =
+    "Verifying…";
+
+  try {
+    await api(
+      "/api/admin/login",
+      {
         method: "POST",
         body: JSON.stringify({
-          password
+          password,
+          githubToken
         })
-      });
+      }
+    );
 
-      $("#password").value = "";
+    /*
+     * Clear the PAT immediately.
+     * It is never retained in localStorage,
+     * sessionStorage, cookies, or application state.
+     */
+    $("#password").value = "";
+    $("#githubToken").value = "";
 
-      showApp();
+    showApp();
 
-      await loadDashboard();
-    } catch (err) {
-      error.textContent = err.message;
-      error.hidden = false;
-    } finally {
-      button.disabled = false;
-      button.querySelector("span").textContent = "Sign in";
-    }
+    await loadDashboard();
+  } catch (err) {
+    error.textContent =
+      err.message === "Unauthorized"
+        ? "Invalid admin credentials."
+        : err.message;
+
+    error.hidden = false;
+  } finally {
+    button.disabled = false;
+    button.querySelector("span").textContent =
+      "Sign in";
   }
+}
 
   async function logout() {
     try {

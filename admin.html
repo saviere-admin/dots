@@ -30,16 +30,38 @@
       </p>
 
       <form id="loginForm">
-        <label for="password">Admin password</label>
+        <div class="field">
+  <label for="password">Admin password</label>
 
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autocomplete="current-password"
-          required
-          placeholder="Enter admin password"
-        >
+  <input
+    id="password"
+    name="password"
+    type="password"
+    autocomplete="current-password"
+    required
+    placeholder="Enter admin password"
+  >
+</div>
+
+<div class="field">
+  <label for="githubToken">
+    GitHub personal access token
+  </label>
+
+  <input
+    id="githubToken"
+    name="githubToken"
+    type="password"
+    autocomplete="off"
+    spellcheck="false"
+    required
+    placeholder="Enter GitHub PAT"
+  >
+
+  <small class="security-note">
+    Your token is verified with GitHub and is not stored by dots.
+  </small>
+</div>
 
         <button type="submit" id="loginButton" class="primary-button">
           <span>Sign in</span>

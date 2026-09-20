@@ -1,61 +1,115 @@
-import { json, requireSameOrigin } from "../_utils.js";
 import {
-  createAdminSession,
-  sessionCookie,
+  json,
+  requireSameOrigin
+} from "../_utils.js";
+
+import {
   verifyAdminPassword,
+  verifyGithubPat,
+  createAdminSession,
+  sessionCookie
 } from "./_auth.js";
 
-export async function onRequestPost(context) {
-  const { request, env } = context;
-
+export async function onRequestPost({
+  request,
+  env
+}) {
   if (!requireSameOrigin(request)) {
-    return json({ error: "Invalid request origin." }, { status: 403 });
+    return json(
+      {
+        error: "Forbidden."
+      },
+      403
+    );
   }
+
+  let body;
 
   try {
-    const body = await request.json().catch(() => null);
-    const password = String(body?.password || "");
-
-    if (!password) {
-      return json(
-        { error: "Password is required." },
-        { status: 400 }
-      );
-    }
-
-    const valid = await verifyAdminPassword(password, env);
-
-    if (!valid) {
-      return json(
-        { error: "Invalid admin password." },
-        { status: 401 }
-      );
-    }
-
-    const token = await createAdminSession(env);
-    const secure = new URL(request.url).protocol === "https:";
-
+    body = await request.json();
+  } catch {
     return json(
       {
-        success: true,
-        expiresIn: 8 * 60 * 60,
+        error: "Invalid request."
       },
-      {
-        headers: {
-          "Set-Cookie": sessionCookie(token, secure),
-        },
-      }
-    );
-  } catch (error) {
-    console.error("Admin login error:", error);
-
-    return json(
-      { error: "Authentication service is not configured correctly." },
-      { status: 500 }
+      400
     );
   }
-}
 
-export async function onRequestGet(context) {
-  return json({ error: "Method not allowed." }, { status: 405 });
+  const password =
+    String(body.password || "");
+
+  const githubToken =
+    String(body.githubToken || "").trim();
+
+  if (!password || !githubToken) {
+    return json(
+      {
+        error:
+          "Admin password and GitHub PAT are both required."
+      },
+      400
+    );
+  }
+
+  const passwordValid =
+    await verifyAdminPassword(
+      password,
+      env
+    );
+
+  if (!passwordValid) {
+    return json(
+      {
+        error:
+          "Invalid admin credentials."
+      },
+      401
+    );
+  }
+
+  const githubAuth =
+    await verifyGithubPat(
+      githubToken,
+      env
+    );
+
+  /*
+   * Deliberately do not expose whether the
+   * password or GitHub credential failed.
+   */
+  if (!githubAuth.valid) {
+    return json(
+      {
+        error:
+          "Invalid admin credentials."
+      },
+      401
+    );
+  }
+
+  const token =
+    await createAdminSession(
+      env,
+      githubAuth.login
+    );
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      authenticated: true,
+      githubLogin: githubAuth.login
+    }),
+    {
+      status: 200,
+      headers: {
+        "Content-Type":
+          "application/json; charset=utf-8",
+        "Cache-Control":
+          "no-store",
+        "Set-Cookie":
+          sessionCookie(token)
+      }
+    }
+  );
 }

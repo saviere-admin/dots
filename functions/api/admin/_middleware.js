@@ -1,29 +1,37 @@
 import { json } from "../_utils.js";
 import { verifyAdminSession } from "./_auth.js";
 
-export async function onRequest(context) {
-  const { request, env, next } = context;
-  const pathname = new URL(request.url).pathname;
+export async function onRequest(
+  context
+) {
+  const {
+    request,
+    next,
+    env
+  } = context;
 
-  // Login must remain reachable without an existing session.
-  if (pathname === "/api/admin/login") {
+  const pathname =
+    new URL(request.url).pathname;
+
+  if (
+    pathname ===
+    "/api/admin/login"
+  ) {
     return next();
   }
 
-  const authenticated = await verifyAdminSession(request, env);
+  const session =
+    await verifyAdminSession(
+      request,
+      env
+    );
 
-  if (!authenticated) {
+  if (!session) {
     return json(
       {
-        error: "Unauthorized",
-        code: "ADMIN_AUTH_REQUIRED",
+        error: "Unauthorized"
       },
-      {
-        status: 401,
-        headers: {
-          "WWW-Authenticate": 'Cookie realm="dots-admin"',
-        },
-      }
+      401
     );
   }
 

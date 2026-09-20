@@ -2,6 +2,9 @@ const SITE_URL = "https://usedots.in";
 const LOGO_URL =
   "https://usedots.in/brand/logos/dh/DotsTBBTWoS.png";
 
+const INLINE_LOGO_URL =
+  "cid:dots-logo";
+
 function escapeHtml(value = "") {
   return String(value)
     .replace(/&/g, "&amp;")

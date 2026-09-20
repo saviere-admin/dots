@@ -1,21 +1,28 @@
 import { json } from "../_utils.js";
 import { verifyAdminSession } from "./_auth.js";
 
-export async function onRequestGet(context) {
-  const authenticated = await verifyAdminSession(
-    context.request,
-    context.env
-  );
+export async function onRequestGet({
+  request,
+  env
+}) {
+  const session =
+    await verifyAdminSession(
+      request,
+      env
+    );
 
-  if (!authenticated) {
+  if (!session) {
     return json(
-      { error: "Unauthorized" },
-      { status: 401 }
+      {
+        authenticated: false
+      },
+      401
     );
   }
 
   return json({
-    success: true,
     authenticated: true,
+    githubLogin:
+      session.githubLogin
   });
 }
