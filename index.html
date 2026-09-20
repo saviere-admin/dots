@@ -3,30 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dots. | Solid State Toothpaste Tablets in India</title>
+    <title>dots. | Solid State Toothpaste Tablets in India | Savière Group</title>
     
-    <!-- Dominant SEO for India -->
     <meta name="description" content="The clinical standard for solid-state toothpaste tablets in India. Zero water weight, zero plastic, powered by Nano-Hydroxyapatite. A Savière Group brand.">
     <meta name="keywords" content="toothpaste tablets, toothpaste tablets in India, solid state toothpaste, Savière Group, saviere group brand, eco-friendly oral care, Nano-Hydroxyapatite, zero waste toothpaste, travel toothpaste India">
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Animation Stack: GSAP Core, ScrollTrigger, and Lenis -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
+    
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body class="antialiased selection:bg-[#d0a84f] selection:text-white bg-[#FAFAFA] text-[#111111] overflow-x-hidden font-poppins">
 
-    <!-- Smart Frosted Navigation -->
-    <nav class="fixed w-full top-0 z-50 transition-transform duration-300 bg-white/80 backdrop-blur-md border-b border-gray-100/50" id="navbar">
+    <nav class="fixed w-full top-0 z-50 transition-transform duration-500 bg-white/80 backdrop-blur-md border-b border-gray-100/50" id="navbar">
         <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-            <h2 class="text-black font-bold text-2xl tracking-tighter">dots<span class="text-[#d0a84f]">.</span></h2>
-            <a href="#waitlist" class="text-xs font-bold tracking-[0.15em] text-black hover:text-[#d0a84f] transition-colors uppercase">Join Waitlist</a>
+            <h2 class="text-black font-bold text-2xl tracking-tighter" id="nav-logo">dots<span class="text-[#d0a84f]">.</span></h2>
+            <a href="#waitlist" class="text-xs md:text-sm font-bold tracking-[0.15em] text-black hover:text-[#d0a84f] transition-colors uppercase" id="nav-cta">Join Waitlist</a>
         </div>
     </nav>
 
-    <!-- THE GOLDEN DOT ZOOM & SCATTER HERO -->
+    <!-- THE GOLDEN DOT ZOOM HERO -->
     <section id="hero-scene" class="relative h-[100dvh] w-full bg-[#FAFAFA] overflow-hidden flex items-center justify-center">
         <!-- The SVG Logo -->
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10" id="svg-container">
@@ -40,46 +41,46 @@
 
         <!-- The Content Revealed inside the Golden Dot -->
         <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 opacity-0 text-white z-20 pointer-events-none" id="post-zoom-content">
-            <span class="block text-xs md:text-sm font-bold tracking-[0.4em] uppercase text-white/50 mb-6" id="hero-tagline">In Daily Life</span>
+            <span class="block text-xs md:text-sm font-bold tracking-[0.4em] uppercase text-white/70 mb-6" id="hero-tagline">In Daily Life</span>
             
-            <!-- This text will shatter/scatter on scroll -->
-            <div id="scatter-text" class="text-4xl md:text-7xl lg:text-[7rem] font-bold tracking-tighter mb-8 leading-[1.05] text-white flex flex-wrap justify-center w-full max-w-5xl mx-auto">
+            <!-- Typewriter and Scatter Target -->
+            <div id="scatter-text" class="text-4xl md:text-6xl lg:text-[6rem] font-bold tracking-tighter mb-8 leading-[1.05] text-white max-w-4xl mx-auto flex flex-wrap justify-center">
                 Thoughtful products for everyday life.
             </div>
             
             <div id="hero-cta" class="mt-8 pointer-events-auto opacity-0 translate-y-4">
-                <a href="#habit-pin" class="px-10 py-5 bg-white text-black rounded-full font-semibold hover:scale-105 transition-transform">Discover dots.</a>
+                <a href="#habit-pin" class="px-10 py-5 bg-white text-black rounded-full font-semibold shadow-2xl hover:scale-105 transition-transform">Discover</a>
             </div>
         </div>
     </section>
 
     <!-- The Problem (Pinned Scroll) -->
-    <section id="habit-pin" class="bg-white relative z-30 flex items-center overflow-hidden border-t border-gray-100 py-32 md:py-0 md:h-screen">
+    <section id="habit-pin" class="bg-white relative z-30 flex flex-col justify-center overflow-hidden py-32 md:py-0 md:h-screen">
         <div class="max-w-7xl mx-auto px-6 w-full flex flex-col lg:flex-row items-center justify-between gap-16">
             <div class="lg:w-1/2">
                 <h2 class="text-xs font-bold tracking-[0.3em] uppercase text-[#d0a84f] mb-6">You use it every day.</h2>
-                <h3 class="text-4xl md:text-6xl font-semibold tracking-tight leading-[1.1] text-gray-900 mb-8">
+                <h3 class="text-4xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.05] text-gray-900 mb-8">
                     What if the product you rely on twice a day was fundamentally engineered differently?
                 </h3>
-                <p class="text-xl text-gray-500 font-light leading-relaxed mb-4">
+                <p class="text-lg md:text-xl text-gray-500 font-light leading-relaxed mb-4">
                     Eliminates multi-laminate plastic tubes entirely. ✨
                 </p>
-                <p class="text-xl text-gray-500 font-light leading-relaxed">
+                <p class="text-lg md:text-xl text-gray-500 font-light leading-relaxed">
                     Restores enamel with advanced clinical biomimetics. Clinical Precision.
                 </p>
             </div>
             
             <div class="lg:w-1/2 grid grid-cols-2 gap-4 md:gap-6 w-full pin-cards">
-                <div class="3d-card p-8 md:p-10 bg-[#FAFAFA] rounded-[2rem] border border-gray-100 flex flex-col justify-center items-center text-center shadow-sm">
-                    <div class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-2">365</div>
+                <div class="3d-card p-8 md:p-12 bg-[#FAFAFA] rounded-[2rem] md:rounded-[3rem] border border-gray-100 flex flex-col justify-center items-center text-center shadow-sm">
+                    <div class="text-6xl md:text-8xl lg:text-[7rem] font-bold tracking-tighter mb-2 text-[#111]">365</div>
                     <div class="text-[10px] md:text-xs font-bold tracking-widest text-gray-400 uppercase">Days a year</div>
                 </div>
-                <div class="3d-card p-8 md:p-10 bg-[#FAFAFA] rounded-[2rem] border border-gray-100 flex flex-col justify-center items-center text-center shadow-sm">
-                    <div class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-2">2</div>
+                <div class="3d-card p-8 md:p-12 bg-[#FAFAFA] rounded-[2rem] md:rounded-[3rem] border border-gray-100 flex flex-col justify-center items-center text-center shadow-sm">
+                    <div class="text-6xl md:text-8xl lg:text-[7rem] font-bold tracking-tighter mb-2 text-[#111]">2</div>
                     <div class="text-[10px] md:text-xs font-bold tracking-widest text-gray-400 uppercase">Times a day</div>
                 </div>
-                <div class="3d-card p-8 md:p-10 bg-[#050505] text-white rounded-[2rem] flex flex-col justify-center items-center text-center col-span-2 shadow-2xl border border-gray-900">
-                    <div class="text-6xl md:text-8xl lg:text-[7rem] font-bold tracking-tighter mb-2 text-[#d0a84f]">730</div>
+                <div class="3d-card p-10 md:p-14 bg-[#0a0a0a] text-white rounded-[2rem] md:rounded-[3rem] flex flex-col justify-center items-center text-center col-span-2 shadow-2xl border border-gray-900">
+                    <div class="text-7xl md:text-[8rem] lg:text-[9rem] font-bold tracking-tighter mb-2 text-[#d0a84f] leading-none">730</div>
                     <div class="text-[10px] md:text-xs font-bold tracking-widest text-gray-400 uppercase">Brushing moments 💧</div>
                 </div>
             </div>
@@ -91,14 +92,14 @@
         <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-24 items-center">
             <div>
                 <h2 class="text-xs font-bold tracking-[0.4em] uppercase text-[#d0a84f] mb-8 gs-fade">Biological purity.</h2>
-                <h3 class="text-5xl md:text-7xl font-bold tracking-tighter mb-10 leading-none gs-fade">Zero water weight.</h3>
+                <h3 class="text-5xl md:text-7xl lg:text-[6rem] font-bold tracking-tighter mb-10 leading-none gs-fade">Zero water weight.</h3>
                 
                 <p class="text-lg md:text-2xl text-gray-400 leading-relaxed font-light mb-8 gs-fade">
                     Standard formulations carry up to 50% dead-weight water. <strong class="text-white font-medium">dots.</strong> strips away unnecessary logistics, delivering Nano-Hydroxyapatite (Nano-HAp) in a precise, solid-state format.
                 </p>
             </div>
             
-            <div class="relative h-[300px] md:h-[500px] w-full flex items-center justify-center gs-scale">
+            <div class="relative h-[350px] md:h-[500px] w-full flex items-center justify-center gs-scale">
                 <div class="absolute inset-0 border border-gray-800 rounded-full animate-[spin_20s_linear_infinite]"></div>
                 <div class="absolute inset-10 md:inset-16 border border-[#d0a84f]/30 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
                 <div class="text-center z-10 bg-[#050505] p-8 md:p-12 rounded-full shadow-[0_0_100px_rgba(208,168,79,0.15)]">
@@ -114,37 +115,39 @@
         <div class="max-w-6xl mx-auto px-6">
             <div class="text-center mb-16 md:mb-20 gs-fade">
                 <h2 class="text-xs font-bold tracking-[0.3em] uppercase text-[#d0a84f] mb-6">Live Architecture</h2>
-                <h3 class="text-4xl md:text-7xl font-bold tracking-tighter mb-6 text-gray-900">The format changes the equation.</h3>
+                <h3 class="text-4xl md:text-7xl lg:text-[6rem] font-bold tracking-tighter mb-6 text-[#111]">The format changes the equation.</h3>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 bg-white p-8 md:p-20 rounded-[2rem] md:rounded-[3rem] shadow-[0_30px_80px_rgba(0,0,0,0.04)] border border-gray-100 gs-scale">
+            <!-- Calculator Card matching Screenshot 19 -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 bg-white p-8 md:p-20 rounded-[2rem] md:rounded-[3rem] shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-gray-100 gs-scale">
+                
                 <div class="md:col-span-5 space-y-12 md:space-y-16 flex flex-col justify-center">
                     <div class="slider-container">
                         <div class="flex justify-between items-center mb-4 md:mb-6">
-                            <label class="text-[10px] md:text-sm font-bold tracking-[0.15em] uppercase text-gray-400">Household Variables</label>
-                            <span class="text-2xl md:text-3xl font-bold text-[#d0a84f]" id="val-people">2</span>
+                            <label class="text-xs md:text-sm font-bold tracking-[0.1em] uppercase text-gray-400">Household Variables</label>
+                            <span class="text-2xl md:text-4xl font-bold text-[#d0a84f]" id="val-people">2</span>
                         </div>
                         <input type="range" min="1" max="6" value="2" class="impact-slider w-full" id="slider-people">
                     </div>
                     
                     <div class="slider-container">
                         <div class="flex justify-between items-center mb-4 md:mb-6">
-                            <label class="text-[10px] md:text-sm font-bold tracking-[0.15em] uppercase text-gray-400">Months Using dots.</label>
-                            <span class="text-2xl md:text-3xl font-bold text-[#d0a84f]" id="val-months">12</span>
+                            <label class="text-xs md:text-sm font-bold tracking-[0.1em] uppercase text-gray-400">Months Using dots.</label>
+                            <span class="text-2xl md:text-4xl font-bold text-[#d0a84f]" id="val-months">12</span>
                         </div>
                         <input type="range" min="1" max="24" value="12" class="impact-slider w-full" id="slider-months">
                     </div>
                 </div>
 
-                <div class="md:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 md:pl-16 border-t md:border-t-0 md:border-l border-gray-100 pt-10 md:pt-0">
+                <div class="md:col-span-7 grid grid-cols-2 gap-6 md:gap-12 md:pl-16 border-t md:border-t-0 md:border-l border-gray-100 pt-10 md:pt-0">
                     <div class="flex flex-col justify-center">
-                        <div class="text-gray-400 text-[10px] md:text-xs font-bold mb-2 md:mb-4 uppercase tracking-[0.15em]">Plastic Packaging Avoided</div>
-                        <div class="text-6xl md:text-7xl lg:text-[6rem] font-bold tracking-tighter text-[#0a0a0a] mb-2 leading-none" id="out-tubes">0</div>
+                        <div class="text-gray-400 text-[10px] md:text-xs font-bold mb-2 md:mb-4 uppercase tracking-[0.1em]">Plastic Packaging Avoided</div>
+                        <div class="text-6xl md:text-7xl lg:text-[7rem] font-bold tracking-tighter text-[#111] mb-2 leading-none" id="out-plastic">0</div>
                         <div class="text-xs md:text-sm font-medium text-gray-400">grams</div>
                     </div>
                     <div class="flex flex-col justify-center">
-                        <div class="text-gray-400 text-[10px] md:text-xs font-bold mb-2 md:mb-4 uppercase tracking-[0.15em]">Freight Mass Reduction</div>
-                        <div class="text-6xl md:text-7xl lg:text-[6rem] font-bold tracking-tighter text-[#0a0a0a] mb-2 leading-none" id="out-water">0</div>
+                        <div class="text-gray-400 text-[10px] md:text-xs font-bold mb-2 md:mb-4 uppercase tracking-[0.1em]">Freight Mass Reduction</div>
+                        <div class="text-6xl md:text-7xl lg:text-[7rem] font-bold tracking-tighter text-[#111] mb-2 leading-none" id="out-freight">0</div>
                         <div class="text-xs md:text-sm font-medium text-gray-400">kg</div>
                     </div>
                 </div>
@@ -152,16 +155,18 @@
         </div>
     </section>
 
-    <!-- Waitlist Section with Name Field -->
+    <!-- Waitlist Section matching Screenshot 20 -->
     <section id="waitlist" class="py-32 md:py-40 bg-white border-t border-gray-100 relative z-20">
         <div class="max-w-4xl mx-auto px-6 text-center gs-fade">
-            <h3 class="text-5xl md:text-8xl font-bold tracking-tighter mb-6 md:mb-8">There is another way.</h3>
-            <p class="text-gray-500 text-lg md:text-2xl mb-12 md:mb-16 font-light">Rethinking everyday oral care through precise, solid-state formulations. Designed to minimize environmental debt without compromising the ritual.</p>
+            <h3 class="text-5xl md:text-7xl lg:text-[7rem] font-bold tracking-tighter mb-6 md:mb-8 text-[#111]">There is another way.</h3>
+            <p class="text-gray-500 text-lg md:text-2xl mb-12 md:mb-16 font-light max-w-3xl mx-auto">
+                Rethinking everyday oral care through precise, solid-state formulations. Designed to minimize environmental debt without compromising the ritual.
+            </p>
             
-            <form id="waitlistForm" class="flex flex-col gap-4 max-w-2xl mx-auto relative z-20">
-                <input type="text" id="waitlistName" required placeholder="Your Name" class="w-full px-8 py-5 md:px-10 md:py-6 rounded-full border border-gray-200 bg-[#FAFAFA] text-lg md:text-xl focus:outline-none focus:border-[#d0a84f] transition-all shadow-inner font-poppins">
-                <input type="email" id="waitlistEmail" required placeholder="Your Email Address" class="w-full px-8 py-5 md:px-10 md:py-6 rounded-full border border-gray-200 bg-[#FAFAFA] text-lg md:text-xl focus:outline-none focus:border-[#d0a84f] transition-all shadow-inner font-poppins">
-                <button type="submit" id="waitlistBtn" class="w-full py-5 md:py-6 bg-[#111111] text-white rounded-full font-semibold text-lg md:text-xl hover:bg-[#d0a84f] hover:text-black hover:shadow-2xl hover:-translate-y-1 transition-all shadow-lg font-poppins mt-2 md:mt-4">
+            <form id="waitlistForm" class="flex flex-col gap-4 max-w-md mx-auto relative z-20" onsubmit="event.preventDefault(); return false;">
+                <input type="text" id="waitlistName" required placeholder="Name" class="w-full px-8 py-5 rounded-[2rem] border border-gray-200 bg-[#FAFAFA] text-lg focus:outline-none focus:border-[#d0a84f] transition-all font-poppins">
+                <input type="email" id="waitlistEmail" required placeholder="Email Address" class="w-full px-8 py-5 rounded-[2rem] border border-gray-200 bg-[#FAFAFA] text-lg focus:outline-none focus:border-[#d0a84f] transition-all font-poppins">
+                <button type="submit" id="waitlistBtn" class="w-full py-5 bg-[#111] text-white rounded-[2rem] font-semibold text-lg hover:bg-black hover:-translate-y-1 transition-all shadow-lg font-poppins mt-2">
                     Join Waitlist
                 </button>
             </form>
@@ -175,8 +180,8 @@
             <h2 class="text-white font-bold text-3xl md:text-4xl tracking-tighter mb-10 opacity-80">dots<span class="text-[#d0a84f]">.</span></h2>
             
             <div class="flex flex-wrap justify-center gap-4 md:gap-6 mb-12">
-                <span class="px-5 py-2.5 bg-[#111] border border-[#d0a84f]/20 rounded-full text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-[#d0a84f]">Cruelty-Free</span>
-                <span class="px-5 py-2.5 bg-[#111] border border-[#d0a84f]/20 rounded-full text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-[#d0a84f]">Waterless</span>
+                <span class="px-5 py-2.5 bg-[#111] border border-[#d0a84f]/30 rounded-full text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-[#d0a84f]">Cruelty-Free</span>
+                <span class="px-5 py-2.5 bg-[#111] border border-[#d0a84f]/30 rounded-full text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-[#d0a84f]">Waterless</span>
             </div>
             <div class="text-[10px] md:text-xs font-medium tracking-[0.2em] uppercase text-gray-500 leading-loose">
                 A Subsidiary Brand Of dots. © 2026 All rights reserved.<br class="md:hidden"/> A brand of Savière Group Private Limited.

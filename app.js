@@ -1,9 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     
     // 1. Lenis Smooth Scrolling
-    let lenis;
     try {
-        lenis = new Lenis({
+        const lenis = new Lenis({
             duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             smooth: true,
@@ -14,38 +13,37 @@ document.addEventListener('DOMContentLoaded', () => {
             requestAnimationFrame(raf);
         }
         requestAnimationFrame(raf);
-    } catch(e) { console.error("Lenis error:", e); }
+    } catch(e) { console.error("Lenis init failed:", e); }
 
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
     gsap.registerPlugin(ScrollTrigger);
 
     // --- NAVBAR HIDE/SHOW LOGIC ---
     const navbar = document.getElementById("navbar");
     let lastScrollY = window.scrollY;
-    window.addEventListener("scroll", () => {
-        if (window.scrollY > 50) {
-            if (window.scrollY > lastScrollY) {
-                // Scrolling down - hide navbar
-                navbar.style.transform = "translateY(-100%)";
+    if(navbar) {
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 50) {
+                if (window.scrollY > lastScrollY) {
+                    navbar.style.transform = "translateY(-100%)";
+                } else {
+                    navbar.style.transform = "translateY(0)";
+                }
             } else {
-                // Scrolling up - show frosted navbar
                 navbar.style.transform = "translateY(0)";
             }
-        } else {
-            navbar.style.transform = "translateY(0)";
-        }
-        lastScrollY = window.scrollY;
-    });
+            lastScrollY = window.scrollY;
+        });
+    }
 
     // --- THE GOLDEN DOT ZOOM & SCATTER EXPERIENCE ---
-    
-    // Prepare the text for scattering by splitting it into spans
     const textElement = document.getElementById("scatter-text");
-    if(textElement) {
+    if (textElement) {
         const text = textElement.innerText;
         textElement.innerHTML = "";
         text.split(" ").forEach(word => {
             const wordSpan = document.createElement("span");
-            wordSpan.className = "inline-block mr-[0.2em] whitespace-nowrap";
+            wordSpan.className = "inline-block mr-[0.3em] whitespace-nowrap";
             word.split("").forEach(char => {
                 const charSpan = document.createElement("span");
                 charSpan.innerText = char;
@@ -56,67 +54,69 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const heroTl = gsap.timeline({
-        scrollTrigger: {
-            trigger: "#hero-scene",
-            start: "top top",
-            end: "+=400%", // Very long pin for full experience
-            pin: true,
-            scrub: 1
-        }
-    });
+    const heroScene = document.getElementById("hero-scene");
+    if (heroScene) {
+        const heroTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#hero-scene",
+                start: "top top",
+                end: "+=350%", 
+                pin: true,
+                scrub: 1
+            }
+        });
 
-    // A. Zoom into the Golden Dot (Calculated exact center: 93.5% 72%)
-    heroTl.to("#hero-svg", {
-        scale: 180, 
-        transformOrigin: "93.5% 72%", 
-        ease: "power1.inOut",
-        duration: 2
-    })
-    // B. Fade out black letters, turn background gold
-    .to("#black-letters", { opacity: 0, duration: 0.1 }, "-=0.5")
-    .to("#hero-scene", { backgroundColor: "#d0a84f", duration: 0.3 }, "-=0.5")
-    
-    // C. Reveal the container
-    .to("#post-zoom-content", {
-        opacity: 1,
-        pointerEvents: "auto",
-        duration: 0.1
-    }, "-=0.2")
+        // A. Zoom into the Golden Dot (Exact Center: 93.6% 71.6%)
+        heroTl.to("#hero-svg", {
+            scale: 250, 
+            transformOrigin: "93.6% 71.6%", 
+            ease: "power1.inOut",
+            duration: 2
+        })
+        // B. Fade out black letters, turn background gold
+        .to("#black-letters", { opacity: 0, duration: 0.1 }, "-=0.6")
+        .to("#hero-scene", { backgroundColor: "#d0a84f", duration: 0.4 }, "-=0.6")
+        
+        // C. Reveal text container
+        .to("#post-zoom-content", {
+            opacity: 1,
+            pointerEvents: "auto",
+            duration: 0.1
+        }, "-=0.2")
 
-    // D. Typewriter / Fade up the individual letters
-    .to(".scatter-char", {
-        opacity: 1,
-        y: 0,
-        stagger: 0.02,
-        duration: 0.5,
-        ease: "back.out(1.7)"
-    })
-    .to("#hero-cta", { opacity: 1, y: 0, duration: 0.5 }, "-=0.2")
+        // D. Fade up individual letters
+        .to(".scatter-char", {
+            opacity: 1,
+            y: 0,
+            stagger: 0.02,
+            duration: 0.5,
+            ease: "back.out(1.7)"
+        })
+        .to("#hero-cta", { opacity: 1, y: 0, duration: 0.5 }, "-=0.2")
 
-    // E. SCATTER EXPLOSION! As you keep scrolling, the letters fly away
-    .to(".scatter-char", {
-        x: () => (Math.random() - 0.5) * 1000,
-        y: () => (Math.random() - 0.5) * 1000,
-        z: () => Math.random() * 500,
-        rotateX: () => Math.random() * 360,
-        rotateY: () => Math.random() * 360,
-        opacity: 0,
-        filter: "blur(10px)",
-        stagger: 0.01,
-        duration: 1.5,
-        ease: "power3.inOut"
-    })
-    .to("#hero-cta, #hero-tagline", { opacity: 0, duration: 0.5 }, "-=1.5");
+        // E. SCATTER EXPLOSION! 
+        .to(".scatter-char", {
+            x: () => (Math.random() - 0.5) * 1200,
+            y: () => (Math.random() - 0.5) * 1200,
+            z: () => Math.random() * 800,
+            rotationX: () => Math.random() * 720,
+            rotationY: () => Math.random() * 720,
+            opacity: 0,
+            filter: "blur(15px)",
+            stagger: 0.01,
+            duration: 1.5,
+            ease: "power3.inOut"
+        })
+        .to("#hero-cta, #hero-tagline", { opacity: 0, duration: 0.5 }, "-=1.5");
+    }
 
     // --- Pinned Section: The Habit Cards ---
-    // Only pin on desktop to prevent mobile overlapping issues
-    if (window.innerWidth > 768) {
+    if (window.innerWidth > 768 && document.getElementById("habit-pin")) {
         const tlPin = gsap.timeline({
             scrollTrigger: {
                 trigger: "#habit-pin",
                 start: "top top",
-                end: "+=120%",
+                end: "+=100%",
                 pin: true,
                 scrub: 1
             }
@@ -129,29 +129,19 @@ document.addEventListener('DOMContentLoaded', () => {
             duration: 1,
             ease: "power3.out"
         });
-    } else {
-        // Simple fade up for mobile
-        gsap.from(".pin-cards > div", {
-            y: 50,
-            opacity: 0,
-            stagger: 0.2,
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: { trigger: ".pin-cards", start: "top 80%" }
-        });
     }
 
     // --- General Reveals ---
     gsap.utils.toArray('.gs-fade').forEach(elem => {
         gsap.from(elem, {
-            y: 50, opacity: 0, duration: 1.2, ease: "power3.out",
+            y: 40, opacity: 0, duration: 1, ease: "power3.out",
             scrollTrigger: { trigger: elem, start: "top 85%" }
         });
     });
 
     gsap.utils.toArray('.gs-scale').forEach(elem => {
         gsap.from(elem, {
-            scale: 0.95, opacity: 0, duration: 1.5, ease: "power3.out",
+            scale: 0.95, opacity: 0, duration: 1.2, ease: "power3.out",
             scrollTrigger: { trigger: elem, start: "top 85%" }
         });
     });
@@ -179,15 +169,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const people = parseInt(sliderPeople.value);
         const months = parseInt(sliderMonths.value);
         
-        document.getElementById('val-people').innerText = people;
-        document.getElementById('val-months').innerText = months;
+        const valP = document.getElementById('val-people');
+        const valM = document.getElementById('val-months');
+        if(valP) valP.innerText = people;
+        if(valM) valM.innerText = months;
 
+        // Math: 1 person uses 1 tube / 2 months = 0.5 tubes/mo
         const totalTubes = Math.round(people * (months * 0.5));
         const totalPlastic = totalTubes * 20;
         const totalWater = (totalTubes * 0.1).toFixed(1);
 
-        document.getElementById('out-tubes').innerHTML = totalTubes;
-        document.getElementById('out-water').innerHTML = totalWater;
+        const outPlastic = document.getElementById('out-plastic');
+        const outFreight = document.getElementById('out-freight');
+
+        if(outPlastic) gsap.to(outPlastic, { innerHTML: totalPlastic, roundProps: "innerHTML", duration: 0.6, ease: "power2.out" });
+        if(outFreight) {
+            let dummy = { val: parseFloat(outFreight.innerText) || 0 };
+            gsap.to(dummy, {
+                val: totalWater, duration: 0.6, ease: "power2.out",
+                onUpdate: function() { outFreight.innerText = this.targets()[0].val.toFixed(1); }
+            });
+        }
     }
 
     if (sliderPeople) {
@@ -196,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateImpact(); 
     }
 
-    // --- Waitlist API Hook ---
+    // --- Waitlist API ---
     const waitlistForm = document.getElementById('waitlistForm');
     if (waitlistForm) {
         waitlistForm.addEventListener('submit', async (e) => {
@@ -226,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 msg.textContent = error.message;
                 msg.className = 'mt-6 text-sm font-medium text-red-500 block';
-                btn.disabled = false; btn.textContent = 'Request Access';
+                btn.disabled = false; btn.textContent = 'Join Waitlist';
             }
         });
     }
