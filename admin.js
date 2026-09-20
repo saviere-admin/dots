@@ -1,18 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. State & Constants
     const REQUIRED_PWD = "Saviere@798959885#";
     let activePwd = null;
     let selectedEmails = new Set();
     let waitlistData = [];
 
-    // 2. DOM Elements
     const authModal = document.getElementById("authModal");
     const pwdForm = document.getElementById("pwdForm");
     const gitForm = document.getElementById("gitForm");
     const authError = document.getElementById("authError");
     const dashboardView = document.getElementById("dashboardView");
-    
-    // 3. Persistent Session Check
+
+    // Session Check
     const sPwd = sessionStorage.getItem("dots_admin_pwd");
     const sGit = sessionStorage.getItem("dots_admin_git");
     if (sPwd === REQUIRED_PWD && sGit) {
@@ -21,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function showError(msg) {
-        authError.textContent = msg;
+        authError.innerHTML = msg;
         authError.classList.remove("hidden");
     }
 
@@ -41,25 +39,26 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // --- STEP 2: GITHUB PAT AUTHENTICATION ---
+    // --- STEP 2: GITHUB PAT AUTHENTICATION (FAIL-SAFE) ---
     gitForm.addEventListener("submit", async (e) => {
         e.preventDefault(); 
         const gitToken = document.getElementById("gitToken").value.trim();
         const btn = document.getElementById("btnGit");
         
+        // FOOLPROOF CHECK: Prevent users from typing "dots-company"
+        if (!gitToken.startsWith("ghp_") && !gitToken.startsWith("github_pat_")) {
+            showError("<strong>Format Error:</strong> You typed the name of the token. You must paste the actual 40-character secret key that starts with <code>ghp_</code>.");
+            return;
+        }
+
         btn.textContent = "Verifying Authority...";
         btn.disabled = true;
         authError.classList.add("hidden");
 
         try {
-            // Ping the backend to verify the token via the middleware
             const res = await fetch("/api/admin/waitlist", {
-                headers: { 
-                    "X-Admin-Password": activePwd, 
-                    "X-GitHub-Token": gitToken 
-                }
+                headers: { "X-Admin-Password": activePwd, "X-GitHub-Token": gitToken }
             });
-            
             const data = await res.json();
             
             if (!res.ok) throw new Error(data.error || "GitHub verification failed.");
@@ -70,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
             unlockSystem(gitToken);
 
         } catch (err) {
-            showError(err.message);
+            showError(`<strong>Auth Failed:</strong> ${err.message}`);
             btn.textContent = "Connect Database";
             btn.disabled = false;
         }
@@ -93,36 +92,29 @@ document.addEventListener("DOMContentLoaded", () => {
             const { data } = await res.json();
             waitlistData = data;
             document.getElementById("totalCount").textContent = data.length;
-            renderTable();
-        } catch (e) { 
-            console.error("Failed to sync D1 database", e); 
-        }
-    }
+            
+            document.getElementById("waitlistBody").innerHTML = waitlistData.map(u => `
+                <tr class="hover:bg-white/5 transition-colors cursor-pointer row-select" data-email="${u.email}">
+                    <td class="px-6 py-4"><input type="checkbox" class="custom-checkbox row-check" value="${u.email}"></td>
+                    <td class="px-6 py-4 font-medium text-white">${u.email}</td>
+                    <td class="px-6 py-4 text-gray-400 text-xs text-right">${new Date(u.created_at).toLocaleString()}</td>
+                </tr>
+            `).join('');
 
-    function renderTable() {
-        const tbody = document.getElementById("waitlistBody");
-        tbody.innerHTML = waitlistData.map(u => `
-            <tr class="hover:bg-white/5 transition-colors cursor-pointer row-select" data-email="${u.email}">
-                <td class="px-6 py-4"><input type="checkbox" class="custom-checkbox row-check" value="${u.email}"></td>
-                <td class="px-6 py-4 font-medium text-white">${u.email}</td>
-                <td class="px-6 py-4 text-gray-400 text-xs text-right">${new Date(u.created_at).toLocaleString()}</td>
-            </tr>
-        `).join('');
-
-        // Row Click Selection Logic
-        document.querySelectorAll('.row-select').forEach(row => {
-            row.addEventListener('click', (e) => {
-                if(e.target.type !== 'checkbox') {
-                    const cb = row.querySelector('.row-check');
-                    cb.checked = !cb.checked;
-                    handleSelection(cb);
-                }
+            document.querySelectorAll('.row-select').forEach(row => {
+                row.addEventListener('click', (e) => {
+                    if(e.target.type !== 'checkbox') {
+                        const cb = row.querySelector('.row-check');
+                        cb.checked = !cb.checked;
+                        handleSelection(cb);
+                    }
+                });
             });
-        });
 
-        document.querySelectorAll('.row-check').forEach(cb => {
-            cb.addEventListener('change', (e) => handleSelection(e.target));
-        });
+            document.querySelectorAll('.row-check').forEach(cb => {
+                cb.addEventListener('change', (e) => handleSelection(e.target));
+            });
+        } catch (e) { console.error("Database sync failed", e); }
     }
 
     // --- STEP 5: SELECTION LOGIC ---
@@ -183,11 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     "X-GitHub-Token": sessionStorage.getItem("dots_admin_git"),
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ 
-                    subject, 
-                    html, 
-                    selectedEmails: Array.from(selectedEmails) 
-                })
+                body: JSON.stringify({ subject, html, selectedEmails: Array.from(selectedEmails) })
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error);
@@ -199,14 +187,11 @@ document.addEventListener("DOMContentLoaded", () => {
             statusBox.textContent = err.message;
             statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-red-900/30 text-red-400 border border-red-500/20 block";
         } finally {
-            btn.disabled = false; 
-            btn.textContent = "Dispatch to Targets";
+            btn.disabled = false; btn.textContent = "Dispatch to Targets";
         }
     });
 
-    // --- STEP 7: LOGOUT ---
     document.getElementById("logoutBtn").addEventListener("click", () => {
-        sessionStorage.clear(); 
-        location.reload();
+        sessionStorage.clear(); location.reload();
     });
 });

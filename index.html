@@ -3,37 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dots. | Solid State Toothpaste Tablets in India | Savière Group</title>
+    <title>Solid State Toothpaste Tablets in India | Savière Group</title>
     
-    <!-- Dominant Indian SEO & OpenGraph -->
-    <meta name="description" content="Discover dots. The clinical standard for solid-state toothpaste tablets in India. Zero water weight, zero plastic, powered by Nano-Hydroxyapatite. A Savière Group brand.">
-    <meta name="keywords" content="toothpaste tablets, toothpaste tablets India, tooth tablets India, solid state toothpaste, Savière Group, saviere group brand, eco-friendly oral care, Nano-Hydroxyapatite">
-    <meta name="author" content="Savière Group">
-    <meta property="og:title" content="dots. | Clinical Precision, Zero Waste">
-    <meta property="og:description" content="Fundamentally re-engineered solid-state oral care. Experience the future of toothpaste in India.">
+    <!-- Deep SEO & Indian Market Targeting -->
+    <meta name="description" content="The clinical standard for solid-state toothpaste tablets in India. Zero water weight, zero plastic, powered by Nano-Hydroxyapatite. A Savière Group brand.">
+    <meta name="keywords" content="toothpaste tablets, toothpaste tablets in India, solid state toothpaste, Savière Group, eco-friendly oral care, Nano-Hydroxyapatite, zero waste toothpaste, travel toothpaste India">
     
-    <!-- Structural JSON-LD for Brand Authority -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      "name": "dots. Solid State Toothpaste",
-      "description": "Premium toothpaste tablets engineered for clinical precision and zero waste. Featuring Nano-Hydroxyapatite.",
-      "brand": {
-        "@type": "Brand",
-        "name": "dots.",
-        "parentOrganization": {
-          "@type": "Organization",
-          "name": "Savière Group Private Limited",
-          "location": "India"
-        }
-      },
-      "category": "Oral Care > Toothpaste Tablets"
-    }
-    </script>
-
-    <!-- Poppins, Tailwind, GSAP, Lenis -->
+    <!-- Poppins Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -42,35 +21,31 @@
 </head>
 <body class="antialiased selection:bg-black selection:text-white bg-[#050505] text-[#111111] overflow-x-hidden font-poppins">
 
-    <!-- Navbar: Mix-Blend Difference adapts to background color automatically -->
     <nav class="fixed w-full top-0 z-50 transition-all duration-500 mix-blend-difference pointer-events-auto" id="navbar">
         <div class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
-            <!-- White logo is used here because mix-blend-difference will invert it when on white backgrounds -->
-            <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots." class="h-10 md:h-14 w-auto object-contain">
+            <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots." class="h-10 md:h-12 w-auto object-contain">
             <a href="#waitlist" class="text-xs md:text-sm font-semibold tracking-[0.2em] text-white hover:opacity-60 transition-opacity uppercase">Join Waitlist</a>
         </div>
     </nav>
 
     <!-- 1. THE STENCIL ZOOM HERO -->
-    <!-- The user scrolls, the text scales up 300x, and we fly *through* the black text to reveal the site -->
     <section id="stencil-scene" class="relative h-screen w-full bg-[#050505] overflow-hidden flex items-center justify-center">
-        
         <!-- The background image hidden behind the mask -->
         <div class="absolute inset-0 bg-cover bg-center opacity-60" style="background-image: url('https://images.unsplash.com/photo-1606240212354-9cb68d1ea857?q=80&w=2500');"></div>
         
-        <!-- The Stencil Mask -->
+        <!-- The Stencil Mask: In 'screen' mode, black text becomes perfectly transparent -->
         <div class="absolute inset-0 bg-[#FAFAFA] mix-blend-screen flex items-center justify-center pointer-events-none" id="stencil-mask">
-            <!-- The text is black. In 'screen' mode, black becomes perfectly transparent. -->
             <h1 class="text-[30vw] font-bold text-black leading-none tracking-tighter origin-center whitespace-nowrap" id="stencil-text">
                 dots.
             </h1>
         </div>
 
-        <!-- Post-Zoom Content: Appears after we fly through the text -->
+        <!-- Post-Zoom Content -->
         <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 opacity-0 text-white z-10 pointer-events-none" id="post-zoom-content">
-            <h2 class="text-5xl md:text-8xl lg:text-[8rem] font-bold tracking-tighter mb-8 leading-[1.05]">Solid-state oral care<br/>designed for India.</h2>
+            <span class="block text-xs md:text-sm font-bold tracking-[0.4em] uppercase text-gray-300 mb-6">In Daily Life[cite: 8]</span>
+            <h2 class="text-5xl md:text-8xl lg:text-[8rem] font-bold tracking-tighter mb-8 leading-[1.05]">Thoughtful products<br/>for everyday life[cite: 8].</h2>
             <p class="text-xl md:text-3xl text-gray-300 font-light max-w-4xl mx-auto leading-relaxed">
-                Thoughtful products for everyday life[cite: 8]. Zero plastic debt, zero water weight.
+                Solid-state oral care. Fundamentally re-engineered for India.
             </p>
         </div>
     </section>
@@ -79,12 +54,12 @@
     <section id="habit-pin" class="bg-white relative z-20 h-screen flex items-center overflow-hidden border-t border-gray-100">
         <div class="max-w-7xl mx-auto px-6 w-full flex flex-col lg:flex-row items-center justify-between gap-16">
             <div class="lg:w-1/2">
-                <h2 class="text-xs font-bold tracking-[0.3em] uppercase text-gray-400 mb-6">The Environmental Debt</h2>
+                <h2 class="text-xs font-bold tracking-[0.3em] uppercase text-gray-400 mb-6">You use it every day[cite: 8].</h2>
                 <h3 class="text-4xl md:text-6xl font-semibold tracking-tight leading-[1.1] text-gray-900 mb-8">
-                    Over 1.5 billion plastic tubes enter landfills annually.
+                    What if the product you rely on twice a day was fundamentally engineered differently?[cite: 8]
                 </h3>
                 <p class="text-xl text-gray-500 font-light leading-relaxed">
-                    Toothpaste tubes are made from mixed materials—aluminum and plastic layered together—making them nearly impossible to recycle. You use it every day[cite: 8]. It's time to break the cycle.
+                    Over 1.5 billion multi-laminate plastic tubes enter landfills annually. It's time to break the cycle.
                 </p>
             </div>
             
@@ -97,7 +72,7 @@
                     <div class="text-6xl md:text-8xl font-bold tracking-tighter mb-2">2</div>
                     <div class="text-xs font-bold tracking-widest text-gray-400 uppercase">Times a day[cite: 8]</div>
                 </div>
-                <div class="3d-card p-10 bg-[#050505] text-white rounded-[2rem] flex flex-col justify-center items-center text-center col-span-2 shadow-2xl">
+                <div class="3d-card p-10 bg-black text-white rounded-[2rem] flex flex-col justify-center items-center text-center col-span-2 shadow-2xl">
                     <div class="text-6xl md:text-8xl font-bold tracking-tighter mb-2">730</div>
                     <div class="text-xs font-bold tracking-widest text-gray-400 uppercase">Brushing moments[cite: 8]</div>
                 </div>
@@ -110,25 +85,23 @@
         <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
             <div>
                 <h2 class="text-xs font-bold tracking-[0.4em] uppercase text-gray-500 mb-8 gs-fade">Biological Purity[cite: 8]</h2>
-                <h3 class="text-5xl md:text-7xl font-bold tracking-tighter mb-10 leading-none gs-fade">Eliminating<br/>water weight.</h3>
+                <h3 class="text-5xl md:text-7xl font-bold tracking-tighter mb-10 leading-none gs-fade">Zero water<br/>weight.[cite: 8]</h3>
                 
                 <p class="text-xl md:text-2xl text-gray-400 leading-relaxed font-light mb-8 gs-fade">
-                    Standard formulations carry up to 50% dead-weight water[cite: 8]. This creates a breeding ground for bacteria, requiring artificial preservatives, parabens, and multi-laminate plastic tubes to stabilize.
+                    Standard formulations carry up to 50% dead-weight water[cite: 8]. This creates a breeding ground for bacteria, requiring artificial preservatives and unrecyclable plastic tubes to stabilize.
                 </p>
                 <p class="text-xl md:text-2xl text-gray-400 leading-relaxed font-light gs-fade">
-                    <!-- Inline Logo -->
-                    <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots." class="inline h-[0.9em] translate-y-[-0.1em] object-contain"> removes the water to deliver pure, solid-state <span class="text-white font-medium">Nano-Hydroxyapatite (Nano-HAp)</span>[cite: 8]. Making up 97% of your tooth enamel, this active biomimetic restores enamel with advanced clinical precision[cite: 8].
+                    <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots." class="inline h-[0.9em] translate-y-[-0.1em] object-contain"> strips away unnecessary logistics, delivering Nano-Hydroxyapatite (Nano-HAp) in a precise, solid-state format[cite: 8].
                 </p>
             </div>
             
-            <!-- 3D Orbiting Atom -->
             <div class="relative h-[400px] md:h-[600px] w-full flex items-center justify-center gs-scale">
                 <div class="absolute inset-0 border border-gray-800 rounded-full animate-[spin_20s_linear_infinite]"></div>
                 <div class="absolute inset-16 border border-gray-800 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
                 <div class="absolute inset-32 border border-gray-800 rounded-full animate-[spin_10s_linear_infinite]"></div>
                 <div class="text-center z-10 bg-[#050505] p-12 rounded-full shadow-[0_0_100px_rgba(255,255,255,0.05)]">
                     <div class="text-5xl md:text-7xl font-bold tracking-tighter text-white mb-2">Nano-HAp</div>
-                    <div class="text-gray-500 tracking-widest uppercase text-xs font-bold">100% Biocompatible</div>
+                    <div class="text-gray-500 tracking-widest uppercase text-xs font-bold">Clinical Precision[cite: 8]</div>
                 </div>
             </div>
         </div>
@@ -139,16 +112,15 @@
         <div class="max-w-6xl mx-auto px-6">
             <div class="text-center mb-20 gs-fade">
                 <h2 class="text-xs font-bold tracking-[0.3em] uppercase text-gray-400 mb-6">Live Architecture[cite: 8]</h2>
-                <h3 class="text-5xl md:text-7xl font-bold tracking-tighter mb-6 text-gray-900">Calculate your impact.</h3>
-                <p class="text-xl text-gray-500 font-light">The format changes the equation[cite: 8]. See how switching to a solid-state format impacts your home.</p>
+                <h3 class="text-5xl md:text-7xl font-bold tracking-tighter mb-6 text-gray-900">The format changes the equation.[cite: 8]</h3>
+                <p class="text-xl text-gray-500 font-light">See how switching to a solid-state format impacts your home.</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-12 gap-12 bg-white p-10 md:p-20 rounded-[3rem] shadow-[0_30px_80px_rgba(0,0,0,0.04)] border border-gray-100 gs-scale">
-                
                 <div class="md:col-span-5 space-y-16 flex flex-col justify-center">
                     <div class="slider-container">
                         <div class="flex justify-between items-center mb-6">
-                            <label class="text-sm font-bold tracking-[0.15em] uppercase text-gray-400">People in Household</label>
+                            <label class="text-sm font-bold tracking-[0.15em] uppercase text-gray-400">Household Variables[cite: 8]</label>
                             <span class="text-3xl font-bold text-gray-900" id="val-people">2</span>
                         </div>
                         <input type="range" min="1" max="6" value="2" class="impact-slider w-full" id="slider-people">
@@ -185,12 +157,12 @@
     <section id="waitlist" class="py-40 bg-white border-t border-gray-100 relative z-20">
         <div class="max-w-4xl mx-auto px-6 text-center gs-fade">
             <h3 class="text-6xl md:text-8xl font-bold tracking-tighter mb-8">There is another way.[cite: 8]</h3>
-            <p class="text-gray-500 text-2xl mb-16 font-light">Rethinking everyday oral care through precise, solid-state formulations[cite: 8]. Join the waitlist.</p>
+            <p class="text-gray-500 text-2xl mb-16 font-light">Rethinking everyday oral care through precise, solid-state formulations. Designed to minimize environmental debt without compromising the ritual.[cite: 8]</p>
             
             <form id="waitlistForm" class="flex flex-col sm:flex-row gap-4 max-w-3xl mx-auto relative z-20">
                 <input type="email" id="waitlistEmail" required placeholder="Enter your email address" class="flex-1 px-10 py-6 rounded-full border border-gray-200 bg-[#FAFAFA] text-xl focus:outline-none focus:border-black transition-all shadow-inner font-poppins">
                 <button type="submit" id="waitlistBtn" class="px-12 py-6 bg-black text-white rounded-full font-medium text-xl hover:bg-gray-800 hover:scale-105 transition-all shadow-xl font-poppins">
-                    Request Access
+                    Join Waitlist
                 </button>
             </form>
             <div id="waitlistMsg" class="mt-8 text-lg font-medium hidden"></div>
@@ -205,10 +177,9 @@
             <div class="flex flex-wrap justify-center gap-6 mb-16">
                 <span class="px-6 py-3 bg-[#111] border border-gray-800 rounded-full text-xs font-bold tracking-[0.2em] uppercase text-gray-400">Cruelty-Free[cite: 8]</span>
                 <span class="px-6 py-3 bg-[#111] border border-gray-800 rounded-full text-xs font-bold tracking-[0.2em] uppercase text-gray-400">Waterless[cite: 8]</span>
-                <span class="px-6 py-3 bg-[#111] border border-gray-800 rounded-full text-xs font-bold tracking-[0.2em] uppercase text-gray-400">Nano-HAp</span>
             </div>
             <div class="text-xs font-medium tracking-[0.2em] uppercase text-gray-500">
-                <img src="https://usedots.in/public/brand/logos/dh/DotsTBWTWoS.png" alt="dots." class="inline h-[1em] translate-y-[-0.1em] object-contain opacity-50"> © 2026. A subsidiary brand of Savière Group Private Limited[cite: 8].
+                dots. © 2026 All rights reserved. A brand of Savière Group Private Limited.[cite: 8]
             </div>
         </div>
     </footer>

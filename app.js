@@ -20,14 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollTrigger: {
             trigger: "#stencil-scene",
             start: "top top",
-            end: "+=350%", // Pin for 3.5x screen height to make the zoom slow and dramatic
+            end: "+=350%", // Pin for 3.5 screen heights to make the zoom slow and dramatic
             pin: true,
             scrub: 1
         }
     });
 
     stencilTl.to("#stencil-text", {
-        scale: 250, // Massive scale to fly exactly through the 'o'
+        scale: 250, // Massive scale to fly exactly through the letter
         transformOrigin: "35% 50%", // Adjusted origin to fly through the letter 'o' in 'dots.'
         ease: "power2.inOut"
     })
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateImpact(); 
     }
 
-    // --- 7. Waitlist API ---
+    // --- 7. Waitlist API Hook ---
     const waitlistForm = document.getElementById('waitlistForm');
     if (waitlistForm) {
         waitlistForm.addEventListener('submit', async (e) => {

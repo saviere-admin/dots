@@ -22,7 +22,7 @@
             
             <!-- Step 1: Password Form -->
             <form id="pwdForm" class="block">
-                <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-6">Restricted Access</h2>
+                <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-6">System Access</h2>
                 <input type="password" id="sysPwd" required placeholder="Admin Password" class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-4 text-white text-center mb-4 focus:outline-none focus:border-gray-500 transition-colors">
                 <button type="submit" id="btnPwd" class="w-full bg-white text-black font-semibold py-4 rounded-xl hover:scale-[1.02] transition-transform">Verify Password</button>
             </form>
@@ -30,7 +30,8 @@
             <!-- Step 2: GitHub PAT Form -->
             <form id="gitForm" class="hidden">
                 <h2 class="text-xs font-bold tracking-[0.2em] uppercase text-green-400 mb-6">Password Verified</h2>
-                <input type="password" id="gitToken" required placeholder="GitHub PAT (dots-company)" class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-4 text-white text-center mb-4 focus:outline-none focus:border-gray-500 font-mono text-sm transition-colors">
+                <p class="text-[10px] text-gray-500 mb-4">Paste the 40-character secret key (starts with ghp_)</p>
+                <input type="password" id="gitToken" required placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="w-full bg-black/50 border border-gray-800 rounded-xl px-4 py-4 text-white text-center mb-4 focus:outline-none focus:border-gray-500 font-mono text-sm transition-colors">
                 <button type="submit" id="btnGit" class="w-full bg-white text-black font-semibold py-4 rounded-xl hover:scale-[1.02] transition-transform">Connect Database</button>
             </form>
 
@@ -46,8 +47,7 @@
         </nav>
 
         <div class="flex-1 overflow-hidden flex flex-col md:flex-row max-w-screen-2xl mx-auto w-full p-6 gap-6">
-            
-            <!-- Left: Waitlist Data Grid -->
+            <!-- Waitlist Data Grid -->
             <div class="flex-1 glass-panel rounded-3xl flex flex-col overflow-hidden relative">
                 <div class="p-6 border-b border-white/5 flex justify-between items-center">
                     <div>
@@ -55,7 +55,7 @@
                         <p class="text-xs text-gray-400 mt-1">Live D1 SQL Synchronization</p>
                     </div>
                     <div class="flex gap-4 items-center">
-                        <span class="text-xs font-bold text-gray-500"><span id="totalCount">0</span> Total Users</span>
+                        <span class="text-xs font-bold text-gray-500"><span id="totalCount">0</span> Total</span>
                     </div>
                 </div>
                 
@@ -79,7 +79,7 @@
                 </div>
             </div>
 
-            <!-- Right: Broadcast Composer (Hidden initially, slides in) -->
+            <!-- Broadcast Composer -->
             <div id="composerPanel" class="w-full md:w-[450px] glass-panel rounded-3xl p-8 flex flex-col transform transition-transform duration-500 translate-x-[120%] absolute md:relative right-6 top-6 bottom-6 md:right-auto md:top-auto md:bottom-auto md:translate-x-0 hidden">
                 <div class="flex justify-between items-center mb-8">
                     <h2 class="text-xl font-semibold tracking-tight">Payload Composer</h2>
