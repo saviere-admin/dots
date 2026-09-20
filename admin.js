@@ -9,8 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const gitForm = document.getElementById("gitForm");
     const authError = document.getElementById("authError");
     const dashboardView = document.getElementById("dashboardView");
-
-    // Session Check
+    
     const sPwd = sessionStorage.getItem("dots_admin_pwd");
     const sGit = sessionStorage.getItem("dots_admin_git");
     if (sPwd === REQUIRED_PWD && sGit) {
@@ -24,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
         authError.classList.remove("hidden");
     }
 
-    // --- STEP 1: PASSWORD AUTHENTICATION ---
     if(pwdForm) {
         pwdForm.addEventListener("submit", (e) => {
             e.preventDefault(); 
@@ -42,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- STEP 2: GITHUB PAT AUTHENTICATION ---
     if(gitForm) {
         gitForm.addEventListener("submit", async (e) => {
             e.preventDefault(); 
@@ -78,7 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- STEP 3: UNLOCK DASHBOARD ---
     function unlockSystem(gitToken) {
         document.body.classList.remove("items-center", "justify-center");
         if(authModal) authModal.classList.add("hidden");
@@ -86,7 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchWaitlist(gitToken);
     }
 
-    // --- STEP 4: FETCH WAITLIST DATA ---
     async function fetchWaitlist(gitToken) {
         try {
             const res = await fetch("/api/admin/waitlist", {
@@ -125,7 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (e) { console.error("Database sync failed", e); }
     }
 
-    // --- STEP 5: SELECTION LOGIC ---
     const selectionActionBar = document.getElementById("selectionActionBar");
     const composerPanel = document.getElementById("composerPanel");
 
@@ -172,7 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
         closeBtn.addEventListener("click", () => composerPanel.classList.add("hidden"));
     }
 
-    // --- STEP 6: SEND BROADCAST VIA RESEND ---
     const notifyForm = document.getElementById("notifyForm");
     if (notifyForm) {
         notifyForm.addEventListener("submit", async (e) => {

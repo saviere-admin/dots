@@ -1,20 +1,16 @@
-/* Apply Poppins Globally */
 body { font-family: 'Poppins', sans-serif; }
 
-/* Clean Scrollbars */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #050505; }
 ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
 
 html { scroll-behavior: auto; -webkit-font-smoothing: antialiased; }
 
-/* 3D Utils */
 .3d-card { 
     transition: transform 0.1s ease-out; 
     will-change: transform;
 }
 
-/* Custom Impact Sliders (Match screenshot exactly) */
 .slider-container { width: 100%; position: relative; }
 
 .impact-slider {

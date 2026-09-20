@@ -15,20 +15,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // --- 2. THE STENCIL ZOOM EFFECT ---
+    // 2. THE STENCIL ZOOM EFFECT
     const stencilTl = gsap.timeline({
         scrollTrigger: {
             trigger: "#stencil-scene",
             start: "top top",
-            end: "+=350%", // Pin for 3.5 screen heights to make the zoom slow and dramatic
+            end: "+=350%", 
             pin: true,
             scrub: 1
         }
     });
 
     stencilTl.to("#stencil-text", {
-        scale: 250, // Massive scale to fly exactly through the letter
-        transformOrigin: "35% 50%", // Adjusted origin to fly through the letter 'o' in 'dots.'
+        scale: 250, 
+        transformOrigin: "35% 50%", 
         ease: "power2.inOut"
     })
     .to("#stencil-mask", {
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         duration: 0.5
     });
 
-    // --- 3. Pinned Section: The Habit Cards ---
+    // 3. Pinned Section: The Habit Cards
     const tlPin = gsap.timeline({
         scrollTrigger: {
             trigger: "#habit-pin",
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ease: "power3.out"
     });
 
-    // --- 4. Content Reveals ---
+    // 4. Content Reveals
     gsap.utils.toArray('.gs-fade').forEach(elem => {
         gsap.from(elem, {
             y: 50, opacity: 0, duration: 1.2, ease: "power3.out",
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 5. Interactive 3D Cards ---
+    // 5. Interactive 3D Cards
     document.querySelectorAll('.3d-card').forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 6. Live Architecture Calculator ---
+    // 6. Live Architecture Calculator
     const sliderPeople = document.getElementById('slider-people');
     const sliderMonths = document.getElementById('slider-months');
     const outTubes = document.getElementById('out-tubes');
@@ -123,13 +123,13 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateImpact(); 
     }
 
-    // --- 7. Waitlist API Hook ---
+    // 7. Waitlist API Hook (Foolproof form handling)
     const waitlistForm = document.getElementById('waitlistForm');
     if (waitlistForm) {
+        const btn = document.getElementById('waitlistBtn');
         waitlistForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('waitlistEmail').value;
-            const btn = document.getElementById('waitlistBtn');
             const msg = document.getElementById('waitlistMsg');
             
             btn.disabled = true; btn.textContent = 'Processing...';

@@ -7,9 +7,7 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ error: "Invalid email address provided." }), { status: 400 });
         }
 
-        await env.DB.prepare("INSERT INTO waitlist (email) VALUES (?)")
-            .bind(email)
-            .run();
+        await env.DB.prepare("INSERT INTO waitlist (email) VALUES (?)").bind(email).run();
 
         return new Response(JSON.stringify({ success: true }), {
             headers: { "Content-Type": "application/json" }
