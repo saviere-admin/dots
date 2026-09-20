@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- 1. Lenis Smooth Scrolling (Buttery Experience) ---
+    // --- 1. Lenis Smooth Scrolling ---
     const lenis = new Lenis({
         duration: 1.5,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smooth: true,
-        wheelMultiplier: 1,
+        wheelMultiplier: 1.2,
     });
     function raf(time) {
         lenis.raf(time);
@@ -13,36 +13,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     requestAnimationFrame(raf);
 
-    // --- 2. GSAP Advanced Scroll Animations ---
+    // --- 2. GSAP Animations & Stencil Zoom ---
     gsap.registerPlugin(ScrollTrigger);
 
-    // Hero 3D Entrance
-    gsap.from(".hero-text", {
-        y: 100, 
-        opacity: 0, 
-        duration: 1.5, 
-        stagger: 0.15, 
-        ease: "power4.out", 
-        delay: 0.2
-    });
-    gsap.to(".hero-bg", {
-        scale: 1, 
-        opacity: 0.2, 
-        ease: "none",
-        scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: true }
+    // The Stencil Zoom Effect
+    const stencilTl = gsap.timeline({
+        scrollTrigger: {
+            trigger: "#stencil-wrapper",
+            start: "top top",
+            end: "+=250%", // Scroll distance for the zoom
+            pin: true,     // Lock screen in place
+            scrub: 1       // Smooth scrubbing
+        }
     });
 
-    // Pinned Section: The Habit
+    // Scale the text massively so the transparent hole fills the screen
+    stencilTl.to("#stencil-text", {
+        scale: 150,
+        transformOrigin: "center center",
+        ease: "power2.inOut"
+    })
+    // Fade out the overlay to leave just the background image
+    .to(".stencil-overlay", {
+        opacity: 0,
+        duration: 0.1
+    }, "-=0.2")
+    // Fade in the hero text over the background image
+    .to("#hero-post-zoom", {
+        opacity: 1,
+        pointerEvents: "auto",
+        duration: 0.5
+    });
+
+    // Pinned Section: The Habit Cards
     const tlPin = gsap.timeline({
         scrollTrigger: {
             trigger: "#habit-pin",
             start: "top top",
-            end: "+=100%", // Pin for 1 screen height
+            end: "+=100%",
             pin: true,
             scrub: 1
         }
     });
-    tlPin.from(".pin-cards .tilt-card", {
+    tlPin.from(".pin-cards > div", {
         y: window.innerHeight,
         opacity: 0,
         stagger: 0.2,
@@ -50,51 +63,23 @@ document.addEventListener('DOMContentLoaded', () => {
         ease: "power3.out"
     });
 
-    // Dark Section Text Reveals
-    gsap.utils.toArray('.gs-dark').forEach(elem => {
+    // Standard Fade Ups
+    gsap.utils.toArray('.gs-fade').forEach(elem => {
         gsap.from(elem, {
-            y: 80, opacity: 0, duration: 1.5, ease: "power4.out",
-            scrollTrigger: { trigger: elem, start: "top 85%" }
-        });
-    });
-    gsap.from(".gs-dark-scale", {
-        scale: 0.8, opacity: 0, duration: 2, ease: "power3.out",
-        scrollTrigger: { trigger: ".gs-dark-scale", start: "top 80%" }
-    });
-
-    // Calculator Section Reveals
-    gsap.from(".gs-calc", {
-        y: 60, opacity: 0, duration: 1.2, stagger: 0.1, ease: "power3.out",
-        scrollTrigger: { trigger: "#impact", start: "top 80%" }
-    });
-    gsap.from(".gs-calc-card", {
-        y: 100, opacity: 0, duration: 1.5, ease: "power4.out",
-        scrollTrigger: { trigger: ".gs-calc-card", start: "top 85%" }
-    });
-
-    // Simple Up Reveals
-    gsap.utils.toArray('.gs-up').forEach(elem => {
-        gsap.from(elem, {
-            y: 50, opacity: 0, duration: 1.2, ease: "power3.out",
+            y: 40, opacity: 0, duration: 1.2, ease: "power3.out",
             scrollTrigger: { trigger: elem, start: "top 85%" }
         });
     });
 
-    // --- 3. Interactive 3D Card Tilt ---
-    document.querySelectorAll('.tilt-card').forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            // 3D rotation math
-            card.style.transform = `perspective(1000px) rotateX(${-y / 20}deg) rotateY(${x / 20}deg) scale(1.02)`;
-        });
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)`;
+    // Scale effects
+    gsap.utils.toArray('.gs-scale').forEach(elem => {
+        gsap.from(elem, {
+            scale: 0.9, opacity: 0, duration: 1.5, ease: "power3.out",
+            scrollTrigger: { trigger: elem, start: "top 85%" }
         });
     });
 
-    // --- 4. Live Architecture Calculator ---
+    // --- 3. Live Architecture Calculator ---
     const sliderPeople = document.getElementById('slider-people');
     const sliderMonths = document.getElementById('slider-months');
     const valPeople = document.getElementById('val-people');
@@ -112,30 +97,27 @@ document.addEventListener('DOMContentLoaded', () => {
         valPeople.innerText = people;
         valMonths.innerText = months;
 
-        // Formula: 1 person = 1 tube every 2 months = 0.5 tubes/month.
-        // 1 tube = 20g plastic. 1 tube = 0.1 liters water.
         const totalTubes = Math.round(people * (months * 0.5));
         const totalPlastic = totalTubes * 20;
         const totalWater = (totalTubes * 0.1).toFixed(1);
 
-        // GSAP counter animation for buttery number updates
-        gsap.to(outTubes, { innerHTML: totalTubes, roundProps: "innerHTML", duration: 0.8, ease: "power3.out" });
-        gsap.to(outPlastic, { innerHTML: totalPlastic, roundProps: "innerHTML", duration: 0.8, ease: "power3.out" });
+        gsap.to(outTubes, { innerHTML: totalTubes, roundProps: "innerHTML", duration: 0.5, ease: "power2.out" });
+        gsap.to(outPlastic, { innerHTML: totalPlastic, roundProps: "innerHTML", duration: 0.5, ease: "power2.out" });
         
         let dummy = { val: parseFloat(outWater.innerText) || 0 };
         gsap.to(dummy, {
-            val: totalWater, duration: 0.8, ease: "power3.out",
+            val: totalWater, duration: 0.5, ease: "power2.out",
             onUpdate: function() { outWater.innerText = this.targets()[0].val.toFixed(1); }
         });
     }
 
-    if (sliderPeople && sliderMonths) {
+    if (sliderPeople) {
         sliderPeople.addEventListener('input', calculateImpact);
         sliderMonths.addEventListener('input', calculateImpact);
-        calculateImpact(); // Initial calculation
+        calculateImpact(); 
     }
 
-    // --- 5. Waitlist API Hook ---
+    // --- 4. Waitlist Hook ---
     const waitlistForm = document.getElementById('waitlistForm');
     if (waitlistForm) {
         waitlistForm.addEventListener('submit', async (e) => {
