@@ -6,3 +6,7 @@ data/waitlist.json
 data/notifications.json
 .dev.vars
 .wrangler/
+
+.dots-backup/
+
+.dots-backup/
