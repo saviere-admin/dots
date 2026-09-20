@@ -1,207 +1,377 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const REQUIRED_PWD = "Saviere@798959885#";
-    let activePwd = null;
-    let selectedEmails = new Set();
-    let waitlistData = [];
+  const $ = (selector) => document.querySelector(selector);
+  const $$ = (selector) => [...document.querySelectorAll(selector)];
 
-    const authModal = document.getElementById("authModal");
-    const pwdForm = document.getElementById("pwdForm");
-    const gitForm = document.getElementById("gitForm");
-    const authError = document.getElementById("authError");
-    const dashboardView = document.getElementById("dashboardView");
+  const authScreen = $("#authScreen");
+  const dashboard = $("#dashboard");
+  const loginForm = $("#loginForm");
+  const loginPassword = $("#loginPassword");
+  const loginButton = $("#loginButton");
+  const authStatus = $("#authStatus");
 
-    // Check existing session
-    const sPwd = sessionStorage.getItem("dots_admin_pwd");
-    const sGit = sessionStorage.getItem("dots_admin_git");
-    if (sPwd === REQUIRED_PWD && sGit) {
-        activePwd = sPwd;
-        unlockSystem(sGit);
+  const waitlistBody = $("#waitlistBody");
+  const totalCount = $("#totalCount");
+  const selectAll = $("#selectAll");
+  const selectedCount = $("#selectedCount");
+  const selectionBar = $("#selectionBar");
+
+  const composerModal = $("#composerModal");
+  const composerForm = $("#composerForm");
+  const closeComposer = $("#closeComposer");
+  const recipientCount = $("#recipientCount");
+  const sendButton = $("#sendButton");
+  const composerStatus = $("#composerStatus");
+
+  const historyList = $("#historyList");
+  const refreshButton = $("#refreshButton");
+  const exportButton = $("#exportButton");
+  const logoutButton = $("#logoutButton");
+
+  let waitlist = [];
+  const selectedEmails = new Set();
+
+  function showStatus(element, message, type = "error") {
+    if (!element) return;
+
+    element.textContent = message;
+    element.className = `status ${type}`;
+    element.classList.remove("hidden");
+  }
+
+  function hideStatus(element) {
+    element?.classList.add("hidden");
+  }
+
+  async function api(url, options = {}) {
+    const response = await fetch(url, {
+      credentials: "same-origin",
+      ...options,
+      headers: {
+        Accept: "application/json",
+        ...(options.body ? { "Content-Type": "application/json" } : {}),
+        ...(options.headers || {}),
+      },
+    });
+
+    const contentType = response.headers.get("content-type") || "";
+    const data = contentType.includes("application/json")
+      ? await response.json()
+      : await response.text();
+
+    if (!response.ok) {
+      const error = new Error(
+        data?.error || `Request failed (${response.status}).`
+      );
+      error.status = response.status;
+      throw error;
     }
 
-    function showError(msg) {
-        if(!authError) return;
-        authError.innerHTML = msg;
-        authError.classList.remove("hidden");
+    return data;
+  }
+
+  function setAuthenticated(isAuthenticated) {
+    authScreen?.classList.toggle("hidden", isAuthenticated);
+    dashboard?.classList.toggle("hidden", !isAuthenticated);
+
+    if (isAuthenticated) {
+      loadAll();
+    }
+  }
+
+  async function checkSession() {
+    try {
+      await api("/api/admin/session");
+      setAuthenticated(true);
+    } catch {
+      setAuthenticated(false);
+    }
+  }
+
+  loginForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const password = loginPassword?.value || "";
+    if (!password) {
+      showStatus(authStatus, "Enter your admin password.");
+      return;
     }
 
-    // Step 1: System Password
-    if(pwdForm) {
-        pwdForm.addEventListener("submit", (e) => {
-            e.preventDefault(); 
-            const val = document.getElementById("sysPwd")?.value.trim();
-            if (val === REQUIRED_PWD) {
-                activePwd = val;
-                authError.classList.add("hidden");
-                pwdForm.classList.replace("block", "hidden");
-                gitForm.classList.replace("hidden", "block");
-            } else {
-                showError("Invalid System Password.");
-                document.getElementById("sysPwd").value = "";
-            }
-        });
+    loginButton.disabled = true;
+    loginButton.textContent = "Authenticating…";
+    hideStatus(authStatus);
+
+    try {
+      await api("/api/admin/login", {
+        method: "POST",
+        body: JSON.stringify({ password }),
+      });
+
+      loginForm.reset();
+      setAuthenticated(true);
+    } catch (error) {
+      showStatus(authStatus, error.message);
+      loginPassword?.select();
+    } finally {
+      loginButton.disabled = false;
+      loginButton.textContent = "Enter command center";
+    }
+  });
+
+  async function loadWaitlist() {
+    const data = await api("/api/admin/waitlist");
+    waitlist = Array.isArray(data.data) ? data.data : [];
+
+    totalCount.textContent = String(waitlist.length);
+    renderWaitlist();
+  }
+
+  function renderWaitlist() {
+    if (!waitlistBody) return;
+
+    if (!waitlist.length) {
+      waitlistBody.innerHTML = `
+        <tr>
+          <td colspan="4" style="text-align:center;padding:70px 20px;color:#777">
+            No waitlist entries yet.
+          </td>
+        </tr>
+      `;
+      return;
     }
 
-    // Step 2: GitHub PAT (Allow ANY input so backend can verify it)
-    if(gitForm) {
-        gitForm.addEventListener("submit", async (e) => {
-            e.preventDefault(); 
-            const gitToken = document.getElementById("gitToken")?.value.trim();
-            const btn = document.getElementById("btnGit");
-            
-            btn.textContent = "Verifying Authority...";
-            btn.disabled = true;
-            authError.classList.add("hidden");
+    waitlistBody.innerHTML = waitlist
+      .map((user) => {
+        const email = escapeAttribute(user.email);
+        const checked = selectedEmails.has(user.email) ? "checked" : "";
+        const name = escapeHtml(user.full_name || "Guest");
+        const joined = user.created_at
+          ? new Date(user.created_at).toLocaleString()
+          : "—";
 
-            try {
-                // Let the Cloudflare Backend verify the token. 
-                const res = await fetch("/api/admin/waitlist", {
-                    headers: { "X-Admin-Password": activePwd, "X-GitHub-Token": gitToken }
-                });
-                const data = await res.json();
-                
-                if (!res.ok) throw new Error(data.error || "GitHub verification failed.");
+        return `
+          <tr data-email="${email}">
+            <td>
+              <input
+                class="check row-check"
+                type="checkbox"
+                value="${email}"
+                ${checked}
+                aria-label="Select ${name}">
+            </td>
+            <td>${name}</td>
+            <td>${escapeHtml(user.email)}</td>
+            <td style="text-align:right;color:#777;font-size:12px">${escapeHtml(joined)}</td>
+          </tr>
+        `;
+      })
+      .join("");
 
-                sessionStorage.setItem("dots_admin_pwd", activePwd);
-                sessionStorage.setItem("dots_admin_git", gitToken);
-                unlockSystem(gitToken);
-
-            } catch (err) {
-                showError(`<strong>Auth Failed:</strong> ${err.message}`);
-                btn.textContent = "Connect Database";
-                btn.disabled = false;
-            }
-        });
-    }
-
-    function unlockSystem(gitToken) {
-        document.body.classList.remove("items-center", "justify-center");
-        if(authModal) authModal.classList.add("hidden");
-        if(dashboardView) dashboardView.classList.remove("hidden");
-        fetchWaitlist(gitToken);
-    }
-
-    async function fetchWaitlist(gitToken) {
-        try {
-            const res = await fetch("/api/admin/waitlist", {
-                headers: { "X-Admin-Password": activePwd, "X-GitHub-Token": gitToken }
-            });
-            const { data } = await res.json();
-            waitlistData = data || [];
-            
-            const countEl = document.getElementById("totalCount");
-            if(countEl) countEl.textContent = waitlistData.length;
-            
-            const tbody = document.getElementById("waitlistBody");
-            if(tbody) {
-                tbody.innerHTML = waitlistData.map(u => `
-                    <tr class="hover:bg-white/5 transition-colors cursor-pointer row-select" data-email="${u.email}">
-                        <td class="px-6 py-4"><input type="checkbox" class="custom-checkbox row-check" value="${u.email}"></td>
-                        <td class="px-6 py-4 font-medium text-white">${u.name || 'Guest'}</td>
-                        <td class="px-6 py-4 text-gray-300">${u.email}</td>
-                        <td class="px-6 py-4 text-gray-500 text-xs text-right">${new Date(u.created_at).toLocaleString()}</td>
-                    </tr>
-                `).join('');
-
-                document.querySelectorAll('.row-select').forEach(row => {
-                    row.addEventListener('click', (e) => {
-                        if(e.target.type !== 'checkbox') {
-                            const cb = row.querySelector('.row-check');
-                            cb.checked = !cb.checked;
-                            handleSelection(cb);
-                        }
-                    });
-                });
-
-                document.querySelectorAll('.row-check').forEach(cb => {
-                    cb.addEventListener('change', (e) => handleSelection(e.target));
-                });
-            }
-        } catch (e) { console.error("Database sync failed", e); }
-    }
-
-    const selectionActionBar = document.getElementById("selectionActionBar");
-    const composerModal = document.getElementById("composerModal");
-
-    const selectAllBtn = document.getElementById("selectAll");
-    if(selectAllBtn) {
-        selectAllBtn.addEventListener("change", (e) => {
-            const isChecked = e.target.checked;
-            document.querySelectorAll('.row-check').forEach(cb => {
-                cb.checked = isChecked;
-                if (isChecked) selectedEmails.add(cb.value);
-                else selectedEmails.delete(cb.value);
-            });
-            updateActionBar();
-        });
-    }
-
-    function handleSelection(checkbox) {
-        if (checkbox.checked) selectedEmails.add(checkbox.value);
-        else selectedEmails.delete(checkbox.value);
-        updateActionBar();
-    }
-
-    function updateActionBar() {
-        const selCount = document.getElementById("selectedCount");
-        const recCount = document.getElementById("recipientCountLabel");
-        if(selCount) selCount.textContent = selectedEmails.size;
-        if(recCount) recCount.textContent = selectedEmails.size;
-        
-        if (selectedEmails.size > 0) {
-            selectionActionBar.classList.remove("translate-y-24", "opacity-0", "pointer-events-none");
+    $$(".row-check").forEach((checkbox) => {
+      checkbox.addEventListener("change", () => {
+        if (checkbox.checked) {
+          selectedEmails.add(checkbox.value);
         } else {
-            selectionActionBar.classList.add("translate-y-24", "opacity-0", "pointer-events-none");
-            composerModal.classList.add("hidden");
+          selectedEmails.delete(checkbox.value);
         }
+
+        syncSelectionUI();
+      });
+    });
+
+    $$("tbody tr[data-email]").forEach((row) => {
+      row.addEventListener("click", (event) => {
+        if (event.target instanceof HTMLInputElement) return;
+
+        const checkbox = row.querySelector(".row-check");
+        if (!checkbox) return;
+
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event("change"));
+      });
+    });
+
+    syncSelectionUI();
+  }
+
+  function syncSelectionUI() {
+    selectedCount.textContent = String(selectedEmails.size);
+    recipientCount.textContent = String(selectedEmails.size);
+
+    selectionBar?.classList.toggle(
+      "visible",
+      selectedEmails.size > 0
+    );
+
+    const boxes = $$(".row-check");
+    if (selectAll) {
+      selectAll.checked =
+        boxes.length > 0 &&
+        boxes.every((box) => box.checked);
+      selectAll.indeterminate =
+        boxes.some((box) => box.checked) &&
+        !selectAll.checked;
+    }
+  }
+
+  selectAll?.addEventListener("change", () => {
+    const checked = selectAll.checked;
+
+    $$(".row-check").forEach((box) => {
+      box.checked = checked;
+
+      if (checked) {
+        selectedEmails.add(box.value);
+      } else {
+        selectedEmails.delete(box.value);
+      }
+    });
+
+    syncSelectionUI();
+  });
+
+  $("#composeButton")?.addEventListener("click", () => {
+    if (!selectedEmails.size) return;
+    recipientCount.textContent = String(selectedEmails.size);
+    composerModal.classList.remove("hidden");
+  });
+
+  closeComposer?.addEventListener("click", () => {
+    composerModal.classList.add("hidden");
+  });
+
+  composerModal?.addEventListener("click", (event) => {
+    if (event.target === composerModal) {
+      composerModal.classList.add("hidden");
+    }
+  });
+
+  composerForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!selectedEmails.size) {
+      showStatus(composerStatus, "Select at least one recipient.");
+      return;
     }
 
-    document.getElementById("composeBtn")?.addEventListener("click", () => {
-        composerModal.classList.remove("hidden");
-    });
-    
-    document.getElementById("closeComposerBtn")?.addEventListener("click", () => {
-        composerModal.classList.add("hidden");
-    });
+    const subject = $("#emailSubject").value.trim();
+    const html = $("#emailBody").value.trim();
 
-    const notifyForm = document.getElementById("notifyForm");
-    if (notifyForm) {
-        notifyForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const subject = document.getElementById("emailSubject").value;
-            const html = document.getElementById("emailBody").value;
-            const btn = document.getElementById("sendBtn");
-            const statusBox = document.getElementById("notifyStatus");
+    sendButton.disabled = true;
+    sendButton.textContent = "Sending…";
+    hideStatus(composerStatus);
 
-            btn.disabled = true; 
-            btn.textContent = "Dispatching Payload...";
-            statusBox.classList.add("hidden");
+    try {
+      const data = await api("/api/admin/notifications", {
+        method: "POST",
+        body: JSON.stringify({
+          subject,
+          html,
+          selectedEmails: [...selectedEmails],
+        }),
+      });
 
-            try {
-                const res = await fetch("/api/admin/notifications", {
-                    method: "POST",
-                    headers: {
-                        "X-Admin-Password": activePwd,
-                        "X-GitHub-Token": sessionStorage.getItem("dots_admin_git"),
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ subject, html, selectedEmails: Array.from(selectedEmails) })
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error);
+      showStatus(
+        composerStatus,
+        data.warning ||
+          `Sent to ${data.sentCount} recipient${data.sentCount === 1 ? "" : "s"}.`,
+        data.warning ? "error" : "success"
+      );
 
-                statusBox.innerHTML = `Payload delivered to <b>${data.count}</b> targets.`;
-                statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-green-900/30 text-green-400 block";
-                notifyForm.reset();
-            } catch (err) {
-                statusBox.textContent = err.message;
-                statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-red-900/30 text-red-400 block";
-            } finally {
-                btn.disabled = false; btn.textContent = "Dispatch via Resend";
-            }
-        });
+      composerForm.reset();
+      await loadHistory();
+    } catch (error) {
+      showStatus(composerStatus, error.message);
+    } finally {
+      sendButton.disabled = false;
+      sendButton.textContent = "Send via Resend";
+    }
+  });
+
+  async function loadHistory() {
+    const data = await api("/api/admin/notifications");
+    const history = Array.isArray(data.data) ? data.data : [];
+
+    if (!history.length) {
+      historyList.innerHTML = `<div class="small">No notifications sent yet.</div>`;
+      return;
     }
 
-    document.getElementById("logoutBtn")?.addEventListener("click", () => {
-        sessionStorage.clear(); location.reload();
-    });
+    historyList.innerHTML = history
+      .map((item) => {
+        const sent = Number(item.sent_count || 0);
+        const failed = Number(item.failed_count || 0);
+
+        return `
+          <div class="history-item">
+            <div>
+              <strong>${escapeHtml(item.subject)}</strong>
+              <div class="small">
+                ${escapeHtml(
+                  item.created_at
+                    ? new Date(item.created_at).toLocaleString()
+                    : "—"
+                )}
+              </div>
+            </div>
+            <div class="small">
+              ${sent} sent${failed ? ` · ${failed} failed` : ""}
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+  }
+
+  async function loadAll() {
+    try {
+      await Promise.all([loadWaitlist(), loadHistory()]);
+    } catch (error) {
+      if (error.status === 401) {
+        setAuthenticated(false);
+        return;
+      }
+
+      console.error(error);
+    }
+  }
+
+  refreshButton?.addEventListener("click", async () => {
+    refreshButton.disabled = true;
+    try {
+      await loadAll();
+    } finally {
+      refreshButton.disabled = false;
+    }
+  });
+
+  exportButton?.addEventListener("click", () => {
+    window.location.href = "/api/admin/export";
+  });
+
+  logoutButton?.addEventListener("click", async () => {
+    try {
+      await api("/api/admin/logout", { method: "POST" });
+    } catch {
+      // Clear the UI even if the network request fails.
+    }
+
+    selectedEmails.clear();
+    setAuthenticated(false);
+  });
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    }[char]));
+  }
+
+  function escapeAttribute(value) {
+    return escapeHtml(value);
+  }
+
+  checkSession();
 });

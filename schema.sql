@@ -13,7 +13,16 @@ CREATE TABLE IF NOT EXISTS notifications (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   subject TEXT NOT NULL,
   message TEXT NOT NULL,
-  sent_count INTEGER DEFAULT 0,
-  failed_count INTEGER DEFAULT 0,
+  sent_count INTEGER NOT NULL DEFAULT 0,
+  failed_count INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL
 );
+
+CREATE INDEX IF NOT EXISTS idx_waitlist_created_at
+  ON waitlist(created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_waitlist_email
+  ON waitlist(email);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_created_at
+  ON notifications(created_at DESC);
