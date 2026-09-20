@@ -60,7 +60,7 @@ export async function onRequestPost(context) {
     const createdAt = new Date().toISOString();
 
     await env.DB.prepare(`
-      INSERT INTO waitlist (full_name, email, created_at)
+      INSERT INTO waitlist (name, email, created_at)
       VALUES (?, ?, ?)
     `).bind(name, email, createdAt).run();
 

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS waitlist (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  full_name TEXT NOT NULL,
+  name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
   phone TEXT,
   category TEXT,

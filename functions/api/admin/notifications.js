@@ -1,4 +1,4 @@
-import { json } from "../../_utils.js";
+import { json } from "../_utils.js";
 import { requireAdmin } from "./_auth.js";
 
 const MAX_RECIPIENTS_PER_BATCH = 100;

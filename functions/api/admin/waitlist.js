@@ -1,4 +1,4 @@
-import { json } from "../../_utils.js";
+import { json } from "../_utils.js";
 import { requireAdmin } from "./_auth.js";
 
 function csvEscape(value) {
@@ -13,7 +13,7 @@ export async function onRequestGet(context) {
 
   try {
     const { results } = await env.DB.prepare(`
-      SELECT id, full_name, email, phone, category, interest, notes, created_at
+      SELECT id, name, email, phone, category, interest, notes, created_at
       FROM waitlist
       ORDER BY datetime(created_at) DESC, id DESC
     `).all();
@@ -62,7 +62,7 @@ export async function onRequestPost(context) {
     const format = body.format === "csv" ? "csv" : "json";
 
     const { results } = await env.DB.prepare(`
-      SELECT id, full_name, email, phone, category, interest, notes, created_at
+      SELECT id, name, email, phone, category, interest, notes, created_at
       FROM waitlist
       ORDER BY datetime(created_at) DESC, id DESC
     `).all();
@@ -72,7 +72,7 @@ export async function onRequestPost(context) {
     }
 
     const headers = [
-      "id", "full_name", "email", "phone",
+      "id", "name", "email", "phone",
       "category", "interest", "notes", "created_at"
     ];
 
