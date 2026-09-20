@@ -15,23 +15,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // 2. THE STENCIL ZOOM EFFECT
+    // --- 2. THE GOLDEN DOT ZOOM EFFECT ---
     const stencilTl = gsap.timeline({
         scrollTrigger: {
             trigger: "#stencil-scene",
             start: "top top",
-            end: "+=350%", 
+            end: "+=400%", // Long, luxurious zoom distance
             pin: true,
             scrub: 1
         }
     });
 
-    stencilTl.to("#stencil-text", {
+    stencilTl.to("#svg-logo", {
         scale: 250, 
-        transformOrigin: "35% 50%", 
+        // 93.5% X and 72.5% Y is the exact center of the golden dot in the provided SVG
+        transformOrigin: "93.5% 72.5%", 
         ease: "power2.inOut"
     })
-    .to("#stencil-mask", {
+    .to("#svg-container", {
         opacity: 0,
         duration: 0.1
     }, "-=0.2")
@@ -41,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         duration: 0.5
     });
 
-    // 3. Pinned Section: The Habit Cards
+    // --- 3. Pinned Section: The Habit Cards ---
     const tlPin = gsap.timeline({
         scrollTrigger: {
             trigger: "#habit-pin",
@@ -59,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ease: "power3.out"
     });
 
-    // 4. Content Reveals
+    // --- 4. Content Reveals ---
     gsap.utils.toArray('.gs-fade').forEach(elem => {
         gsap.from(elem, {
             y: 50, opacity: 0, duration: 1.2, ease: "power3.out",
@@ -74,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 5. Interactive 3D Cards
+    // --- 5. Interactive 3D Cards ---
     document.querySelectorAll('.3d-card').forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
@@ -87,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 6. Live Architecture Calculator
+    // --- 6. Live Architecture Calculator ---
     const sliderPeople = document.getElementById('slider-people');
     const sliderMonths = document.getElementById('slider-months');
     const outTubes = document.getElementById('out-tubes');
@@ -123,13 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateImpact(); 
     }
 
-    // 7. Waitlist API Hook (Foolproof form handling)
+    // --- 7. Waitlist API (With Inline Success) ---
     const waitlistForm = document.getElementById('waitlistForm');
     if (waitlistForm) {
-        const btn = document.getElementById('waitlistBtn');
         waitlistForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('waitlistEmail').value;
+            e.preventDefault(); // Stop reload
+            const name = document.getElementById('waitlistName').value.trim();
+            const email = document.getElementById('waitlistEmail').value.trim();
+            const btn = document.getElementById('waitlistBtn');
             const msg = document.getElementById('waitlistMsg');
             
             btn.disabled = true; btn.textContent = 'Processing...';
@@ -139,11 +141,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch('/api/waitlist', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
+                    body: JSON.stringify({ name, email })
                 });
                 const data = await response.json();
-                if (response.ok) window.location.href = '/thank-you.html';
-                else throw new Error(data.error || 'Failed to join waitlist.');
+                
+                if (!response.ok) throw new Error(data.error || 'Failed to join waitlist.');
+
+                // Gorgeous inline success message
+                waitlistForm.classList.add('hidden');
+                msg.innerHTML = `<span class="text-4xl block mb-4">✨</span> Welcome to the dots. family, <b>${name}</b>.<br/>You're officially on the list.`;
+                msg.className = 'mt-8 text-xl text-gray-600 block animate-[fadeInUp_0.5s_ease-out]';
+                
             } catch (error) {
                 msg.textContent = error.message;
                 msg.className = 'mt-6 text-lg font-medium text-red-500 block';

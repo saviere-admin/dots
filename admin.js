@@ -9,7 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const gitForm = document.getElementById("gitForm");
     const authError = document.getElementById("authError");
     const dashboardView = document.getElementById("dashboardView");
-    
+
+    // Session Check
     const sPwd = sessionStorage.getItem("dots_admin_pwd");
     const sGit = sessionStorage.getItem("dots_admin_git");
     if (sPwd === REQUIRED_PWD && sGit) {
@@ -25,9 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(pwdForm) {
         pwdForm.addEventListener("submit", (e) => {
-            e.preventDefault(); 
             const val = document.getElementById("sysPwd")?.value.trim();
-            
             if (val === REQUIRED_PWD) {
                 activePwd = val;
                 authError.classList.add("hidden");
@@ -42,16 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(gitForm) {
         gitForm.addEventListener("submit", async (e) => {
-            e.preventDefault(); 
             const gitToken = document.getElementById("gitToken")?.value.trim();
             const btn = document.getElementById("btnGit");
             
-            if (!gitToken.startsWith("ghp_") && !gitToken.startsWith("github_pat_")) {
-                showError("<strong>Format Error:</strong> You must paste the actual 40-character secret key that starts with <code>ghp_</code>.");
-                return;
-            }
-
-            btn.textContent = "Verifying Authority...";
+            btn.textContent = "Verifying...";
             btn.disabled = true;
             authError.classList.add("hidden");
 
@@ -98,8 +91,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 tbody.innerHTML = waitlistData.map(u => `
                     <tr class="hover:bg-white/5 transition-colors cursor-pointer row-select" data-email="${u.email}">
                         <td class="px-6 py-4"><input type="checkbox" class="custom-checkbox row-check" value="${u.email}"></td>
-                        <td class="px-6 py-4 font-medium text-white">${u.email}</td>
-                        <td class="px-6 py-4 text-gray-400 text-xs text-right">${new Date(u.created_at).toLocaleString()}</td>
+                        <td class="px-6 py-4 text-white">${u.name || 'Guest'}</td>
+                        <td class="px-6 py-4 font-medium text-gray-300">${u.email}</td>
+                        <td class="px-6 py-4 text-gray-500 text-xs text-right">${new Date(u.created_at).toLocaleString()}</td>
                     </tr>
                 `).join('');
 
@@ -120,8 +114,9 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (e) { console.error("Database sync failed", e); }
     }
 
+    // --- SELECTION & COMPOSER LOGIC ---
     const selectionActionBar = document.getElementById("selectionActionBar");
-    const composerPanel = document.getElementById("composerPanel");
+    const composerModal = document.getElementById("composerModal");
 
     const selectAllBtn = document.getElementById("selectAll");
     if(selectAllBtn) {
@@ -149,27 +144,23 @@ document.addEventListener("DOMContentLoaded", () => {
         if(recCount) recCount.textContent = selectedEmails.size;
         
         if (selectedEmails.size > 0) {
-            selectionActionBar?.classList.remove("translate-y-24");
+            selectionActionBar.classList.remove("translate-y-24", "opacity-0", "pointer-events-none");
         } else {
-            selectionActionBar?.classList.add("translate-y-24");
-            composerPanel?.classList.add("hidden");
+            selectionActionBar.classList.add("translate-y-24", "opacity-0", "pointer-events-none");
         }
     }
 
-    const composeBtn = document.getElementById("composeBtn");
-    if(composeBtn) {
-        composeBtn.addEventListener("click", () => composerPanel.classList.remove("hidden"));
-    }
+    document.getElementById("composeBtn").addEventListener("click", () => {
+        composerModal.classList.remove("hidden");
+    });
     
-    const closeBtn = document.getElementById("closeComposerBtn");
-    if(closeBtn) {
-        closeBtn.addEventListener("click", () => composerPanel.classList.add("hidden"));
-    }
+    document.getElementById("closeComposerBtn").addEventListener("click", () => {
+        composerModal.classList.add("hidden");
+    });
 
     const notifyForm = document.getElementById("notifyForm");
     if (notifyForm) {
         notifyForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
             const subject = document.getElementById("emailSubject").value;
             const html = document.getElementById("emailBody").value;
             const btn = document.getElementById("sendBtn");
@@ -193,21 +184,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!res.ok) throw new Error(data.error);
 
                 statusBox.textContent = `Payload delivered to ${data.count} targets.`;
-                statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-green-900/30 text-green-400 border border-green-500/20 block";
+                statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-green-900/30 text-green-400 block";
                 notifyForm.reset();
             } catch (err) {
                 statusBox.textContent = err.message;
-                statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-red-900/30 text-red-400 border border-red-500/20 block";
+                statusBox.className = "text-xs p-4 rounded-xl mb-6 bg-red-900/30 text-red-400 block";
             } finally {
-                btn.disabled = false; btn.textContent = "Dispatch to Targets";
+                btn.disabled = false; btn.textContent = "Dispatch via Resend";
             }
         });
     }
 
-    const logoutBtn = document.getElementById("logoutBtn");
-    if(logoutBtn) {
-        logoutBtn.addEventListener("click", () => {
-            sessionStorage.clear(); location.reload();
-        });
-    }
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        sessionStorage.clear(); location.reload();
+    });
 });
