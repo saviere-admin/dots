@@ -278,5 +278,49 @@
             </div>
         </div>
     </footer>
+
+    <!-- Self-contained impact calculator -->
+    <script>
+    (() => {
+        const peopleSlider = document.getElementById('slider-people');
+        const monthsSlider = document.getElementById('slider-months');
+
+        const peopleValue = document.getElementById('val-people');
+        const monthsValue = document.getElementById('val-months');
+
+        const plasticOutput = document.getElementById('out-tubes');
+        const freightOutput = document.getElementById('out-water');
+
+        if (!peopleSlider || !monthsSlider) return;
+
+        function updateImpactCalculator() {
+            const people = Number(peopleSlider.value);
+            const months = Number(monthsSlider.value);
+
+            // 1 toothpaste tube per person every 2 months.
+            const tubes = Math.round(people * months * 0.5);
+
+            // 20 g of plastic packaging per conventional tube.
+            const plasticGrams = tubes * 20;
+
+            // 0.1 kg freight reduction per toothpaste tube.
+            const freightKg = (tubes * 0.1).toFixed(1);
+
+            if (peopleValue) peopleValue.textContent = people;
+            if (monthsValue) monthsValue.textContent = months;
+            if (plasticOutput) plasticOutput.textContent = plasticGrams;
+            if (freightOutput) freightOutput.textContent = freightKg;
+        }
+
+        peopleSlider.addEventListener('input', updateImpactCalculator);
+        peopleSlider.addEventListener('change', updateImpactCalculator);
+
+        monthsSlider.addEventListener('input', updateImpactCalculator);
+        monthsSlider.addEventListener('change', updateImpactCalculator);
+
+        updateImpactCalculator();
+    })();
+    </script>
+
 </body>
 </html>
